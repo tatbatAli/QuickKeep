@@ -1,0 +1,717 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>QuickKeep</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="qk-popup">
+    <!-- ══════════════════════════════════════
+       AUTH VIEW — shown when logged out
+  ══════════════════════════════════════ -->
+    <div id="authView" class="qk-view" style="display: none">
+      <div class="qk-auth-header">
+        <div class="qk-logo">
+          <div class="qk-logo-icon">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="white"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              width="14"
+              height="14"
+            >
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+            </svg>
+          </div>
+          <span class="qk-logo-name">Quick<span>Keep</span></span>
+        </div>
+        <p class="qk-auth-tagline">Save anything. Find it instantly.</p>
+      </div>
+
+      <!-- Tab switcher -->
+      <div class="qk-auth-tabs">
+        <button class="qk-tab-btn active" id="tabLogin">Sign in</button>
+        <button class="qk-tab-btn" id="tabRegister">Create account</button>
+      </div>
+
+      <!-- Login form -->
+      <form class="qk-auth-form" id="loginForm">
+        <input
+          type="email"
+          class="qk-input"
+          id="loginEmail"
+          placeholder="Email address"
+          autocomplete="email"
+          required
+        />
+        <input
+          type="password"
+          class="qk-input"
+          id="loginPassword"
+          placeholder="Password"
+          autocomplete="current-password"
+          required
+        />
+        <button type="submit" class="qk-save-btn" id="loginBtn">Sign in</button>
+      </form>
+
+      <!-- Register form -->
+      <form class="qk-auth-form" id="registerForm" style="display: none">
+        <input
+          type="email"
+          class="qk-input"
+          id="regEmail"
+          placeholder="Email address"
+          autocomplete="email"
+          required
+        />
+        <input
+          type="password"
+          class="qk-input"
+          id="regPassword"
+          placeholder="Password (min 8 chars)"
+          autocomplete="new-password"
+          required
+        />
+        <button type="submit" class="qk-save-btn" id="registerBtn">
+          Create free account
+        </button>
+      </form>
+
+      <p class="qk-auth-note">
+        Or use without an account —
+        <button class="qk-link-btn" id="skipAuthBtn">continue as guest</button>
+      </p>
+    </div>
+
+    <!-- ══════════════════════════════════════
+       MAIN VIEW — shown when logged in or guest
+  ══════════════════════════════════════ -->
+    <div id="mainView" class="qk-view" style="display: none">
+      <!-- Header -->
+      <header class="qk-header">
+        <div class="qk-logo">
+          <div class="qk-logo-icon">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="white"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              width="14"
+              height="14"
+            >
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+            </svg>
+          </div>
+          <span class="qk-logo-name">Quick<span>Keep</span></span>
+        </div>
+
+        <div class="qk-header-right">
+          <!-- Plan badge — changes based on user plan -->
+          <span class="qk-plan-badge" id="planBadge">Free</span>
+          <!-- User menu trigger -->
+          <button class="qk-user-btn" id="userMenuBtn" title="Account">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              width="15"
+              height="15"
+            >
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- User dropdown menu -->
+      <div class="qk-user-menu" id="userMenu" style="display: none">
+        <div class="qk-user-email" id="userEmail">guest</div>
+        <div class="qk-menu-divider"></div>
+        <button class="qk-menu-item" id="exportCsvBtn">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            width="13"
+            height="13"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+          Export CSV
+          <span class="qk-pro-tag">Pro</span>
+        </button>
+        <button class="qk-menu-item" id="exportMdBtn">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            width="13"
+            height="13"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+          Export Markdown
+          <span class="qk-pro-tag">Pro</span>
+        </button>
+        <div class="qk-menu-divider"></div>
+        <button class="qk-menu-item danger" id="logoutBtn">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            width="13"
+            height="13"
+          >
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg>
+          Sign out
+        </button>
+      </div>
+
+      <!-- Upgrade banner — only shown on free plan -->
+      <div class="qk-upgrade-banner" id="upgradeBanner">
+        <div class="qk-upgrade-text">
+          <strong>Upgrade to Pro</strong>
+          <span>Sync devices · Unlimited saves · Export</span>
+        </div>
+        <button class="qk-upgrade-btn" id="upgradeBannerBtn">Upgrade</button>
+      </div>
+
+      <!-- Save bar -->
+      <section class="qk-save-bar">
+        <div class="qk-save-bar-title">Save Current Page</div>
+        <textarea
+          id="noteInput"
+          class="qk-note-input"
+          rows="2"
+          placeholder="Add a note (optional)…"
+        ></textarea>
+        <div class="qk-save-row">
+          <button class="qk-save-btn" id="saveBtn">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              width="13"
+              height="13"
+            >
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            Save This Page
+          </button>
+          <!-- Save to Team button — only visible for team plan users -->
+          <button
+            class="qk-save-team-btn"
+            id="saveTeamBtn"
+            style="display: none"
+            title="Save to shared team collection"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              width="13"
+              height="13"
+            >
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+            Team
+          </button>
+          <span class="qk-save-limit" id="saveLimitLabel"></span>
+        </div>
+      </section>
+
+      <!-- Search bar — Pro feature -->
+      <div class="qk-search-wrap" id="searchWrap">
+        <div class="qk-search-box">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            width="13"
+            height="13"
+            class="qk-search-icon"
+          >
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <input
+            type="text"
+            id="searchInput"
+            class="qk-search-input"
+            placeholder="Search saved pages… (Pro)"
+          />
+        </div>
+      </div>
+
+      <!-- Tabs — My Saves / Team Saves -->
+      <div class="qk-saves-tabs" id="savesTabs" style="display: none">
+        <button class="qk-saves-tab active" id="tabMySaves">My Saves</button>
+        <button class="qk-saves-tab" id="tabTeamSaves">
+          Team
+          <span class="qk-team-count" id="teamCountBadge">0</span>
+        </button>
+      </div>
+
+      <!-- List header — shown when tabs hidden -->
+      <div class="qk-list-header" id="listHeader">
+        <span class="qk-list-title"
+          >Saved Pages
+          <span class="qk-count-badge" id="countBadge">0</span></span
+        >
+        <button class="qk-clear-all" id="clearAllBtn">Clear All</button>
+      </div>
+
+      <!-- Personal entry list -->
+      <div class="qk-list-container" id="listContainer">
+        <div class="qk-empty" id="emptyState">
+          <div class="qk-empty-icon">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              width="28"
+              height="28"
+            >
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+            </svg>
+          </div>
+          <div class="qk-empty-title">Nothing saved yet</div>
+          <div class="qk-empty-sub">
+            Click "Save This Page" above, or<br />
+            <kbd>double-click</kbd> anywhere on a webpage.
+          </div>
+        </div>
+      </div>
+
+      <!-- Team saves list -->
+      <div
+        class="qk-list-container"
+        id="teamListContainer"
+        style="display: none"
+      >
+        <div class="qk-empty" id="teamEmptyState">
+          <div class="qk-empty-icon">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              width="28"
+              height="28"
+            >
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+            </svg>
+          </div>
+          <div class="qk-empty-title">No team saves yet</div>
+          <div class="qk-empty-sub">
+            Click <strong>Team</strong> next to Save to share pages<br />with
+            your whole team.
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <footer class="qk-footer">
+        <span class="qk-footer-tip">
+          <kbd>Double-click</kbd> any page to save
+        </span>
+        <a
+          class="qk-privacy-link"
+          href="https://quickkeep.netlify.app"
+          target="_blank"
+          >Privacy</a
+        >
+      </footer>
+    </div>
+
+    <!-- ══════════════════════════════════════
+       UPGRADE VIEW — full pricing screen
+  ══════════════════════════════════════ -->
+    <div id="upgradeView" class="qk-view" style="display: none">
+      <div class="qk-upgrade-header">
+        <button class="qk-back-btn" id="backFromUpgrade">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            width="14"
+            height="14"
+          >
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
+        <span>Upgrade QuickKeep</span>
+      </div>
+
+      <!-- Billing toggle -->
+      <div class="qk-billing-toggle">
+        <span
+          class="qk-toggle-label"
+          id="popupLabelMonthly"
+          style="color: var(--t1)"
+          >Monthly</span
+        >
+        <button class="qk-toggle-btn" id="popupBillingToggle">
+          <span class="qk-toggle-thumb"></span>
+        </button>
+        <span class="qk-toggle-label" id="popupLabelYearly"
+          >Yearly <span class="qk-toggle-save">-27%</span></span
+        >
+      </div>
+
+      <!-- Pro plan -->
+      <div class="qk-plan-card featured">
+        <div class="qk-plan-label">Most Popular</div>
+        <div class="qk-plan-name">Pro</div>
+        <div class="qk-plan-price">
+          <span class="popup-price-monthly">$3.99<span>/month</span></span>
+          <span class="popup-price-yearly" style="display: none"
+            >$29<span>/year</span></span
+          >
+        </div>
+        <div class="qk-plan-price-alt">
+          <span class="popup-alt-monthly">billed monthly</span>
+          <span class="popup-alt-yearly" style="display: none"
+            >$2.42/mo — save $19</span
+          >
+        </div>
+        <ul class="qk-plan-features">
+          <li>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              width="12"
+              height="12"
+            >
+              <polyline points="20 6 9 17 4 12" /></svg
+            >Sync across all your devices
+          </li>
+          <li>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              width="12"
+              height="12"
+            >
+              <polyline points="20 6 9 17 4 12" /></svg
+            >Unlimited saves
+          </li>
+          <li>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              width="12"
+              height="12"
+            >
+              <polyline points="20 6 9 17 4 12" /></svg
+            >Export as CSV, JSON, Markdown
+          </li>
+          <li>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              width="12"
+              height="12"
+            >
+              <polyline points="20 6 9 17 4 12" /></svg
+            >Folders and tags
+          </li>
+          <li>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              width="12"
+              height="12"
+            >
+              <polyline points="20 6 9 17 4 12" /></svg
+            >Search across all notes
+          </li>
+        </ul>
+        <button
+          class="qk-checkout-btn popup-pro-btn"
+          data-monthly="pri_01khz3fzn7vn5b6nwjjvg05rcr"
+          data-yearly="pri_01khz3jett0nyxc2nkrk4pwcvp"
+        >
+          <span class="popup-btn-monthly">Get Pro — $3.99/month</span>
+          <span class="popup-btn-yearly" style="display: none"
+            >Get Pro — $29/year</span
+          >
+        </button>
+      </div>
+
+      <!-- Team plan -->
+      <div class="qk-plan-card">
+        <div class="qk-plan-name">Team</div>
+        <div class="qk-plan-price">
+          <span class="popup-price-monthly">$9.99<span>/seat/mo</span></span>
+          <span class="popup-price-yearly" style="display: none"
+            >$89<span>/seat/yr</span></span
+          >
+        </div>
+        <div class="qk-plan-price-alt">
+          <span class="popup-alt-monthly">billed monthly per member</span>
+          <span class="popup-alt-yearly" style="display: none"
+            >$7.42/seat/mo — save $31</span
+          >
+        </div>
+        <ul class="qk-plan-features">
+          <li>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              width="12"
+              height="12"
+            >
+              <polyline points="20 6 9 17 4 12" /></svg
+            >Everything in Pro
+          </li>
+          <li>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              width="12"
+              height="12"
+            >
+              <polyline points="20 6 9 17 4 12" /></svg
+            >Shared team collections
+          </li>
+          <li>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              width="12"
+              height="12"
+            >
+              <polyline points="20 6 9 17 4 12" /></svg
+            >Comment on saved pages
+          </li>
+          <li>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              width="12"
+              height="12"
+            >
+              <polyline points="20 6 9 17 4 12" /></svg
+            >Admin dashboard
+          </li>
+        </ul>
+        <button
+          class="qk-checkout-btn secondary popup-team-btn"
+          data-monthly="pri_01kj0c2jyfw46t720s405yzf0q"
+          data-yearly="pri_01kj0c3egz8d6qzttdgqw87821"
+        >
+          <span class="popup-btn-monthly">Get Team — $9.99/seat</span>
+          <span class="popup-btn-yearly" style="display: none"
+            >Get Team — $89/seat</span
+          >
+        </button>
+      </div>
+
+      <p class="qk-upgrade-note">
+        Payments handled securely by Paddle. Cancel anytime.
+      </p>
+    </div>
+
+    <!-- Toast -->
+    <div class="qk-toast" id="toast"></div>
+
+    <!-- ══════════════════════════════════════
+       TEAM VIEW — team management screen
+  ══════════════════════════════════════ -->
+    <div id="teamView" class="qk-view" style="display: none">
+      <div class="qk-upgrade-header">
+        <button class="qk-back-btn" id="backFromTeam">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            width="14"
+            height="14"
+          >
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
+        <span id="teamViewTitle">Team</span>
+      </div>
+
+      <!-- No team yet — create one -->
+      <div id="teamCreateSection">
+        <div class="qk-team-empty">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            width="32"
+            height="32"
+          >
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>
+          <p>Create a team to share saved pages with your colleagues.</p>
+        </div>
+        <div class="qk-team-form">
+          <input
+            type="text"
+            id="teamNameInput"
+            class="qk-input"
+            placeholder="Team name (e.g. Design Team)"
+          />
+          <button class="qk-save-btn" id="createTeamBtn">Create Team</button>
+        </div>
+      </div>
+
+      <!-- Has team — manage it -->
+      <div id="teamManageSection" style="display: none">
+        <!-- Team info -->
+        <div class="qk-team-info">
+          <div class="qk-team-name" id="teamNameDisplay"></div>
+          <div class="qk-team-role" id="teamRoleDisplay"></div>
+        </div>
+
+        <!-- Members list -->
+        <div class="qk-team-section-title">Members</div>
+        <div class="qk-members-list" id="membersList"></div>
+
+        <!-- Invite (owner only) -->
+        <div id="inviteSection">
+          <div class="qk-team-section-title">Invite Member</div>
+          <div class="qk-team-form">
+            <input
+              type="email"
+              id="inviteEmailInput"
+              class="qk-input"
+              placeholder="colleague@email.com"
+            />
+            <button class="qk-save-btn" id="sendInviteBtn">Send Invite</button>
+          </div>
+          <div id="inviteLinkWrap" style="display: none">
+            <p class="qk-invite-label">Share this invite link:</p>
+            <div class="qk-invite-link-row">
+              <input
+                type="text"
+                class="qk-input qk-invite-link-input"
+                id="inviteLinkInput"
+                readonly
+              />
+              <button class="qk-copy-btn" id="copyInviteLinkBtn">Copy</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shared saves toggle -->
+        <div class="qk-team-section-title" style="margin-top: 12px">
+          <span>Shared Saves</span>
+          <button class="qk-tab-toggle" id="toggleSharedBtn">View</button>
+        </div>
+        <div id="sharedEntriesList" style="display: none"></div>
+      </div>
+    </div>
+
+    <script src="firebase-app-compat.js"></script>
+    <script src="firebase-auth-compat.js"></script>
+    <script src="firebase-firestore-compat.js"></script>
+    <script src="firebase.js"></script>
+    <script src="auth.js"></script>
+    <script src="db-entries.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>

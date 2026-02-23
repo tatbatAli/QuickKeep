@@ -1,0 +1,2640 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QuickKeep — Privacy Policy</title>
+    <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --ink: #0b0b10;
+        --violet: #6366f1;
+        --violet-mid: #7c7ff5;
+        --violet-hi: #a5b4fc;
+        --violet-lo: rgba(99, 102, 241, 0.08);
+        --fog: rgba(255, 255, 255, 0.055);
+        --rule: rgba(255, 255, 255, 0.07);
+        --t1: #f0f0f8;
+        --t2: #9898b8;
+        --t3: #55556e;
+        --ff-display: "Instrument Serif", Georgia, serif;
+        --ff-body: "Geist", system-ui, sans-serif;
+        --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+        --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: var(--ff-body);
+        background: var(--ink);
+        color: var(--t2);
+        line-height: 1.75;
+        -webkit-font-smoothing: antialiased;
+        overflow-x: hidden;
+      }
+
+      ::selection {
+        background: rgba(99, 102, 241, 0.3);
+        color: var(--t1);
+      }
+
+      /* ── Backgrounds ── */
+      .bg-noise {
+        position: fixed;
+        inset: -50%;
+        width: 200%;
+        height: 200%;
+        opacity: 0.03;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        pointer-events: none;
+        z-index: 0;
+      }
+      .bg-halo-top {
+        position: fixed;
+        top: -20vh;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 900px;
+        height: 500px;
+        background: radial-gradient(
+          ellipse,
+          rgba(99, 102, 241, 0.13) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+        z-index: 0;
+      }
+      .bg-halo-btm {
+        position: fixed;
+        bottom: 5vh;
+        right: -10vw;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(
+          ellipse,
+          rgba(139, 92, 246, 0.06) 0%,
+          transparent 65%
+        );
+        pointer-events: none;
+        z-index: 0;
+      }
+      .bg-grid {
+        position: fixed;
+        inset: 0;
+        background-image: radial-gradient(
+          rgba(255, 255, 255, 0.055) 1px,
+          transparent 1px
+        );
+        background-size: 28px 28px;
+        pointer-events: none;
+        z-index: 0;
+        mask-image: radial-gradient(
+          ellipse 85% 85% at 50% 50%,
+          black 20%,
+          transparent 100%
+        );
+        -webkit-mask-image: radial-gradient(
+          ellipse 85% 85% at 50% 50%,
+          black 20%,
+          transparent 100%
+        );
+      }
+
+      /* ── Reading bar ── */
+      #rbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 2px;
+        width: 0%;
+        background: linear-gradient(90deg, var(--violet), var(--violet-hi));
+        z-index: 1000;
+        box-shadow: 0 0 12px rgba(99, 102, 241, 0.5);
+        transition: width 0.08s linear;
+      }
+
+      /* ── Layout ── */
+      .page {
+        position: relative;
+        z-index: 1;
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 0 24px 120px;
+      }
+
+      /* ── Nav ── */
+      nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 30px 0 0;
+        margin-bottom: 100px;
+        opacity: 0;
+        transform: translateY(-14px);
+        animation: reveal 0.7s var(--ease-expo) 0.1s forwards;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+      }
+      .brand-mark {
+        width: 36px;
+        height: 36px;
+        background: linear-gradient(140deg, #6366f1, #4338ca);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow:
+          0 0 22px rgba(99, 102, 241, 0.45),
+          inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        transition:
+          transform 0.35s var(--ease-spring),
+          box-shadow 0.3s;
+      }
+      .brand-mark:hover {
+        transform: scale(1.1) rotate(-4deg);
+        box-shadow: 0 0 36px rgba(99, 102, 241, 0.65);
+      }
+      .brand-mark svg {
+        width: 18px;
+        height: 18px;
+      }
+      .brand-name {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--t1);
+        letter-spacing: -0.3px;
+      }
+      .brand-name em {
+        font-style: normal;
+        color: var(--violet-hi);
+      }
+      .nav-tag {
+        font-size: 10.5px;
+        font-weight: 600;
+        color: var(--t3);
+        background: var(--fog);
+        border: 1px solid var(--rule);
+        padding: 5px 13px;
+        border-radius: 20px;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+      }
+
+      .nav-legal-links {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .nav-legal-link {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--t3);
+        background: var(--fog);
+        border: 1px solid var(--rule);
+        padding: 5px 12px;
+        border-radius: 20px;
+        text-decoration: none;
+        letter-spacing: 0.4px;
+        transition:
+          color 0.2s,
+          border-color 0.2s;
+      }
+      .nav-legal-link:hover {
+        color: var(--violet-hi);
+        border-color: rgba(99, 102, 241, 0.3);
+      }
+
+      /* ── Hero ── */
+      .hero {
+        text-align: center;
+        margin-bottom: 70px;
+      }
+
+      .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--violet-hi);
+        background: rgba(99, 102, 241, 0.09);
+        border: 1px solid rgba(99, 102, 241, 0.22);
+        padding: 6px 14px;
+        border-radius: 20px;
+        letter-spacing: 0.7px;
+        text-transform: uppercase;
+        margin-bottom: 28px;
+        opacity: 0;
+        transform: translateY(10px) scale(0.95);
+        animation: reveal 0.65s var(--ease-expo) 0.25s forwards;
+      }
+      .pulse-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--violet-hi);
+        position: relative;
+      }
+      .pulse-dot::after {
+        content: "";
+        position: absolute;
+        inset: -3px;
+        border-radius: 50%;
+        border: 1px solid var(--violet-hi);
+        opacity: 0;
+        animation: pulse 2s ease-out infinite;
+      }
+      @keyframes pulse {
+        0% {
+          transform: scale(0.6);
+          opacity: 0.9;
+        }
+        100% {
+          transform: scale(2.4);
+          opacity: 0;
+        }
+      }
+
+      h1.hero-title {
+        font-family: var(--ff-display);
+        font-weight: 400;
+        font-size: clamp(40px, 7vw, 60px);
+        color: var(--t1);
+        line-height: 1.1;
+        letter-spacing: -1.5px;
+        margin-bottom: 20px;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: reveal 0.8s var(--ease-expo) 0.38s forwards;
+      }
+      h1.hero-title em {
+        font-style: italic;
+        color: transparent;
+        background: linear-gradient(
+          125deg,
+          var(--violet-mid),
+          var(--violet-hi)
+        );
+        -webkit-background-clip: text;
+        background-clip: text;
+      }
+
+      .hero-sub {
+        font-size: 16px;
+        font-weight: 300;
+        color: var(--t2);
+        max-width: 460px;
+        margin: 0 auto 0;
+        line-height: 1.8;
+        opacity: 0;
+        transform: translateY(16px);
+        animation: reveal 0.75s var(--ease-expo) 0.5s forwards;
+      }
+
+      /* ── Scenarios ── */
+      .scenarios {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin: 44px auto 0;
+        max-width: 560px;
+        opacity: 0;
+        transform: translateY(22px);
+        animation: reveal 0.8s var(--ease-expo) 0.62s forwards;
+      }
+      @media (max-width: 520px) {
+        .scenarios {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .scenario-card {
+        background: rgba(244, 63, 94, 0.045);
+        border: 1px solid rgba(244, 63, 94, 0.12);
+        border-radius: 14px;
+        padding: 16px 16px 16px 14px;
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        text-align: left;
+        transition:
+          transform 0.3s var(--ease-spring),
+          border-color 0.25s,
+          background 0.25s;
+        position: relative;
+        overflow: hidden;
+      }
+      .scenario-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 10%;
+        right: 10%;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(244, 63, 94, 0.35),
+          transparent
+        );
+      }
+      .scenario-card:hover {
+        transform: translateY(-3px);
+        background: rgba(244, 63, 94, 0.07);
+        border-color: rgba(244, 63, 94, 0.22);
+      }
+
+      .sc-icon {
+        flex-shrink: 0;
+        width: 32px;
+        height: 32px;
+        margin-top: 1px;
+        background: rgba(244, 63, 94, 0.1);
+        border: 1px solid rgba(244, 63, 94, 0.18);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fb7185;
+        transition: transform 0.3s var(--ease-spring);
+      }
+      .scenario-card:hover .sc-icon {
+        transform: scale(1.1) rotate(-4deg);
+      }
+      .sc-icon svg {
+        width: 14px;
+        height: 14px;
+      }
+
+      .sc-text {
+        font-size: 13px;
+        font-weight: 300;
+        color: var(--t2);
+        line-height: 1.7;
+        text-align: left;
+      }
+      .sc-text strong {
+        color: var(--t1);
+        font-weight: 600;
+        display: block;
+        margin-bottom: 3px;
+      }
+
+      /* ── Divider ── */
+      .story-divider {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin: 44px auto;
+        max-width: 560px;
+        opacity: 0;
+        transform: translateY(16px);
+        animation: reveal 0.7s var(--ease-expo) 0.7s forwards;
+      }
+      .story-divider-line {
+        flex: 1;
+        height: 1px;
+        background: var(--rule);
+      }
+      .story-divider-badge {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        background: rgba(99, 102, 241, 0.1);
+        border: 1px solid rgba(99, 102, 241, 0.22);
+        color: var(--violet-hi);
+        font-size: 11px;
+        font-weight: 600;
+        padding: 7px 14px;
+        border-radius: 20px;
+        white-space: nowrap;
+        letter-spacing: 0.3px;
+      }
+
+      /* ── Solutions grid ── */
+      .solutions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin: 0 auto 52px;
+        max-width: 560px;
+        opacity: 0;
+        transform: translateY(22px);
+        animation: reveal 0.8s var(--ease-expo) 0.78s forwards;
+      }
+      @media (max-width: 520px) {
+        .solutions {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .sol-card {
+        background: rgba(99, 102, 241, 0.06);
+        border: 1px solid rgba(99, 102, 241, 0.14);
+        border-radius: 14px;
+        padding: 18px 16px 16px 14px;
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        text-align: left;
+        position: relative;
+        overflow: hidden;
+        transition:
+          transform 0.3s var(--ease-spring),
+          border-color 0.25s,
+          background 0.25s;
+      }
+      .sol-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 10%;
+        right: 10%;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(99, 102, 241, 0.5),
+          transparent
+        );
+      }
+      .sol-card:hover {
+        transform: translateY(-3px);
+        background: rgba(99, 102, 241, 0.1);
+        border-color: rgba(99, 102, 241, 0.26);
+      }
+
+      .sol-icon {
+        flex-shrink: 0;
+        width: 32px;
+        height: 32px;
+        margin-top: 1px;
+        background: rgba(99, 102, 241, 0.1);
+        border: 1px solid rgba(99, 102, 241, 0.2);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--violet-hi);
+        transition: transform 0.3s var(--ease-spring);
+      }
+      .sol-card:hover .sol-icon {
+        transform: scale(1.1) rotate(-4deg);
+      }
+      .sol-icon svg {
+        width: 14px;
+        height: 14px;
+      }
+
+      .sol-title {
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--t1);
+        margin-bottom: 5px;
+        line-height: 1.3;
+      }
+      .sol-body p {
+        font-size: 12.5px;
+        font-weight: 300;
+        color: var(--t2);
+        line-height: 1.7;
+        text-align: left;
+        margin: 0;
+      }
+
+      /* ── Scroll hint ── */
+      .scroll-hint {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        opacity: 0;
+        animation: reveal 0.7s var(--ease-expo) 0.85s forwards;
+      }
+      .scroll-hint span {
+        font-size: 10px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: var(--t3);
+        font-weight: 600;
+      }
+      .scroll-line {
+        width: 1px;
+        height: 40px;
+        background: linear-gradient(to bottom, var(--violet), transparent);
+        animation: scroll-pulse 1.9s ease-in-out infinite;
+      }
+      @keyframes scroll-pulse {
+        0%,
+        100% {
+          transform: scaleY(0);
+          transform-origin: top;
+        }
+        45% {
+          transform: scaleY(1);
+          transform-origin: top;
+        }
+        46% {
+          transform: scaleY(1);
+          transform-origin: bottom;
+        }
+        90% {
+          transform: scaleY(0);
+          transform-origin: bottom;
+        }
+      }
+
+      /* ── Promise Cards ── */
+      .promises {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-bottom: 64px;
+      }
+      @media (max-width: 520px) {
+        .promises {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .pc {
+        background: var(--fog);
+        border: 1px solid var(--rule);
+        border-radius: 18px;
+        padding: 24px 20px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        transition:
+          transform 0.35s var(--ease-spring),
+          border-color 0.25s,
+          box-shadow 0.35s;
+        opacity: 0;
+        transform: translateY(28px);
+      }
+      .pc.in {
+        animation: reveal 0.55s var(--ease-expo) forwards;
+      }
+      .pc:hover {
+        transform: translateY(-5px);
+        border-color: rgba(99, 102, 241, 0.28);
+        box-shadow:
+          0 24px 56px rgba(0, 0, 0, 0.45),
+          0 0 0 1px rgba(99, 102, 241, 0.1);
+      }
+      .pc::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.04) 0%,
+          transparent 55%
+        );
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      .pc:hover::before {
+        opacity: 1;
+      }
+      .pc::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 15%;
+        right: 15%;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--violet),
+          transparent
+        );
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      .pc:hover::after {
+        opacity: 1;
+      }
+
+      .pc-ico {
+        width: 42px;
+        height: 42px;
+        margin: 0 auto 14px;
+        background: rgba(99, 102, 241, 0.09);
+        border: 1px solid rgba(99, 102, 241, 0.18);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition:
+          background 0.3s,
+          transform 0.35s var(--ease-spring);
+      }
+      .pc:hover .pc-ico {
+        background: rgba(99, 102, 241, 0.16);
+        transform: scale(1.12) rotate(-5deg);
+      }
+      .pc-ico svg {
+        width: 18px;
+        height: 18px;
+        stroke: var(--violet-hi);
+        fill: none;
+        stroke-width: 1.7;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .pc-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--t1);
+        margin-bottom: 5px;
+      }
+      .pc-desc {
+        font-size: 12px;
+        color: var(--t3);
+        line-height: 1.55;
+      }
+
+      /* ── Policy Shell ── */
+      .policy-shell {
+        background: var(--fog);
+        border: 1px solid var(--rule);
+        border-radius: 24px;
+        overflow: hidden;
+        position: relative;
+        opacity: 0;
+        transform: translateY(32px);
+      }
+      .policy-shell.in {
+        animation: reveal 0.7s var(--ease-expo) 0.05s forwards;
+      }
+      .policy-shell::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 8%;
+        right: 8%;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(99, 102, 241, 0.45),
+          transparent
+        );
+      }
+
+      /* ── Section ── */
+      .psec {
+        display: flex;
+        align-items: flex-start;
+        gap: 18px;
+        padding: 28px 36px;
+        border-bottom: 1px solid var(--rule);
+        position: relative;
+        transition: background 0.22s;
+        opacity: 0;
+        transform: translateX(-16px);
+      }
+      .psec.in {
+        animation: slide-in 0.5s var(--ease-expo) forwards;
+      }
+      @keyframes slide-in {
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .psec:last-child {
+        border-bottom: none;
+      }
+      .psec:hover {
+        background: rgba(255, 255, 255, 0.016);
+      }
+      .psec::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 25%;
+        bottom: 25%;
+        width: 2px;
+        background: linear-gradient(
+          to bottom,
+          transparent,
+          var(--violet),
+          transparent
+        );
+        border-radius: 2px;
+        opacity: 0;
+        transition:
+          opacity 0.3s,
+          top 0.3s,
+          bottom 0.3s;
+      }
+      .psec:hover::before {
+        opacity: 1;
+        top: 10%;
+        bottom: 10%;
+      }
+      @media (max-width: 520px) {
+        .psec {
+          padding: 22px 20px;
+          gap: 14px;
+        }
+      }
+
+      .s-ico {
+        flex-shrink: 0;
+        width: 34px;
+        height: 34px;
+        margin-top: 1px;
+        background: rgba(99, 102, 241, 0.08);
+        border: 1px solid rgba(99, 102, 241, 0.16);
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition:
+          transform 0.35s var(--ease-spring),
+          background 0.25s;
+      }
+      .psec:hover .s-ico {
+        transform: scale(1.1);
+        background: rgba(99, 102, 241, 0.14);
+      }
+      .s-ico svg {
+        width: 15px;
+        height: 15px;
+        stroke: var(--violet-hi);
+        fill: none;
+        stroke-width: 1.8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .s-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--t1);
+        margin-bottom: 5px;
+        letter-spacing: -0.1px;
+        line-height: 1.3;
+      }
+      .s-text {
+        font-size: 14px;
+        font-weight: 300;
+        color: var(--t2);
+        line-height: 1.75;
+        margin: 0;
+      }
+
+      /* ── Footer ── */
+      footer {
+        margin-top: 56px;
+        text-align: center;
+        opacity: 0;
+        transform: translateY(18px);
+      }
+      footer.in {
+        animation: reveal 0.6s var(--ease-expo) 0.15s forwards;
+      }
+
+      .f-div {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 26px;
+      }
+      .f-div::before,
+      .f-div::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--rule);
+      }
+      .f-div-ico {
+        width: 28px;
+        height: 28px;
+        background: var(--fog);
+        border: 1px solid var(--rule);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .f-div-ico svg {
+        width: 11px;
+        height: 11px;
+        stroke: var(--t3);
+        fill: none;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .f-meta {
+        font-size: 12px;
+        color: var(--t3);
+        line-height: 2.1;
+      }
+      .f-meta a {
+        color: var(--violet-hi);
+        text-decoration: none;
+        transition: color 0.2s;
+      }
+      .f-meta a:hover {
+        color: var(--t1);
+      }
+      .fdot {
+        display: inline-block;
+        width: 3px;
+        height: 3px;
+        background: var(--t3);
+        border-radius: 50%;
+        margin: 0 10px;
+        vertical-align: middle;
+      }
+
+      /* ── Pricing toggle ── */
+      .pricing-toggle-wrap {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 28px;
+      }
+      .toggle-label {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--t2);
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .toggle-save {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #6ee7b7;
+        background: rgba(110, 231, 183, 0.1);
+        border: 1px solid rgba(110, 231, 183, 0.2);
+        padding: 2px 7px;
+        border-radius: 10px;
+      }
+      .pricing-toggle {
+        width: 44px;
+        height: 24px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 12px;
+        cursor: pointer;
+        position: relative;
+        transition: background 0.25s;
+        flex-shrink: 0;
+      }
+      .pricing-toggle.active {
+        background: var(--violet);
+        border-color: var(--violet);
+      }
+      .toggle-thumb {
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 16px;
+        height: 16px;
+        background: #fff;
+        border-radius: 50%;
+        transition: transform 0.25s var(--ease-spring);
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+      }
+      .pricing-toggle.active .toggle-thumb {
+        transform: translateX(20px);
+      }
+      #labelMonthly {
+        color: var(--t1);
+      }
+      #labelYearly {
+        color: var(--t2);
+      }
+      .pricing-toggle.active ~ #labelYearly,
+      .yearly-active #labelYearly {
+        color: var(--t1);
+      }
+
+      /* ── Pricing ── */
+      .pricing-wrap {
+        margin-bottom: 72px;
+      }
+
+      .pricing-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+      @media (max-width: 600px) {
+        .pricing-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .pricing-card {
+        background: var(--fog);
+        border: 1px solid var(--rule);
+        border-radius: 20px;
+        padding: 24px 20px;
+        position: relative;
+        overflow: hidden;
+        transition:
+          transform 0.3s var(--ease-spring),
+          border-color 0.25s,
+          box-shadow 0.3s;
+      }
+      .pricing-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 48px rgba(0, 0, 0, 0.4);
+      }
+      .pricing-card.featured {
+        background: rgba(99, 102, 241, 0.07);
+        border-color: rgba(99, 102, 241, 0.28);
+      }
+      .pricing-card.featured::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 10%;
+        right: 10%;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(99, 102, 241, 0.6),
+          transparent
+        );
+      }
+      .pricing-popular {
+        display: inline-block;
+        font-size: 9.5px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+        color: var(--violet-hi);
+        background: rgba(99, 102, 241, 0.15);
+        padding: 3px 9px;
+        border-radius: 6px;
+        margin-bottom: 10px;
+      }
+      .pricing-name {
+        font-size: 16px;
+        font-weight: 800;
+        color: var(--t1);
+        letter-spacing: -0.3px;
+        margin-bottom: 8px;
+      }
+      .pricing-price {
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--t1);
+        letter-spacing: -1.5px;
+        line-height: 1;
+        margin-bottom: 4px;
+      }
+      .pricing-price span {
+        font-size: 13px;
+        font-weight: 400;
+        color: var(--t3);
+        letter-spacing: 0;
+      }
+      .pricing-alt {
+        font-size: 11px;
+        color: var(--t3);
+        margin-bottom: 16px;
+      }
+      .pricing-features {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .pricing-features li {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12.5px;
+        color: var(--t2);
+        font-weight: 300;
+        line-height: 1.4;
+      }
+      .pricing-features li svg {
+        flex-shrink: 0;
+        stroke: #6ee7b7;
+      }
+      .pricing-btn {
+        display: block;
+        text-align: center;
+        background: linear-gradient(135deg, #6366f1, #4f46e5);
+        border: none;
+        border-radius: 11px;
+        color: #fff;
+        font-family: var(--ff-body);
+        font-size: 13px;
+        font-weight: 700;
+        padding: 12px 16px;
+        cursor: pointer;
+        text-decoration: none;
+        box-shadow: 0 4px 20px rgba(99, 102, 241, 0.35);
+        transition:
+          opacity 0.2s,
+          transform 0.2s;
+      }
+      .pricing-btn:hover {
+        opacity: 0.9;
+        transform: scale(1.02);
+      }
+      .pricing-btn.secondary {
+        background: rgba(255, 255, 255, 0.06);
+        box-shadow: none;
+        border: 1px solid var(--rule);
+        color: var(--t2);
+      }
+      .pricing-btn.secondary:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--t1);
+      }
+      .pricing-note {
+        font-size: 12px;
+        color: var(--t3);
+        text-align: center;
+        margin-top: 16px;
+        line-height: 1.7;
+      }
+
+      /* ── Section headings ── */
+      .section-label {
+        text-align: center;
+        margin-bottom: 36px;
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      .section-label.in {
+        animation: reveal 0.6s var(--ease-expo) forwards;
+      }
+      .section-label h2 {
+        font-family: var(--ff-display);
+        font-weight: 400;
+        font-size: clamp(26px, 5vw, 36px);
+        color: var(--t1);
+        letter-spacing: -0.8px;
+        line-height: 1.15;
+        margin-bottom: 10px;
+      }
+      .section-label h2 em {
+        font-style: italic;
+        color: transparent;
+        background: linear-gradient(
+          125deg,
+          var(--violet-mid),
+          var(--violet-hi)
+        );
+        -webkit-background-clip: text;
+        background-clip: text;
+      }
+      .section-label p {
+        font-size: 14px;
+        font-weight: 300;
+        color: var(--t3);
+      }
+
+      /* ── Reviews ── */
+      .reviews-wrap {
+        margin-bottom: 72px;
+      }
+
+      .reviews-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      @media (max-width: 520px) {
+        .reviews-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .review-card {
+        background: var(--fog);
+        border: 1px solid var(--rule);
+        border-radius: 18px;
+        padding: 24px 22px;
+        position: relative;
+        overflow: hidden;
+        transition:
+          transform 0.35s var(--ease-spring),
+          border-color 0.25s,
+          box-shadow 0.3s;
+        opacity: 0;
+        transform: translateY(24px);
+      }
+      .review-card.in {
+        animation: reveal 0.55s var(--ease-expo) forwards;
+      }
+      .review-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(99, 102, 241, 0.25);
+        box-shadow: 0 20px 48px rgba(0, 0, 0, 0.4);
+      }
+      .review-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.035) 0%,
+          transparent 60%
+        );
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      .review-card:hover::before {
+        opacity: 1;
+      }
+      /* Top highlight line on hover */
+      .review-card::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 15%;
+        right: 15%;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--violet),
+          transparent
+        );
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      .review-card:hover::after {
+        opacity: 1;
+      }
+
+      /* Large decorative quote mark */
+      .review-quote-mark {
+        font-family: var(--ff-display);
+        font-size: 56px;
+        line-height: 1;
+        color: var(--violet);
+        opacity: 0.25;
+        margin-bottom: -8px;
+        display: block;
+        font-style: italic;
+      }
+
+      .review-stars {
+        display: flex;
+        gap: 3px;
+        margin-bottom: 12px;
+      }
+      .review-stars svg {
+        width: 13px;
+        height: 13px;
+        fill: #fbbf24;
+        stroke: #fbbf24;
+        stroke-width: 1;
+      }
+
+      .review-text {
+        font-size: 14px;
+        font-weight: 300;
+        color: var(--t2);
+        line-height: 1.75;
+        margin-bottom: 18px;
+        font-style: italic;
+      }
+
+      .review-author {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .review-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 700;
+        color: white;
+        flex-shrink: 0;
+        box-shadow: 0 0 12px rgba(99, 102, 241, 0.3);
+      }
+      .av-a {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      }
+      .av-b {
+        background: linear-gradient(135deg, #0ea5e9, #6366f1);
+      }
+      .av-c {
+        background: linear-gradient(135deg, #f59e0b, #ef4444);
+      }
+
+      .review-name {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--t1);
+      }
+      .review-role {
+        font-size: 11px;
+        color: var(--t3);
+        margin-top: 1px;
+      }
+
+      /* Third card spans full width */
+      .review-card.full {
+        grid-column: 1 / -1;
+      }
+
+      /* ── FAQ ── */
+      .faq-wrap {
+        margin-bottom: 72px;
+      }
+
+      .faq-list {
+        background: var(--fog);
+        border: 1px solid var(--rule);
+        border-radius: 20px;
+        overflow: hidden;
+        position: relative;
+        opacity: 0;
+        transform: translateY(28px);
+      }
+      .faq-list.in {
+        animation: reveal 0.65s var(--ease-expo) forwards;
+      }
+      .faq-list::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 8%;
+        right: 8%;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(99, 102, 241, 0.4),
+          transparent
+        );
+      }
+
+      .faq-item {
+        border-bottom: 1px solid var(--rule);
+      }
+      .faq-item:last-child {
+        border-bottom: none;
+      }
+
+      .faq-q {
+        width: 100%;
+        background: none;
+        border: none;
+        padding: 22px 28px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        text-align: left;
+        transition: background 0.2s;
+      }
+      .faq-q:hover {
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .faq-q-text {
+        font-family: var(--ff-body);
+        font-size: 14.5px;
+        font-weight: 500;
+        color: var(--t1);
+        line-height: 1.4;
+      }
+
+      .faq-icon {
+        flex-shrink: 0;
+        width: 26px;
+        height: 26px;
+        background: rgba(99, 102, 241, 0.08);
+        border: 1px solid rgba(99, 102, 241, 0.15);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition:
+          background 0.25s,
+          transform 0.35s var(--ease-spring),
+          border-color 0.25s;
+      }
+      .faq-icon svg {
+        width: 12px;
+        height: 12px;
+        stroke: var(--violet-hi);
+        fill: none;
+        stroke-width: 2.5;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        transition: transform 0.35s var(--ease-spring);
+      }
+
+      .faq-item.open .faq-icon {
+        background: rgba(99, 102, 241, 0.16);
+        border-color: rgba(99, 102, 241, 0.35);
+        transform: rotate(180deg);
+      }
+
+      /* Smooth answer drawer */
+      .faq-a-wrap {
+        display: grid;
+        grid-template-rows: 0fr;
+        transition: grid-template-rows 0.38s var(--ease-expo);
+      }
+      .faq-item.open .faq-a-wrap {
+        grid-template-rows: 1fr;
+      }
+      .faq-a-inner {
+        overflow: hidden;
+      }
+
+      .faq-a {
+        padding: 0 28px 22px;
+        font-size: 14px;
+        font-weight: 300;
+        color: var(--t2);
+        line-height: 1.8;
+      }
+
+      /* ── Base animation ── */
+      @keyframes reveal {
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="rbar"></div>
+    <div class="bg-noise"></div>
+    <div class="bg-halo-top"></div>
+    <div class="bg-halo-btm"></div>
+    <div class="bg-grid"></div>
+
+    <div class="page">
+      <!-- Nav -->
+      <nav>
+        <a href="#" class="brand">
+          <div class="brand-mark">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="white"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+            </svg>
+          </div>
+          <span class="brand-name">Quick<em>Keep</em></span>
+        </a>
+        <span class="nav-tag">Privacy Policy</span>
+        <div class="nav-legal-links">
+          <a href="terms.html" class="nav-legal-link">Terms</a>
+        </div>
+      </nav>
+
+      <!-- Hero / Story -->
+      <section class="hero">
+        <div class="hero-badge">
+          <div class="pulse-dot"></div>
+          We've all been there
+        </div>
+
+        <h1 class="hero-title">You found it.<br /><em>Then lost it.</em></h1>
+
+        <p class="hero-sub">
+          That perfect article. That YouTube tutorial you were halfway through.
+          That tool someone recommended in a forum. You told yourself you'd
+          remember — you didn't.
+        </p>
+
+        <!-- ── Scenario strip ── -->
+        <div class="scenarios">
+          <div class="scenario-card">
+            <div class="sc-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect x="2" y="3" width="20" height="14" rx="2" />
+                <path d="M8 21h8M12 17v4" />
+              </svg>
+            </div>
+            <div class="sc-text">
+              <strong>17 open tabs.</strong> You're afraid to close them because
+              one of them had something important. You just don't remember which
+              one.
+            </div>
+          </div>
+
+          <div class="scenario-card">
+            <div class="sc-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polygon points="23 7 16 12 23 17 23 7" />
+                <rect x="1" y="5" width="15" height="14" rx="2" />
+              </svg>
+            </div>
+            <div class="sc-text">
+              <strong>A YouTube video changed your mind</strong> about
+              something. You want to rewatch it next week. You can't find it
+              again in your watch history.
+            </div>
+          </div>
+
+          <div class="scenario-card">
+            <div class="sc-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+                />
+              </svg>
+            </div>
+            <div class="sc-text">
+              <strong>Someone dropped a link in a chat.</strong> You said "I'll
+              check it later." The chat scrolled away. The link is gone. The
+              person is gone. It's gone.
+            </div>
+          </div>
+
+          <div class="scenario-card">
+            <div class="sc-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </div>
+            <div class="sc-text">
+              <strong>You've Googled the same thing 4 times.</strong> That
+              recipe. That CSS trick. That keyboard shortcut. You keep finding
+              it and keep losing it.
+            </div>
+          </div>
+
+          <div class="scenario-card">
+            <div class="sc-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+              </svg>
+            </div>
+            <div class="sc-text">
+              <strong>Research rabbit holes.</strong> You're deep into reading,
+              bouncing between 8 pages. Tomorrow you can't rebuild that chain of
+              thought. It's all gone.
+            </div>
+          </div>
+
+          <div class="scenario-card">
+            <div class="sc-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <path d="M16 10a4 4 0 0 1-8 0" />
+              </svg>
+            </div>
+            <div class="sc-text">
+              <strong>A product you almost bought.</strong> You closed the tab
+              to think about it. Now you can't find the exact listing, the
+              price, or even the store.
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Big divider ── -->
+        <div class="story-divider">
+          <div class="story-divider-line"></div>
+          <div class="story-divider-badge">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              width="14"
+              height="14"
+            >
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+            QuickKeep fixes all of this
+          </div>
+          <div class="story-divider-line"></div>
+        </div>
+
+        <!-- ── Solution features ── -->
+        <div class="solutions">
+          <div class="sol-card">
+            <div class="sol-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+              </svg>
+            </div>
+            <div class="sol-body">
+              <div class="sol-title">Save any page in one click</div>
+              <p>
+                Articles, tools, product pages, documentation — click the
+                extension and hit save. Done. It's yours forever, one click
+                away.
+              </p>
+            </div>
+          </div>
+
+          <div class="sol-card">
+            <div class="sol-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polygon points="23 7 16 12 23 17 23 7" />
+                <rect x="1" y="5" width="15" height="14" rx="2" />
+              </svg>
+            </div>
+            <div class="sol-body">
+              <div class="sol-title">Save videos, come back anytime</div>
+              <p>
+                On a YouTube tutorial or a documentary? Save it instantly. Open
+                it back with one click — right where you left off in your saved
+                list.
+              </p>
+            </div>
+          </div>
+
+          <div class="sol-card">
+            <div class="sol-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M12 20h9" />
+                <path
+                  d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"
+                />
+              </svg>
+            </div>
+            <div class="sol-body">
+              <div class="sol-title">Add a note to remember why</div>
+              <p>
+                Don't just save a link — save your thought. "Use this for the
+                project", "compare with the other pricing", "send to mom".
+                Future you will thank you.
+              </p>
+            </div>
+          </div>
+
+          <div class="sol-card">
+            <div class="sol-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+                />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
+              </svg>
+            </div>
+            <div class="sol-body">
+              <div class="sol-title">Double-click to capture selected text</div>
+              <p>
+                Highlight a quote, a keyword, a stat — double-click anywhere on
+                the page and it auto-fills as your note. No copy-pasting, no
+                app-switching.
+              </p>
+            </div>
+          </div>
+
+          <div class="sol-card">
+            <div class="sol-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+              </svg>
+            </div>
+            <div class="sol-body">
+              <div class="sol-title">Close your tabs without fear</div>
+              <p>
+                Once it's saved, it's safe. Close the tab. Shut down the
+                computer. Restart the browser. Your saved list is right there
+                the next time you open it.
+              </p>
+            </div>
+          </div>
+
+          <div class="sol-card">
+            <div class="sol-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+            </div>
+            <div class="sol-body">
+              <div class="sol-title">Completely private, no account needed</div>
+              <p>
+                No sign-up. No sync. No cloud. Everything stays on your device.
+                There's no server watching what you save or why.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="scroll-hint">
+          <span>Our Privacy Promise</span>
+          <div class="scroll-line"></div>
+        </div>
+      </section>
+
+      <!-- Promise Cards -->
+      <div class="promises">
+        <div class="pc">
+          <div class="pc-ico">
+            <svg viewBox="0 0 24 24">
+              <rect x="2" y="3" width="20" height="14" rx="2" />
+              <path d="M8 21h8M12 17v4" />
+            </svg>
+          </div>
+          <div class="pc-title">Stays Local</div>
+          <div class="pc-desc">Everything lives in your browser only.</div>
+        </div>
+        <div class="pc">
+          <div class="pc-ico">
+            <svg viewBox="0 0 24 24">
+              <path d="M1 1l22 22M16.72 11.06A10.94 10.94 0 0 1 19 12.55" />
+              <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39" />
+              <path d="M10.71 5.05A16 16 0 0 1 22.56 9" />
+              <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88" />
+              <path d="M8.53 16.11a6 6 0 0 1 6.95 0" />
+              <circle cx="12" cy="20" r="1" />
+            </svg>
+          </div>
+          <div class="pc-title">No Tracking</div>
+          <div class="pc-desc">Zero analytics or fingerprinting.</div>
+        </div>
+        <div class="pc">
+          <div class="pc-ico">
+            <svg viewBox="0 0 24 24">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              <polyline points="9 12 11 14 15 10" />
+            </svg>
+          </div>
+          <div class="pc-title">Never Sold</div>
+          <div class="pc-desc">Your data isn't a product. Ever.</div>
+        </div>
+      </div>
+
+      <!-- Policy Sections -->
+      <div class="policy-shell">
+        <div class="psec">
+          <div class="s-ico">
+            <svg viewBox="0 0 24 24">
+              <ellipse cx="12" cy="5" rx="9" ry="3" />
+              <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" />
+              <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
+            </svg>
+          </div>
+          <div class="s-body">
+            <div class="s-title">We don't collect your data</div>
+            <p class="s-text">
+              Everything you save in QuickKeep — URLs, titles, notes — stays on
+              your device. We have no server, no account system, and no way to
+              see what you save.
+            </p>
+          </div>
+        </div>
+
+        <div class="psec">
+          <div class="s-ico">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+            </svg>
+          </div>
+          <div class="s-body">
+            <div class="s-title">No tracking, ever</div>
+            <p class="s-text">
+              There are no analytics, cookies, or third-party scripts inside the
+              extension. We don't know who you are, what you browse, or how you
+              use the app.
+            </p>
+          </div>
+        </div>
+
+        <div class="psec">
+          <div class="s-ico">
+            <svg viewBox="0 0 24 24">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+          </div>
+          <div class="s-body">
+            <div class="s-title">Permissions we ask for</div>
+            <p class="s-text">
+              QuickKeep only needs permission to save data locally, read the
+              current tab's URL when you click save, and inject the quick-save
+              overlay. Nothing more.
+            </p>
+          </div>
+        </div>
+
+        <div class="psec">
+          <div class="s-ico">
+            <svg viewBox="0 0 24 24">
+              <polyline points="3 6 5 6 21 6" />
+              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+              <path d="M10 11v6M14 11v6" />
+              <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+            </svg>
+          </div>
+          <div class="s-body">
+            <div class="s-title">You're in full control</div>
+            <p class="s-text">
+              Delete any entry, clear everything at once, or uninstall the
+              extension. When you remove it, all your data goes with it —
+              permanently.
+            </p>
+          </div>
+        </div>
+
+        <div class="psec">
+          <div class="s-ico">
+            <svg viewBox="0 0 24 24">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+          </div>
+          <div class="s-body">
+            <div class="s-title">No third parties involved</div>
+            <p class="s-text">
+              We don't share, sell, or hand off your data to anyone. There's
+              nothing to share — we simply never have it.
+            </p>
+          </div>
+        </div>
+
+        <div class="psec">
+          <div class="s-ico">
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+              />
+              <polyline points="22,6 12,13 2,6" />
+            </svg>
+          </div>
+          <div class="s-body">
+            <div class="s-title">Questions?</div>
+            <p class="s-text">
+              Reach out via the Chrome Web Store support link. We're a small
+              team and we're always happy to help.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ Pricing ═══ -->
+      <div class="pricing-wrap">
+        <div class="section-label">
+          <h2>Simple, honest <em>pricing</em></h2>
+          <p>Start free. Upgrade when you're ready. Cancel anytime.</p>
+        </div>
+
+        <!-- Billing toggle -->
+        <div class="pricing-toggle-wrap">
+          <span class="toggle-label" id="labelMonthly">Monthly</span>
+          <button
+            class="pricing-toggle"
+            id="billingToggle"
+            aria-label="Toggle billing period"
+          >
+            <span class="toggle-thumb"></span>
+          </button>
+          <span class="toggle-label" id="labelYearly"
+            >Yearly <span class="toggle-save">Save 27%</span></span
+          >
+        </div>
+
+        <div class="pricing-grid">
+          <!-- Free -->
+          <div class="pricing-card">
+            <div class="pricing-name">Free</div>
+            <div class="pricing-price">$0<span>/forever</span></div>
+            <ul class="pricing-features">
+              <li>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  width="13"
+                  height="13"
+                >
+                  <polyline points="20 6 9 17 4 12" /></svg
+                >Save up to 30 pages
+              </li>
+              <li>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  width="13"
+                  height="13"
+                >
+                  <polyline points="20 6 9 17 4 12" /></svg
+                >Notes on every saved page
+              </li>
+              <li>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  width="13"
+                  height="13"
+                >
+                  <polyline points="20 6 9 17 4 12" /></svg
+                >Double-click to save
+              </li>
+              <li>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  width="13"
+                  height="13"
+                >
+                  <polyline points="20 6 9 17 4 12" /></svg
+                >100% private, local storage
+              </li>
+            </ul>
+            <a
+              href="https://chrome.google.com/webstore"
+              class="pricing-btn secondary"
+              target="_blank"
+            >
+              Install free
+            </a>
+          </div>
+
+          <!-- Pro -->
+          <div class="pricing-card featured">
+            <div class="pricing-popular">Most Popular</div>
+            <div class="pricing-name">Pro</div>
+            <div class="pricing-price">
+              <span class="price-monthly">$3.99<span>/month</span></span>
+              <span class="price-yearly" style="display: none"
+                >$29<span>/year</span></span
+              >
+            </div>
+            <div class="pricing-alt">
+              <span class="alt-monthly">billed monthly — cancel anytime</span>
+              <span class="alt-yearly" style="display: none"
+                >that's $2.42/month — save $19</span
+              >
+            </div>
+            <ul class="pricing-features">
+              <li>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  width="13"
+                  height="13"
+                >
+                  <polyline points="20 6 9 17 4 12" /></svg
+                >Everything in Free
+              </li>
+              <li>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  width="13"
+                  height="13"
+                >
+                  <polyline points="20 6 9 17 4 12" /></svg
+                >Sync across all devices
+              </li>
+              <li>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  width="13"
+                  height="13"
+                >
+                  <polyline points="20 6 9 17 4 12" /></svg
+                >Unlimited saves
+              </li>
+              <li>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  width="13"
+                  height="13"
+                >
+                  <polyline points="20 6 9 17 4 12" /></svg
+                >Export CSV, JSON, Markdown
+              </li>
+              <li>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  width="13"
+                  height="13"
+                >
+                  <polyline points="20 6 9 17 4 12" /></svg
+                >Folders and tags
+              </li>
+              <li>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  width="13"
+                  height="13"
+                >
+                  <polyline points="20 6 9 17 4 12" /></svg
+                >Search across all notes
+              </li>
+            </ul>
+            <button
+              class="pricing-btn pro-btn"
+              data-monthly="pri_01khz3fzn7vn5b6nwjjvg05rcr"
+              data-yearly="pri_01khz3jett0nyxc2nkrk4pwcvp"
+            >
+              <span class="btn-monthly">Get Pro — $3.99/month</span>
+              <span class="btn-yearly" style="display: none"
+                >Get Pro — $29/year</span
+              >
+            </button>
+          </div>
+
+          <!-- Team -->
+          <div class="pricing-card">
+            <div class="pricing-name">Team</div>
+            <div class="pricing-price">
+              <span class="price-monthly">$9.99<span>/seat/mo</span></span>
+              <span class="price-yearly" style="display: none"
+                >$89<span>/seat/yr</span></span
+              >
+            </div>
+            <div class="pricing-alt">
+              <span class="alt-monthly">billed monthly per member</span>
+              <span class="alt-yearly" style="display: none"
+                >that's $7.42/seat/month — save $31</span
+              >
+            </div>
+            <ul class="pricing-features">
+              <li>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  width="13"
+                  height="13"
+                >
+                  <polyline points="20 6 9 17 4 12" /></svg
+                >Everything in Pro
+              </li>
+              <li>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  width="13"
+                  height="13"
+                >
+                  <polyline points="20 6 9 17 4 12" /></svg
+                >Shared team collections
+              </li>
+              <li>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  width="13"
+                  height="13"
+                >
+                  <polyline points="20 6 9 17 4 12" /></svg
+                >Comment on saved pages
+              </li>
+              <li>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  width="13"
+                  height="13"
+                >
+                  <polyline points="20 6 9 17 4 12" /></svg
+                >Admin dashboard
+              </li>
+              <li>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  width="13"
+                  height="13"
+                >
+                  <polyline points="20 6 9 17 4 12" /></svg
+                >Invite members by email
+              </li>
+            </ul>
+            <button
+              class="pricing-btn secondary team-btn"
+              data-monthly="pri_01kj0c2jyfw46t720s405yzf0q"
+              data-yearly="pri_01kj0c3egz8d6qzttdgqw87821"
+            >
+              <span class="btn-monthly">Get Team — $9.99/seat</span>
+              <span class="btn-yearly" style="display: none"
+                >Get Team — $89/seat</span
+              >
+            </button>
+          </div>
+        </div>
+
+        <p class="pricing-note">
+          Payments processed securely by Paddle. Cancel anytime.
+        </p>
+      </div>
+
+      <!-- ═══ Reviews ═══ -->
+      <div class="reviews-wrap">
+        <div class="section-label">
+          <h2>Loved by <em>real users</em></h2>
+          <p>Here's what people are saying about QuickKeep.</p>
+        </div>
+
+        <div class="reviews-grid">
+          <div class="review-card">
+            <span class="review-quote-mark">"</span>
+            <div class="review-stars">
+              <svg viewBox="0 0 24 24">
+                <polygon
+                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+                />
+              </svg>
+              <svg viewBox="0 0 24 24">
+                <polygon
+                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+                />
+              </svg>
+              <svg viewBox="0 0 24 24">
+                <polygon
+                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+                />
+              </svg>
+              <svg viewBox="0 0 24 24">
+                <polygon
+                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+                />
+              </svg>
+              <svg viewBox="0 0 24 24">
+                <polygon
+                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+                />
+              </svg>
+            </div>
+            <p class="review-text">
+              The double-click to save is genius. I use it constantly while
+              researching. Fast, clean, and completely out of the way.
+            </p>
+            <div class="review-author">
+              <div class="review-avatar av-a">S</div>
+              <div>
+                <div class="review-name">Sarah M.</div>
+                <div class="review-role">UX Designer</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="review-card">
+            <span class="review-quote-mark">"</span>
+            <div class="review-stars">
+              <svg viewBox="0 0 24 24">
+                <polygon
+                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+                />
+              </svg>
+              <svg viewBox="0 0 24 24">
+                <polygon
+                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+                />
+              </svg>
+              <svg viewBox="0 0 24 24">
+                <polygon
+                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+                />
+              </svg>
+              <svg viewBox="0 0 24 24">
+                <polygon
+                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+                />
+              </svg>
+              <svg viewBox="0 0 24 24">
+                <polygon
+                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+                />
+              </svg>
+            </div>
+            <p class="review-text">
+              Finally a bookmark tool that doesn't require an account. Knowing
+              my data never leaves my machine makes it a no-brainer.
+            </p>
+            <div class="review-author">
+              <div class="review-avatar av-b">J</div>
+              <div>
+                <div class="review-name">James K.</div>
+                <div class="review-role">Software Engineer</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="review-card full">
+            <span class="review-quote-mark">"</span>
+            <div class="review-stars">
+              <svg viewBox="0 0 24 24">
+                <polygon
+                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+                />
+              </svg>
+              <svg viewBox="0 0 24 24">
+                <polygon
+                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+                />
+              </svg>
+              <svg viewBox="0 0 24 24">
+                <polygon
+                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+                />
+              </svg>
+              <svg viewBox="0 0 24 24">
+                <polygon
+                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+                />
+              </svg>
+              <svg viewBox="0 0 24 24">
+                <polygon
+                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+                />
+              </svg>
+            </div>
+            <p class="review-text">
+              I've tried every bookmarking extension out there. QuickKeep is the
+              only one that feels like it was made for actual humans. Simple,
+              beautiful, and private.
+            </p>
+            <div class="review-author">
+              <div class="review-avatar av-c">N</div>
+              <div>
+                <div class="review-name">Nour A.</div>
+                <div class="review-role">Content Strategist</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ FAQ ═══ -->
+      <div class="faq-wrap">
+        <div class="section-label">
+          <h2>Common <em>questions</em></h2>
+          <p>Click any question to see the answer.</p>
+        </div>
+
+        <div class="faq-list">
+          <div class="faq-item">
+            <button class="faq-q">
+              <span class="faq-q-text">Can QuickKeep see what I save?</span>
+              <span class="faq-icon"
+                ><svg viewBox="0 0 24 24">
+                  <polyline points="6 9 12 15 18 9" /></svg
+              ></span>
+            </button>
+            <div class="faq-a-wrap">
+              <div class="faq-a-inner">
+                <p class="faq-a">
+                  No. Everything is stored directly in your browser. We have no
+                  server and no way to access your saved pages or notes.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-q">
+              <span class="faq-q-text"
+                >Does it work without an internet connection?</span
+              >
+              <span class="faq-icon"
+                ><svg viewBox="0 0 24 24">
+                  <polyline points="6 9 12 15 18 9" /></svg
+              ></span>
+            </button>
+            <div class="faq-a-wrap">
+              <div class="faq-a-inner">
+                <p class="faq-a">
+                  Yes, completely. QuickKeep saves everything locally, so it
+                  works just fine offline. There's nothing to sync.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-q">
+              <span class="faq-q-text"
+                >What happens to my data if I uninstall QuickKeep?</span
+              >
+              <span class="faq-icon"
+                ><svg viewBox="0 0 24 24">
+                  <polyline points="6 9 12 15 18 9" /></svg
+              ></span>
+            </button>
+            <div class="faq-a-wrap">
+              <div class="faq-a-inner">
+                <p class="faq-a">
+                  All your saved entries are permanently deleted when you
+                  uninstall the extension. Since everything is local, there's no
+                  account to delete or data lingering on a server.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-q">
+              <span class="faq-q-text"
+                >Will this privacy policy ever change?</span
+              >
+              <span class="faq-icon"
+                ><svg viewBox="0 0 24 24">
+                  <polyline points="6 9 12 15 18 9" /></svg
+              ></span>
+            </button>
+            <div class="faq-a-wrap">
+              <div class="faq-a-inner">
+                <p class="faq-a">
+                  If we ever make meaningful changes, we'll update the date on
+                  this page and note it in the Chrome Web Store changelog. We're
+                  committed to keeping it short and honest.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-q">
+              <span class="faq-q-text"
+                >Do you use any third-party services?</span
+              >
+              <span class="faq-icon"
+                ><svg viewBox="0 0 24 24">
+                  <polyline points="6 9 12 15 18 9" /></svg
+              ></span>
+            </button>
+            <div class="faq-a-wrap">
+              <div class="faq-a-inner">
+                <p class="faq-a">
+                  No. There are no analytics tools, ad networks, or third-party
+                  SDKs inside the extension. The only external request on this
+                  page is loading the font from Google Fonts.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <footer>
+        <div class="f-div">
+          <div class="f-div-ico">
+            <svg viewBox="0 0 24 24">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+            </svg>
+          </div>
+        </div>
+        <div class="f-meta">
+          Last updated: <strong style="color: var(--t2)">February 2026</strong>
+          <span class="fdot"></span>
+          <a href="terms.html">Terms of Service</a>
+          <span class="fdot"></span>
+          <a href="#">Chrome Web Store</a>
+          <br />No cookies &nbsp;&middot;&nbsp; No analytics
+          &nbsp;&middot;&nbsp; No nonsense
+        </div>
+      </footer>
+    </div>
+
+    <script>
+      // Initialize Paddle + pricing toggle
+      window.addEventListener("DOMContentLoaded", () => {
+        if (typeof Paddle !== "undefined") {
+          Paddle.Initialize({ token: "live_67ab1894eb53170faa613ff26dd" });
+        }
+
+        // Auto-open checkout if price ID passed via URL parameter (from extension popup)
+        const params = new URLSearchParams(window.location.search);
+        const priceId = params.get("checkout");
+        const inviteToken = params.get("invite");
+
+        if (priceId && typeof Paddle !== "undefined") {
+          setTimeout(() => {
+            Paddle.Checkout.open({ items: [{ priceId, quantity: 1 }] });
+          }, 500);
+        }
+
+        if (inviteToken) {
+          // Show invite acceptance message
+          const banner = document.createElement("div");
+          banner.style.cssText = `
+          position:fixed; top:0; left:0; right:0; z-index:9999;
+          background:#6366f1; color:#fff; text-align:center;
+          padding:14px 20px; font-size:14px; font-weight:500;
+        `;
+          banner.innerHTML = `
+          🎉 You've been invited to a QuickKeep team!
+          <a href="https://chrome.google.com/webstore" target="_blank"
+             style="color:#fff;font-weight:700;margin-left:8px;text-decoration:underline">
+            Install the extension to accept →
+          </a>
+        `;
+          document.body.prepend(banner);
+        }
+
+        const toggle = document.getElementById("billingToggle");
+        const labelMonthly = document.getElementById("labelMonthly");
+        const labelYearly = document.getElementById("labelYearly");
+        let isYearly = false;
+
+        toggle.addEventListener("click", () => {
+          isYearly = !isYearly;
+          toggle.classList.toggle("active", isYearly);
+          labelMonthly.style.color = isYearly ? "var(--t2)" : "var(--t1)";
+          labelYearly.style.color = isYearly ? "var(--t1)" : "var(--t2)";
+
+          document
+            .querySelectorAll(".price-monthly")
+            .forEach((el) => (el.style.display = isYearly ? "none" : ""));
+          document
+            .querySelectorAll(".price-yearly")
+            .forEach((el) => (el.style.display = isYearly ? "" : "none"));
+          document
+            .querySelectorAll(".alt-monthly")
+            .forEach((el) => (el.style.display = isYearly ? "none" : ""));
+          document
+            .querySelectorAll(".alt-yearly")
+            .forEach((el) => (el.style.display = isYearly ? "" : "none"));
+          document
+            .querySelectorAll(".btn-monthly")
+            .forEach((el) => (el.style.display = isYearly ? "none" : ""));
+          document
+            .querySelectorAll(".btn-yearly")
+            .forEach((el) => (el.style.display = isYearly ? "" : "none"));
+        });
+
+        document.querySelectorAll(".pro-btn, .team-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const priceId = isYearly ? btn.dataset.yearly : btn.dataset.monthly;
+            if (typeof Paddle !== "undefined") {
+              Paddle.Checkout.open({ items: [{ priceId, quantity: 1 }] });
+            } else {
+              alert("Payment system loading, please try again in a moment.");
+            }
+          });
+        });
+      });
+
+      // Reading progress bar
+      const rbar = document.getElementById("rbar");
+      window.addEventListener(
+        "scroll",
+        () => {
+          const pct =
+            window.scrollY / (document.body.scrollHeight - window.innerHeight);
+          rbar.style.width = `${Math.min(100, pct * 100)}%`;
+        },
+        { passive: true },
+      );
+
+      // Scroll-triggered reveals
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add("in");
+              io.unobserve(e.target);
+            }
+          });
+        },
+        { threshold: 0.07, rootMargin: "0px 0px -36px 0px" },
+      );
+
+      document.querySelectorAll(".pc").forEach((el, i) => {
+        el.style.animationDelay = `${i * 0.1}s`;
+        io.observe(el);
+      });
+      document
+        .querySelectorAll(".policy-shell, .faq-list, footer")
+        .forEach((el) => io.observe(el));
+      document.querySelectorAll(".psec").forEach((el, i) => {
+        el.style.animationDelay = `${i * 0.06}s`;
+        io.observe(el);
+      });
+      document
+        .querySelectorAll(".section-label")
+        .forEach((el) => io.observe(el));
+      document.querySelectorAll(".review-card").forEach((el, i) => {
+        el.style.animationDelay = `${i * 0.1}s`;
+        io.observe(el);
+      });
+
+      // FAQ accordion
+      document.querySelectorAll(".faq-item").forEach((item) => {
+        item.querySelector(".faq-q").addEventListener("click", () => {
+          const isOpen = item.classList.contains("open");
+          // Close all
+          document
+            .querySelectorAll(".faq-item")
+            .forEach((i) => i.classList.remove("open"));
+          // Toggle clicked
+          if (!isOpen) item.classList.add("open");
+        });
+      });
+
+      // Hero parallax
+      const title = document.querySelector(".hero-title");
+      window.addEventListener(
+        "mousemove",
+        (e) => {
+          const x = (e.clientX / window.innerWidth - 0.5) * 7;
+          const y = (e.clientY / window.innerHeight - 0.5) * 4;
+          title.style.transform = `translate(${x}px, ${y}px)`;
+        },
+        { passive: true },
+      );
+    </script>
+  </body>
+</html>

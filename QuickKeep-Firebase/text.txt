@@ -1,0 +1,23 @@
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyDMN8Bo3GRYMBNl83cV6bowe22qUNGN4NU",
+    authDomain: "quickkeep-57a5e.firebaseapp.com",
+    projectId: "quickkeep-57a5e",
+    storageBucket: "quickkeep-57a5e.firebasestorage.app",
+    messagingSenderId: "364223082779",
+    appId: "1:364223082779:web:562a207a7bd61379d623be",
+    measurementId: "G-Z0DE4WSJBY"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>

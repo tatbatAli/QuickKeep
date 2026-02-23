@@ -1,0 +1,1055 @@
+/**
+ * QuickKeep — popup.js
+ *
+ * Uses Firebase Auth + Firestore directly.
+ * No backend server. No API calls to your own server.
+ *
+ * Three views:
+ *   authView    — login / register / guest
+ *   mainView    — save, list, search, user menu
+ *   upgradeView — pricing cards
+ *
+ * Data flow:
+ *   Guest:          chrome.storage.local (local only)
+ *   Logged in Free: Firestore (synced, 100 save limit)
+ *   Logged in Pro:  Firestore (synced, unlimited, search, export, folders)
+ *   Team:           Firestore (shared collections, comments)
+ */
+
+// ─────────────────────────────────────────────────────────────
+//  STATE
+// ─────────────────────────────────────────────────────────────
+let userProfile = null; // { uid, email, plan, teamId, role } | null
+let currentEntries = [];
+let isGuest = false;
+let unsubEntries = null; // Firestore real-time listener unsubscribe
+
+// ─────────────────────────────────────────────────────────────
+//  DOM REFS
+// ─────────────────────────────────────────────────────────────
+const authView = document.getElementById("authView");
+const mainView = document.getElementById("mainView");
+const upgradeView = document.getElementById("upgradeView");
+
+const loginForm = document.getElementById("loginForm");
+const registerForm = document.getElementById("registerForm");
+const tabLogin = document.getElementById("tabLogin");
+const tabRegister = document.getElementById("tabRegister");
+
+const saveBtn = document.getElementById("saveBtn");
+const noteInput = document.getElementById("noteInput");
+const listContainer = document.getElementById("listContainer");
+const emptyState = document.getElementById("emptyState");
+const countBadge = document.getElementById("countBadge");
+const clearAllBtn = document.getElementById("clearAllBtn");
+const toast = document.getElementById("toast");
+const planBadge = document.getElementById("planBadge");
+const upgradeBanner = document.getElementById("upgradeBanner");
+const userMenuBtn = document.getElementById("userMenuBtn");
+const userMenu = document.getElementById("userMenu");
+const userEmailEl = document.getElementById("userEmail");
+const saveLimitLabel = document.getElementById("saveLimitLabel");
+const searchInput = document.getElementById("searchInput");
+
+// ─────────────────────────────────────────────────────────────
+//  UTILS
+// ─────────────────────────────────────────────────────────────
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function shortUrl(url) {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return url;
+  }
+}
+
+function formatDate(val) {
+  // val can be a Firestore Timestamp, a JS Date, or a unix ms number
+  let ts;
+  if (!val) return "";
+  if (typeof val === "number") ts = val;
+  else if (val.toDate) ts = val.toDate().getTime();
+  else if (val instanceof Date) ts = val.getTime();
+  else ts = Date.now();
+
+  const diff = Date.now() - ts;
+  if (diff < 60_000) return "just now";
+  if (diff < 3_600_000) return `${Math.floor(diff / 60_000)}m ago`;
+  if (diff < 86_400_000) return `${Math.floor(diff / 3_600_000)}h ago`;
+  return new Date(ts).toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+  });
+}
+
+const delay = (ms) => new Promise((r) => setTimeout(r, ms));
+
+function showToast(msg, type = "success") {
+  toast.textContent = msg;
+  toast.className = `qk-toast ${type} show`;
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => toast.classList.remove("show"), 2200);
+}
+
+// ─────────────────────────────────────────────────────────────
+//  VIEWS
+// ─────────────────────────────────────────────────────────────
+function showView(view) {
+  [authView, mainView, upgradeView].forEach((v) => (v.style.display = "none"));
+  view.style.display = "flex";
+}
+
+// ─────────────────────────────────────────────────────────────
+//  PLAN UI
+// ─────────────────────────────────────────────────────────────
+function updatePlanUI(plan) {
+  const labels = { free: "Free", pro: "Pro ✦", team: "Team ✦" };
+  planBadge.textContent = labels[plan] || "Free";
+  planBadge.className = `qk-plan-badge ${plan}`;
+  upgradeBanner.style.display = plan === "free" ? "" : "none";
+
+  // Show team features if on team plan
+  const isTeam = plan === "team";
+  document.getElementById("saveTeamBtn").style.display = isTeam ? "" : "none";
+  document.getElementById("savesTabs").style.display = isTeam ? "" : "none";
+  document.getElementById("listHeader").style.display = isTeam ? "none" : "";
+}
+
+// ─────────────────────────────────────────────────────────────
+//  AUTH HANDLERS
+// ─────────────────────────────────────────────────────────────
+async function handleLogin(e) {
+  e.preventDefault();
+  const btn = document.getElementById("loginBtn");
+  btn.textContent = "Signing in…";
+  btn.disabled = true;
+
+  try {
+    const email = document.getElementById("loginEmail").value.trim();
+    const password = document.getElementById("loginPassword").value;
+    await loginUser(email, password);
+    // onAuthChange listener will fire and call initMain()
+  } catch (err) {
+    showToast(friendlyAuthError(err.code), "error");
+    btn.textContent = "Sign in";
+    btn.disabled = false;
+  }
+}
+
+async function handleRegister(e) {
+  e.preventDefault();
+  const btn = document.getElementById("registerBtn");
+  btn.textContent = "Creating account…";
+  btn.disabled = true;
+
+  try {
+    const email = document.getElementById("regEmail").value.trim();
+    const password = document.getElementById("regPassword").value;
+    await registerUser(email, password);
+    // onAuthChange listener will fire
+  } catch (err) {
+    showToast(friendlyAuthError(err.code), "error");
+    btn.textContent = "Create free account";
+    btn.disabled = false;
+  }
+}
+
+async function handleLogout() {
+  userMenu.style.display = "none";
+  if (unsubEntries) {
+    unsubEntries();
+    unsubEntries = null;
+  }
+  await logoutUser();
+  await chrome.storage.local.remove([
+    "qk_user_uid",
+    "qk_user_plan",
+    "qk_auth_token",
+    "qk_auth_expiry",
+  ]);
+  userProfile = null;
+  currentEntries = [];
+  isGuest = false;
+  showView(authView);
+}
+
+// ─────────────────────────────────────────────────────────────
+//  RENDER LIST
+// ─────────────────────────────────────────────────────────────
+function renderList(entries) {
+  listContainer.querySelectorAll(".qk-entry").forEach((c) => c.remove());
+
+  const n = entries.length;
+  countBadge.textContent = n;
+  clearAllBtn.classList.toggle("visible", n > 0);
+  emptyState.style.display = n === 0 ? "" : "none";
+
+  // Save limit indicator
+  const plan = userProfile?.plan || "free";
+  if (plan === "free") {
+    saveLimitLabel.textContent = `${n} / 30`;
+    saveLimitLabel.style.display = "";
+  } else {
+    saveLimitLabel.style.display = "none";
+  }
+
+  [...entries].forEach((entry, i) => {
+    const card = document.createElement("div");
+    card.className = "qk-entry";
+    card.style.animationDelay = `${i * 0.035}s`;
+
+    card.innerHTML = `
+      <div class="qk-entry-top">
+        <div class="qk-entry-info" title="${escapeHtml(entry.title || "")}">
+          <div class="qk-entry-title">${escapeHtml(entry.title || "Untitled")}</div>
+          <div class="qk-entry-url">${escapeHtml(shortUrl(entry.url))}</div>
+        </div>
+        <div class="qk-entry-actions">
+          <button class="qk-icon-btn open" title="Open in new tab">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                 stroke-linecap="round" stroke-linejoin="round" width="11" height="11">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+              <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+            </svg>
+          </button>
+          <button class="qk-icon-btn delete" title="Delete">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                 stroke-linecap="round" stroke-linejoin="round" width="11" height="11">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      ${entry.note ? `<div class="qk-entry-note">${escapeHtml(entry.note)}</div>` : ""}
+      ${
+        (entry.tags || []).length
+          ? `
+        <div class="qk-entry-tags">
+          ${entry.tags.map((t) => `<span class="qk-tag">${escapeHtml(t)}</span>`).join("")}
+        </div>`
+          : ""
+      }
+      <div class="qk-entry-meta">${formatDate(entry.savedAt)}</div>
+    `;
+
+    card
+      .querySelector(".qk-entry-info")
+      .addEventListener("click", () => chrome.tabs.create({ url: entry.url }));
+    card
+      .querySelector(".qk-icon-btn.open")
+      .addEventListener("click", () => chrome.tabs.create({ url: entry.url }));
+    card
+      .querySelector(".qk-icon-btn.delete")
+      .addEventListener("click", async () => {
+        card.style.transition = "opacity 0.15s, transform 0.15s";
+        card.style.opacity = "0";
+        card.style.transform = "translateX(8px)";
+        await delay(150);
+        try {
+          if (isGuest) {
+            await localDeleteEntry(entry.id);
+            currentEntries = currentEntries.filter((e) => e.id !== entry.id);
+            renderList(currentEntries);
+          } else {
+            await deleteEntry(entry.id);
+            // Firestore real-time listener will auto-refresh the list
+          }
+          showToast("Removed");
+        } catch {
+          showToast("Delete failed", "error");
+        }
+      });
+
+    listContainer.appendChild(card);
+  });
+}
+
+// ─────────────────────────────────────────────────────────────
+//  REAL-TIME FIRESTORE LISTENER
+// ─────────────────────────────────────────────────────────────
+let unsubTeamEntries = null;
+let currentTeamEntries = [];
+let activeTab = "personal"; // 'personal' | 'team'
+
+function startEntriesListener(uid) {
+  if (unsubEntries) unsubEntries();
+
+  unsubEntries = db
+    .collection("entries")
+    .where("userId", "==", uid)
+    .where("teamId", "==", null)
+    .orderBy("savedAt", "desc")
+    .onSnapshot(
+      (snap) => {
+        currentEntries = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        if (activeTab === "personal") {
+          const q = searchInput.value.trim();
+          renderList(q ? searchEntries(currentEntries, q) : currentEntries);
+        }
+      },
+      (err) => {
+        console.error("[QuickKeep] Firestore listener error:", err);
+      },
+    );
+}
+
+function startTeamEntriesListener(teamId) {
+  if (unsubTeamEntries) unsubTeamEntries();
+
+  unsubTeamEntries = db
+    .collection("entries")
+    .where("teamId", "==", teamId)
+    .orderBy("savedAt", "desc")
+    .onSnapshot(
+      (snap) => {
+        currentTeamEntries = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+
+        // Update team count badge
+        document.getElementById("teamCountBadge").textContent =
+          currentTeamEntries.length;
+
+        if (activeTab === "team") renderTeamList(currentTeamEntries);
+      },
+      (err) => {
+        console.error("[QuickKeep] Team listener error:", err);
+      },
+    );
+}
+
+function renderTeamList(entries) {
+  const container = document.getElementById("teamListContainer");
+  const empty = document.getElementById("teamEmptyState");
+
+  if (!entries.length) {
+    container.innerHTML = "";
+    container.appendChild(empty);
+    empty.style.display = "";
+    return;
+  }
+
+  container.innerHTML = entries
+    .map(
+      (e) => `
+    <div class="qk-entry" data-id="${e.id}">
+      <div class="qk-entry-top">
+        <div class="qk-entry-favicon">
+          <img src="https://www.google.com/s2/favicons?domain=${encodeURIComponent(e.url)}&sz=16"
+               width="14" height="14" alt="" onerror="this.style.display='none'" />
+        </div>
+        <a class="qk-entry-title" href="${escapeHtml(e.url)}"
+           target="_blank" title="${escapeHtml(e.title || e.url)}">
+          ${escapeHtml(e.title || shortUrl(e.url))}
+        </a>
+        <span class="qk-entry-date">${formatDate(e.savedAt)}</span>
+      </div>
+      ${e.note ? `<div class="qk-entry-note">${escapeHtml(e.note)}</div>` : ""}
+      <div class="qk-entry-url">${escapeHtml(shortUrl(e.url))}</div>
+    </div>
+  `,
+    )
+    .join("");
+}
+
+// ── Tab switching ─────────────────────────────────────────────
+document.getElementById("tabMySaves").addEventListener("click", () => {
+  activeTab = "personal";
+  document.getElementById("tabMySaves").classList.add("active");
+  document.getElementById("tabTeamSaves").classList.remove("active");
+  document.getElementById("listContainer").style.display = "";
+  document.getElementById("teamListContainer").style.display = "none";
+  const q = searchInput.value.trim();
+  renderList(q ? searchEntries(currentEntries, q) : currentEntries);
+});
+
+document.getElementById("tabTeamSaves").addEventListener("click", () => {
+  activeTab = "team";
+  document.getElementById("tabTeamSaves").classList.add("active");
+  document.getElementById("tabMySaves").classList.remove("active");
+  document.getElementById("listContainer").style.display = "none";
+  document.getElementById("teamListContainer").style.display = "";
+  renderTeamList(currentTeamEntries);
+});
+
+// ─────────────────────────────────────────────────────────────
+//  SAVE
+// ─────────────────────────────────────────────────────────────
+async function saveCurrentPage() {
+  saveBtn.disabled = true;
+  saveBtn.innerHTML = "<span>Saving…</span>";
+
+  try {
+    const [tab] = await chrome.tabs.query({
+      active: true,
+      currentWindow: true,
+    });
+
+    if (
+      !tab?.url ||
+      tab.url.startsWith("chrome://") ||
+      tab.url.startsWith("chrome-extension://")
+    ) {
+      showToast("Cannot save this page type", "error");
+      return;
+    }
+
+    const note = noteInput.value.trim();
+
+    if (isGuest) {
+      await localAddEntry({
+        url: tab.url,
+        title: tab.title || "Untitled",
+        note,
+      });
+      currentEntries = await localLoadEntries();
+      renderList(currentEntries);
+    } else {
+      const plan = userProfile?.plan || "free";
+      await saveEntry(userProfile.uid, plan, {
+        url: tab.url,
+        title: tab.title || "Untitled",
+        note,
+      });
+      // Firestore listener auto-refreshes the list
+    }
+
+    noteInput.value = "";
+    showToast("Page saved!");
+  } catch (err) {
+    if (err.upgrade) {
+      showToast(err.message, "error");
+      setTimeout(() => showView(upgradeView), 800);
+    } else {
+      console.error("[QuickKeep] Save error:", err);
+      showToast("Save failed", "error");
+    }
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+           stroke-linecap="round" stroke-linejoin="round" width="13" height="13">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      Save This Page`;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+//  SEARCH (Pro — client-side filter on already-fetched entries)
+// ─────────────────────────────────────────────────────────────
+let searchTimer = null;
+searchInput.addEventListener("input", () => {
+  clearTimeout(searchTimer);
+
+  if (isGuest || userProfile?.plan === "free") {
+    showToast("Search is a Pro feature", "error");
+    searchInput.value = "";
+    setTimeout(() => showView(upgradeView), 500);
+    return;
+  }
+
+  searchTimer = setTimeout(() => {
+    const q = searchInput.value.trim();
+    renderList(q ? searchEntries(currentEntries, q) : currentEntries);
+  }, 250);
+});
+
+// ─────────────────────────────────────────────────────────────
+//  EXPORT (Pro)
+// ─────────────────────────────────────────────────────────────
+async function handleExport(format) {
+  userMenu.style.display = "none";
+
+  if (isGuest || userProfile?.plan === "free") {
+    showToast("Export is a Pro feature", "error");
+    setTimeout(() => showView(upgradeView), 500);
+    return;
+  }
+
+  try {
+    let content, filename, mime;
+
+    if (format === "csv") {
+      content = exportAsCSV(currentEntries);
+      filename = "quickkeep-export.csv";
+      mime = "text/csv";
+    } else if (format === "markdown") {
+      content = exportAsMarkdown(currentEntries);
+      filename = "quickkeep-export.md";
+      mime = "text/markdown";
+    } else {
+      content = exportAsJSON(currentEntries);
+      filename = "quickkeep-export.json";
+      mime = "application/json";
+    }
+
+    downloadFile(content, filename, mime);
+    showToast("Export downloaded!");
+  } catch (err) {
+    console.error("[QuickKeep] Export error:", err);
+    showToast("Export failed", "error");
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+//  CLEAR ALL
+// ─────────────────────────────────────────────────────────────
+clearAllBtn.addEventListener("click", async () => {
+  if (!confirm("Delete all saved pages? This cannot be undone.")) return;
+  try {
+    if (isGuest) {
+      await localClearAll();
+      currentEntries = [];
+      renderList([]);
+    } else {
+      await clearAllEntries(userProfile.uid);
+      // Listener auto-refreshes
+    }
+    showToast("All entries cleared");
+  } catch {
+    showToast("Clear failed", "error");
+  }
+});
+
+// ─────────────────────────────────────────────────────────────
+//  INIT MAIN VIEW
+// ─────────────────────────────────────────────────────────────
+async function initMain(user) {
+  showView(mainView);
+
+  if (user && !isGuest) {
+    // Logged-in user — load profile from Firestore
+    userProfile = await getUserProfile(user.uid);
+
+    if (!userProfile) {
+      await db.collection("users").doc(user.uid).set({
+        email: user.email,
+        plan: "free",
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+      userProfile = { uid: user.uid, email: user.email, plan: "free" };
+
+      // Check if they paid before creating their account
+      const pendingSnap = await db
+        .collection("pending_upgrades")
+        .doc(user.email)
+        .get();
+      if (pendingSnap.exists) {
+        const { plan, paddleSubId } = pendingSnap.data();
+        await db
+          .collection("users")
+          .doc(user.uid)
+          .update({ plan, paddleSubId });
+        await pendingSnap.ref.delete();
+        userProfile.plan = plan;
+      }
+    }
+
+    // Store auth info for background service worker
+    const token = await user.getIdToken();
+    await chrome.storage.local.set({
+      qk_user_uid: user.uid,
+      qk_user_plan: userProfile.plan || "free",
+      qk_auth_token: token,
+      qk_auth_expiry: Date.now() + 55 * 60 * 1000, // 55 min (token expires in 60)
+    });
+
+    userEmailEl.textContent = userProfile.email || user.email;
+    updatePlanUI(userProfile.plan || "free");
+    startEntriesListener(user.uid);
+
+    // Start team listener if user is on team plan and has a team
+    if (userProfile.plan === "team" && userProfile.teamId) {
+      startTeamEntriesListener(userProfile.teamId);
+    }
+  } else {
+    // Guest mode
+    isGuest = true;
+    await chrome.storage.local.remove([
+      "qk_user_uid",
+      "qk_user_plan",
+      "qk_auth_token",
+      "qk_auth_expiry",
+    ]);
+    userEmailEl.textContent = "Guest";
+    updatePlanUI("free");
+
+    const local = await localLoadEntries();
+    currentEntries = local;
+    renderList(local);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+//  PENDING SAVE LISTENER
+//  When content script saves a page, it goes to chrome.storage
+//  as a pending save. The popup picks it up here and saves to
+//  Firebase (or local storage for guests).
+// ─────────────────────────────────────────────────────────────
+async function processPendingSave() {
+  const result = await new Promise((resolve) =>
+    chrome.storage.local.get(["qk_pending_save"], resolve),
+  );
+
+  const pending = result.qk_pending_save;
+  if (!pending) return;
+
+  // Clear it immediately to avoid processing twice
+  await new Promise((resolve) =>
+    chrome.storage.local.remove(["qk_pending_save"], resolve),
+  );
+
+  const { url, title, note } = pending;
+
+  try {
+    if (isGuest) {
+      await localAddEntry({ url, title, note });
+      currentEntries = await localLoadEntries();
+      renderList(currentEntries);
+    } else if (userProfile) {
+      await saveEntry(userProfile.uid, userProfile.plan || "free", {
+        url,
+        title,
+        note,
+      });
+      // Firestore listener auto-refreshes the list
+    }
+  } catch (err) {
+    console.error("[QuickKeep] Pending save error:", err);
+  }
+}
+
+// Listen for storage changes (content script just saved something)
+chrome.storage.onChanged.addListener((changes) => {
+  if (changes.qk_pending_save) {
+    processPendingSave();
+  }
+});
+
+//  This is the main entry point — Firebase tells us when the
+//  user is logged in or out, then we show the right view.
+// ─────────────────────────────────────────────────────────────
+onAuthChange(async (firebaseUser) => {
+  if (firebaseUser && !isGuest) {
+    // User is logged in
+    await initMain(firebaseUser);
+  } else if (!isGuest) {
+    // Not logged in and not guest — show auth screen
+    showView(authView);
+  }
+});
+
+// ─────────────────────────────────────────────────────────────
+//  EVENT LISTENERS
+// ─────────────────────────────────────────────────────────────
+
+// Auth tab switching
+tabLogin.addEventListener("click", () => {
+  tabLogin.classList.add("active");
+  tabRegister.classList.remove("active");
+  loginForm.style.display = "";
+  registerForm.style.display = "none";
+});
+tabRegister.addEventListener("click", () => {
+  tabRegister.classList.add("active");
+  tabLogin.classList.remove("active");
+  registerForm.style.display = "";
+  loginForm.style.display = "none";
+});
+
+// Auth forms
+loginForm.addEventListener("submit", handleLogin);
+registerForm.addEventListener("submit", handleRegister);
+
+// Guest / skip
+document.getElementById("skipAuthBtn").addEventListener("click", async () => {
+  isGuest = true;
+  await initMain(null);
+});
+
+// Save button
+saveBtn.addEventListener("click", saveCurrentPage);
+noteInput.addEventListener("keydown", (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === "Enter") saveCurrentPage();
+});
+
+// Save to Team button
+document.getElementById("saveTeamBtn").addEventListener("click", async () => {
+  if (!userProfile?.teamId) {
+    showToast("Create a team first", "error");
+    return;
+  }
+
+  const btn = document.getElementById("saveTeamBtn");
+  btn.textContent = "Saving…";
+  btn.disabled = true;
+
+  try {
+    const [tab] = await chrome.tabs.query({
+      active: true,
+      currentWindow: true,
+    });
+    const note = noteInput.value.trim();
+
+    await saveEntry(userProfile.uid, userProfile.plan, {
+      url: tab.url,
+      title: tab.title,
+      note,
+      teamId: userProfile.teamId, // ← saves to team collection
+    });
+
+    noteInput.value = "";
+    showToast("Saved to team!");
+
+    // Switch to team tab to show the save
+    document.getElementById("tabTeamSaves").click();
+  } catch (err) {
+    console.error("[QuickKeep] Save to team error:", err);
+    showToast("Failed to save to team", "error");
+  } finally {
+    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+      stroke-linecap="round" stroke-linejoin="round" width="13" height="13">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+      <circle cx="9" cy="7" r="4"/>
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+      <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+    </svg> Team`;
+    btn.disabled = false;
+  }
+});
+
+// User menu
+userMenuBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  userMenu.style.display = userMenu.style.display === "none" ? "" : "none";
+});
+document.addEventListener("click", () => (userMenu.style.display = "none"));
+
+// Menu actions
+document.getElementById("logoutBtn").addEventListener("click", handleLogout);
+document
+  .getElementById("exportCsvBtn")
+  .addEventListener("click", () => handleExport("csv"));
+document
+  .getElementById("exportMdBtn")
+  .addEventListener("click", () => handleExport("markdown"));
+
+// Upgrade
+document
+  .getElementById("upgradeBannerBtn")
+  .addEventListener("click", () => showView(upgradeView));
+document
+  .getElementById("backFromUpgrade")
+  .addEventListener("click", () => showView(mainView));
+
+// ── Upgrade view billing toggle ───────────────────────────────
+const popupToggle = document.getElementById("popupBillingToggle");
+const popupLabelMonthly = document.getElementById("popupLabelMonthly");
+const popupLabelYearly = document.getElementById("popupLabelYearly");
+let popupIsYearly = false;
+
+popupToggle.addEventListener("click", () => {
+  popupIsYearly = !popupIsYearly;
+  popupToggle.classList.toggle("active", popupIsYearly);
+
+  popupLabelMonthly.style.color = popupIsYearly
+    ? "var(--qk-muted)"
+    : "var(--qk-text)";
+  popupLabelYearly.style.color = popupIsYearly
+    ? "var(--qk-text)"
+    : "var(--qk-muted)";
+
+  document
+    .querySelectorAll(".popup-price-monthly")
+    .forEach((el) => (el.style.display = popupIsYearly ? "none" : ""));
+  document
+    .querySelectorAll(".popup-price-yearly")
+    .forEach((el) => (el.style.display = popupIsYearly ? "" : "none"));
+  document
+    .querySelectorAll(".popup-alt-monthly")
+    .forEach((el) => (el.style.display = popupIsYearly ? "none" : ""));
+  document
+    .querySelectorAll(".popup-alt-yearly")
+    .forEach((el) => (el.style.display = popupIsYearly ? "" : "none"));
+  document
+    .querySelectorAll(".popup-btn-monthly")
+    .forEach((el) => (el.style.display = popupIsYearly ? "none" : ""));
+  document
+    .querySelectorAll(".popup-btn-yearly")
+    .forEach((el) => (el.style.display = popupIsYearly ? "" : "none"));
+});
+
+// Open checkout in new tab via Netlify page
+document.querySelectorAll(".popup-pro-btn, .popup-team-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const priceId = popupIsYearly ? btn.dataset.yearly : btn.dataset.monthly;
+    chrome.tabs.create({
+      url: `https://usequickkeep.netlify.app/?checkout=${priceId}`,
+    });
+  });
+});
+
+// ─────────────────────────────────────────────────────────────
+//  TEAM VIEW
+// ─────────────────────────────────────────────────────────────
+const teamView = document.getElementById("teamView");
+let unsubShared = null;
+
+// Update showView to include teamView
+function showView(view) {
+  [authView, mainView, upgradeView, teamView].forEach(
+    (v) => (v.style.display = "none"),
+  );
+  view.style.display = "flex";
+}
+
+document
+  .getElementById("backFromTeam")
+  .addEventListener("click", () => showView(mainView));
+
+// ── Open team view from user menu ─────────────────────────────
+async function openTeamView() {
+  userMenu.style.display = "none";
+  showView(teamView);
+
+  const createSection = document.getElementById("teamCreateSection");
+  const manageSection = document.getElementById("teamManageSection");
+
+  if (!userProfile?.teamId) {
+    // No team yet — show create form
+    createSection.style.display = "";
+    manageSection.style.display = "none";
+    document.getElementById("teamViewTitle").textContent = "Create Team";
+  } else {
+    // Has team — load it
+    createSection.style.display = "none";
+    manageSection.style.display = "";
+    document.getElementById("teamViewTitle").textContent = "Team";
+    await loadTeamData(userProfile.teamId);
+  }
+}
+
+// ── Load team data ────────────────────────────────────────────
+async function loadTeamData(teamId) {
+  try {
+    const teamDoc = await db.collection("teams").doc(teamId).get();
+    if (!teamDoc.exists) return;
+
+    const team = teamDoc.data();
+    document.getElementById("teamNameDisplay").textContent = team.name;
+    document.getElementById("teamRoleDisplay").textContent =
+      team.ownerId === userProfile.uid ? "Owner" : "Member";
+
+    // Show invite section only to owner
+    document.getElementById("inviteSection").style.display =
+      team.ownerId === userProfile.uid ? "" : "none";
+
+    // Load member emails
+    const membersList = document.getElementById("membersList");
+    membersList.innerHTML =
+      '<div style="font-size:11px;color:var(--qk-muted);padding:4px 0">Loading members…</div>';
+
+    const memberEmails = await Promise.all(
+      team.memberIds.map((uid) =>
+        db
+          .collection("users")
+          .doc(uid)
+          .get()
+          .then((d) => ({
+            email: d.data()?.email || uid,
+            isOwner: uid === team.ownerId,
+          })),
+      ),
+    );
+
+    membersList.innerHTML = memberEmails
+      .map(
+        (m) => `
+      <div class="qk-member-row">
+        <span class="qk-member-email">${escapeHtml(m.email)}</span>
+        <span class="qk-member-role">${m.isOwner ? "Owner" : "Member"}</span>
+      </div>
+    `,
+      )
+      .join("");
+  } catch (err) {
+    console.error("[QuickKeep] Team load error:", err);
+    showToast("Failed to load team", "error");
+  }
+}
+
+// ── Create team ───────────────────────────────────────────────
+document.getElementById("createTeamBtn").addEventListener("click", async () => {
+  const nameInput = document.getElementById("teamNameInput");
+  const teamName = nameInput.value.trim();
+  if (!teamName) {
+    showToast("Enter a team name", "error");
+    return;
+  }
+
+  const btn = document.getElementById("createTeamBtn");
+  btn.textContent = "Creating…";
+  btn.disabled = true;
+
+  try {
+    // Create team document
+    const teamRef = await db.collection("teams").add({
+      name: teamName,
+      ownerId: userProfile.uid,
+      memberIds: [userProfile.uid],
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+
+    // Update user profile
+    await db.collection("users").doc(userProfile.uid).update({
+      teamId: teamRef.id,
+      role: "owner",
+    });
+
+    userProfile.teamId = teamRef.id;
+    userProfile.role = "owner";
+
+    showToast("Team created!");
+    nameInput.value = "";
+    await openTeamView();
+  } catch (err) {
+    console.error("[QuickKeep] Create team error:", err);
+    showToast("Failed to create team", "error");
+  } finally {
+    btn.textContent = "Create Team";
+    btn.disabled = false;
+  }
+});
+
+// ── Send invite ───────────────────────────────────────────────
+document.getElementById("sendInviteBtn").addEventListener("click", async () => {
+  const emailInput = document.getElementById("inviteEmailInput");
+  const inviteEmail = emailInput.value.trim().toLowerCase();
+  if (!inviteEmail) {
+    showToast("Enter an email address", "error");
+    return;
+  }
+
+  const btn = document.getElementById("sendInviteBtn");
+  btn.textContent = "Generating…";
+  btn.disabled = true;
+
+  try {
+    const token = Math.random().toString(36).slice(2) + Date.now().toString(36);
+
+    await db.collection("invites").add({
+      teamId: userProfile.teamId,
+      email: inviteEmail,
+      token,
+      accepted: false,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+
+    // Show the invite link
+    const inviteLink = `https://usequickkeep.netlify.app/?invite=${token}`;
+    document.getElementById("inviteLinkWrap").style.display = "";
+    document.getElementById("inviteLinkInput").value = inviteLink;
+
+    showToast("Invite link generated!");
+    emailInput.value = "";
+  } catch (err) {
+    console.error("[QuickKeep] Invite error:", err);
+    showToast("Failed to create invite", "error");
+  } finally {
+    btn.textContent = "Send Invite";
+    btn.disabled = false;
+  }
+});
+
+// ── Copy invite link ──────────────────────────────────────────
+document.getElementById("copyInviteLinkBtn").addEventListener("click", () => {
+  const linkInput = document.getElementById("inviteLinkInput");
+  navigator.clipboard.writeText(linkInput.value).then(() => {
+    showToast("Link copied!");
+  });
+});
+
+// ── Toggle shared entries ─────────────────────────────────────
+let sharedLoaded = false;
+document
+  .getElementById("toggleSharedBtn")
+  .addEventListener("click", async () => {
+    const sharedList = document.getElementById("sharedEntriesList");
+    const isVisible = sharedList.style.display !== "none";
+
+    if (isVisible) {
+      sharedList.style.display = "none";
+      document.getElementById("toggleSharedBtn").textContent = "View";
+      if (unsubShared) {
+        unsubShared();
+        unsubShared = null;
+      }
+      return;
+    }
+
+    sharedList.style.display = "";
+    document.getElementById("toggleSharedBtn").textContent = "Hide";
+    sharedList.innerHTML =
+      '<div style="padding:8px 16px;font-size:11px;color:var(--qk-muted)">Loading…</div>';
+
+    if (!userProfile?.teamId) return;
+
+    unsubShared = db
+      .collection("entries")
+      .where("teamId", "==", userProfile.teamId)
+      .orderBy("savedAt", "desc")
+      .limit(20)
+      .onSnapshot((snap) => {
+        if (snap.empty) {
+          sharedList.innerHTML =
+            '<div style="padding:8px 16px;font-size:11px;color:var(--qk-muted)">No shared saves yet.</div>';
+          return;
+        }
+        sharedList.innerHTML = snap.docs
+          .map((d) => {
+            const e = d.data();
+            return `
+          <div class="qk-shared-entry" style="cursor:pointer" onclick="chrome.tabs.create({url:'${escapeHtml(e.url)}'})">
+            <div class="qk-shared-entry-title">${escapeHtml(e.title || "Untitled")}</div>
+            <div class="qk-shared-entry-url">${escapeHtml(new URL(e.url).hostname.replace(/^www\./, ""))}</div>
+          </div>
+        `;
+          })
+          .join("");
+      });
+  });
+
+// ── Add Team button to user menu ──────────────────────────────
+const teamMenuBtn = document.createElement("button");
+teamMenuBtn.className = "qk-menu-item";
+teamMenuBtn.id = "teamMenuBtn";
+teamMenuBtn.innerHTML = `
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+       stroke-linecap="round" stroke-linejoin="round" width="13" height="13">
+    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+    <circle cx="9" cy="7" r="4"/>
+    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+  </svg>
+  Team
+  <span class="qk-pro-tag">Team</span>
+`;
+teamMenuBtn.addEventListener("click", () => {
+  if (userProfile?.plan !== "team") {
+    showToast("Team plan required", "error");
+    userMenu.style.display = "none";
+    showView(upgradeView);
+    return;
+  }
+  openTeamView();
+});
+
+// Insert team button before the divider above logout
+const menuDividers = userMenu.querySelectorAll(".qk-menu-divider");
+userMenu.insertBefore(teamMenuBtn, menuDividers[menuDividers.length - 1]);

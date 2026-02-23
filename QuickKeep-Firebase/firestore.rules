@@ -1,0 +1,123 @@
+// firestore.rules
+// Deploy with: firebase deploy --only firestore:rules
+//
+// These rules ensure users can ONLY access their own data.
+// No user can read or write another user's entries, folders, or profile.
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helper functions ──────────────────────────────────────
+
+    // Is the request coming from a logged-in user?
+    function isAuth() {
+      return request.auth != null;
+    }
+
+    // Is the logged-in user the owner of this document?
+    function isOwner(userId) {
+      return isAuth() && request.auth.uid == userId;
+    }
+
+    // Is the logged-in user a member of a team?
+    function isTeamMember(teamId) {
+      return isAuth() &&
+        request.auth.uid in get(/databases/$(database)/documents/teams/$(teamId)).data.memberIds;
+    }
+
+    // Is the logged-in user on a paid plan?
+    function isPro() {
+      return isAuth() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.plan in ['pro', 'team'];
+    }
+
+    // ── Users collection ──────────────────────────────────────
+    // Each user document stores plan, email, paddleSubId.
+    // Users can read their own profile.
+    // Only Cloud Functions (admin SDK) can write plan upgrades.
+    match /users/{userId} {
+      allow read:   if isOwner(userId);
+      allow create: if isOwner(userId);
+      // Prevent client from self-upgrading plan — only backend webhook can do this
+      // But allow updating teamId, role, and other profile fields
+      allow update: if isOwner(userId)
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['plan', 'paddleSubId']);
+    }
+
+    // ── Entries collection ────────────────────────────────────
+    // Personal entries: userId must match the logged-in user.
+    // Team entries: user must be a member of the entry's teamId.
+    match /entries/{entryId} {
+
+      // Reading personal entries
+      allow read: if isAuth() && (
+        resource.data.userId == request.auth.uid ||
+        (resource.data.teamId != null && isTeamMember(resource.data.teamId))
+      );
+
+      // Creating an entry
+      allow create: if isAuth()
+        && request.resource.data.userId == request.auth.uid;
+
+      // Updating or deleting — must be the original saver
+      allow update, delete: if isAuth()
+        && resource.data.userId == request.auth.uid;
+    }
+
+    // ── Folders collection (Pro feature) ──────────────────────
+    match /folders/{folderId} {
+      allow read, write: if isOwner(resource.data.userId);
+      allow create:      if isOwner(request.resource.data.userId) && isPro();
+    }
+
+    // ── Teams collection ──────────────────────────────────────
+    match /teams/{teamId} {
+      // Any member can read the team
+      allow read: if isTeamMember(teamId);
+      // Team plan users can create a team
+      allow create: if isAuth()
+        && request.resource.data.ownerId == request.auth.uid
+        && request.resource.data.memberIds.hasAll([request.auth.uid]);
+      // Only the owner can update team settings
+      allow update: if isAuth() && resource.data.ownerId == request.auth.uid;
+    }
+
+    // ── Invites collection ────────────────────────────────────
+    match /invites/{inviteId} {
+      // Anyone with the invite token can read it (to accept it)
+      allow read: if isAuth();
+      // Only team owners can create invites
+      allow create: if isAuth()
+        && get(/databases/$(database)/documents/teams/$(request.resource.data.teamId)).data.ownerId
+           == request.auth.uid;
+      // Mark as accepted — invite recipient only
+      allow update: if isAuth()
+        && resource.data.email == request.auth.token.email
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accepted']);
+    }
+
+    // ── Comments collection (Team feature) ───────────────────
+    match /comments/{commentId} {
+      allow read: if isAuth() &&
+        isTeamMember(
+          get(/databases/$(database)/documents/entries/$(resource.data.entryId)).data.teamId
+        );
+      allow create: if isAuth()
+        && request.resource.data.userId == request.auth.uid;
+      // Authors can delete their own comments
+      allow delete: if isAuth() && resource.data.userId == request.auth.uid;
+    }
+
+    // ── Pending upgrades (paid before account creation) ──────────
+    match /pending_upgrades/{email} {
+      allow read, delete: if isAuth() && request.auth.token.email == email;
+      allow write: if false; // only Cloud Functions can write
+    }
+
+    // ── Deny everything else ──────────────────────────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

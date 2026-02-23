@@ -1,0 +1,749 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QuickKeep — Terms of Service</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --ink: #0b0b10;
+        --violet: #6366f1;
+        --violet-mid: #7c7ff5;
+        --violet-hi: #a5b4fc;
+        --fog: rgba(255, 255, 255, 0.055);
+        --rule: rgba(255, 255, 255, 0.07);
+        --t1: #f0f0f8;
+        --t2: #9898b8;
+        --t3: #55556e;
+        --ff-display: "Instrument Serif", Georgia, serif;
+        --ff-body: "Geist", system-ui, sans-serif;
+        --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+        --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: var(--ff-body);
+        background: var(--ink);
+        color: var(--t2);
+        line-height: 1.75;
+        -webkit-font-smoothing: antialiased;
+        overflow-x: hidden;
+      }
+      ::selection {
+        background: rgba(99, 102, 241, 0.3);
+        color: var(--t1);
+      }
+
+      /* ── Backgrounds ── */
+      .bg-noise {
+        position: fixed;
+        inset: -50%;
+        width: 200%;
+        height: 200%;
+        opacity: 0.03;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        pointer-events: none;
+        z-index: 0;
+      }
+      .bg-halo-top {
+        position: fixed;
+        top: -20vh;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 900px;
+        height: 500px;
+        background: radial-gradient(
+          ellipse,
+          rgba(99, 102, 241, 0.13) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+        z-index: 0;
+      }
+      .bg-halo-btm {
+        position: fixed;
+        bottom: 5vh;
+        right: -10vw;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(
+          ellipse,
+          rgba(139, 92, 246, 0.06) 0%,
+          transparent 65%
+        );
+        pointer-events: none;
+        z-index: 0;
+      }
+      .bg-grid {
+        position: fixed;
+        inset: 0;
+        background-image: radial-gradient(
+          rgba(255, 255, 255, 0.055) 1px,
+          transparent 1px
+        );
+        background-size: 28px 28px;
+        pointer-events: none;
+        z-index: 0;
+        mask-image: radial-gradient(
+          ellipse 85% 85% at 50% 50%,
+          black 20%,
+          transparent 100%
+        );
+        -webkit-mask-image: radial-gradient(
+          ellipse 85% 85% at 50% 50%,
+          black 20%,
+          transparent 100%
+        );
+      }
+
+      /* ── Reading bar ── */
+      #rbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 2px;
+        width: 0%;
+        background: linear-gradient(90deg, var(--violet), var(--violet-hi));
+        z-index: 1000;
+        box-shadow: 0 0 12px rgba(99, 102, 241, 0.5);
+        transition: width 0.08s linear;
+      }
+
+      /* ── Layout ── */
+      .page {
+        position: relative;
+        z-index: 1;
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 0 24px 120px;
+      }
+
+      /* ── Nav ── */
+      nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 30px 0 0;
+        margin-bottom: 64px;
+        opacity: 0;
+        transform: translateY(-14px);
+        animation: reveal 0.7s var(--ease-expo) 0.1s forwards;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+      }
+      .brand-mark {
+        width: 36px;
+        height: 36px;
+        background: linear-gradient(140deg, #6366f1, #4338ca);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow:
+          0 0 22px rgba(99, 102, 241, 0.45),
+          inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        transition:
+          transform 0.35s var(--ease-spring),
+          box-shadow 0.3s;
+      }
+      .brand-mark:hover {
+        transform: scale(1.1) rotate(-4deg);
+        box-shadow: 0 0 36px rgba(99, 102, 241, 0.65);
+      }
+      .brand-mark svg {
+        width: 18px;
+        height: 18px;
+      }
+      .brand-name {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--t1);
+        letter-spacing: -0.3px;
+      }
+      .brand-name em {
+        font-style: normal;
+        color: var(--violet-hi);
+      }
+      .nav-tag {
+        font-size: 10.5px;
+        font-weight: 600;
+        color: var(--t3);
+        background: var(--fog);
+        border: 1px solid var(--rule);
+        padding: 5px 13px;
+        border-radius: 20px;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+      }
+
+      /* ── Page hero ── */
+      .doc-hero {
+        text-align: center;
+        margin-bottom: 56px;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: reveal 0.8s var(--ease-expo) 0.25s forwards;
+      }
+      .doc-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--violet-hi);
+        background: rgba(99, 102, 241, 0.09);
+        border: 1px solid rgba(99, 102, 241, 0.22);
+        padding: 6px 14px;
+        border-radius: 20px;
+        letter-spacing: 0.7px;
+        text-transform: uppercase;
+        margin-bottom: 22px;
+      }
+      .doc-title {
+        font-family: var(--ff-display);
+        font-weight: 400;
+        font-size: clamp(34px, 6vw, 52px);
+        color: var(--t1);
+        line-height: 1.1;
+        letter-spacing: -1.2px;
+        margin-bottom: 16px;
+      }
+      .doc-title em {
+        font-style: italic;
+        color: transparent;
+        background: linear-gradient(
+          125deg,
+          var(--violet-mid),
+          var(--violet-hi)
+        );
+        -webkit-background-clip: text;
+        background-clip: text;
+      }
+      .doc-sub {
+        font-size: 14px;
+        color: var(--t3);
+        font-weight: 300;
+      }
+
+      /* ── Document shell ── */
+      .doc-shell {
+        background: var(--fog);
+        border: 1px solid var(--rule);
+        border-radius: 22px;
+        overflow: hidden;
+        position: relative;
+        opacity: 0;
+        transform: translateY(28px);
+      }
+      .doc-shell.in {
+        animation: reveal 0.65s var(--ease-expo) forwards;
+      }
+      .doc-shell::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 8%;
+        right: 8%;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(99, 102, 241, 0.45),
+          transparent
+        );
+      }
+
+      /* ── Sections ── */
+      .dsec {
+        padding: 28px 32px;
+        border-bottom: 1px solid var(--rule);
+        display: flex;
+        gap: 18px;
+        align-items: flex-start;
+        opacity: 0;
+        transform: translateX(-14px);
+        transition: background 0.2s;
+      }
+      .dsec:last-child {
+        border-bottom: none;
+      }
+      .dsec.in {
+        animation: reveal 0.5s var(--ease-expo) forwards;
+      }
+      .dsec:hover {
+        background: rgba(255, 255, 255, 0.018);
+      }
+
+      .d-num {
+        flex-shrink: 0;
+        width: 28px;
+        height: 28px;
+        background: rgba(99, 102, 241, 0.1);
+        border: 1px solid rgba(99, 102, 241, 0.2);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--violet-hi);
+        margin-top: 2px;
+      }
+      .d-body {
+        flex: 1;
+      }
+      .d-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--t1);
+        margin-bottom: 8px;
+        letter-spacing: -0.2px;
+      }
+      .d-text {
+        font-size: 13.5px;
+        font-weight: 300;
+        color: var(--t2);
+        line-height: 1.8;
+      }
+      .d-text + .d-text {
+        margin-top: 10px;
+      }
+
+      /* ── Highlight callout ── */
+      .d-callout {
+        background: rgba(99, 102, 241, 0.07);
+        border: 1px solid rgba(99, 102, 241, 0.18);
+        border-radius: 12px;
+        padding: 14px 18px;
+        margin-top: 12px;
+        font-size: 13px;
+        font-weight: 400;
+        color: var(--violet-hi);
+        line-height: 1.75;
+      }
+
+      /* ── Refund section highlight ── */
+      .d-refund-box {
+        background: rgba(110, 231, 183, 0.06);
+        border: 1px solid rgba(110, 231, 183, 0.18);
+        border-radius: 12px;
+        padding: 16px 18px;
+        margin-top: 12px;
+        font-size: 13.5px;
+        color: #6ee7b7;
+        line-height: 1.8;
+      }
+      .d-refund-box strong {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 13px;
+      }
+
+      /* ── Footer ── */
+      footer {
+        text-align: center;
+        padding-top: 56px;
+        opacity: 0;
+        transform: translateY(16px);
+      }
+      footer.in {
+        animation: reveal 0.6s var(--ease-expo) forwards;
+      }
+      .f-div {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 20px;
+      }
+      .f-div-line {
+        flex: 1;
+        height: 1px;
+        background: var(--rule);
+      }
+      .f-div-ico {
+        width: 32px;
+        height: 32px;
+        background: var(--fog);
+        border: 1px solid var(--rule);
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .f-div-ico svg {
+        width: 13px;
+        height: 13px;
+        stroke: var(--t3);
+        fill: none;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .f-meta {
+        font-size: 12px;
+        color: var(--t3);
+        line-height: 2.2;
+      }
+      .f-meta a {
+        color: var(--violet-hi);
+        text-decoration: none;
+        transition: color 0.2s;
+      }
+      .f-meta a:hover {
+        color: var(--t1);
+      }
+      .fdot {
+        display: inline-block;
+        width: 3px;
+        height: 3px;
+        background: var(--t3);
+        border-radius: 50%;
+        margin: 0 10px;
+        vertical-align: middle;
+      }
+
+      @keyframes reveal {
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="rbar"></div>
+    <div class="bg-noise"></div>
+    <div class="bg-halo-top"></div>
+    <div class="bg-halo-btm"></div>
+    <div class="bg-grid"></div>
+
+    <div class="page">
+      <!-- Nav -->
+      <nav>
+        <a href="index.html" class="brand">
+          <div class="brand-mark">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="white"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+            </svg>
+          </div>
+          <span class="brand-name">Quick<em>Keep</em></span>
+        </a>
+        <span class="nav-tag">Terms of Service</span>
+      </nav>
+
+      <!-- Hero -->
+      <div class="doc-hero">
+        <div class="doc-badge">Legal</div>
+        <h1 class="doc-title">Terms of <em>Service</em></h1>
+        <p class="doc-sub">
+          Last updated: February 2026 &nbsp;·&nbsp; Effective immediately upon
+          use
+        </p>
+      </div>
+
+      <!-- Document -->
+      <div class="doc-shell">
+        <div class="dsec">
+          <div class="d-num">1</div>
+          <div class="d-body">
+            <div class="d-title">Acceptance of Terms</div>
+            <p class="d-text">
+              These Terms of Service are between you and
+              <strong style="color: var(--t1)">QuickKeep</strong>. By installing
+              QuickKeep, creating an account, or using any part of the service,
+              you agree to be bound by these Terms of Service. If you do not
+              agree, do not use QuickKeep. These terms apply to all users —
+              free, Pro, and Team plan subscribers.
+            </p>
+          </div>
+        </div>
+
+        <div class="dsec">
+          <div class="d-num">2</div>
+          <div class="d-body">
+            <div class="d-title">What QuickKeep Is</div>
+            <p class="d-text">
+              QuickKeep is a Chrome browser extension that allows users to save
+              webpages, videos, and online resources with personal notes
+              attached. Free users store data locally on their device. Pro and
+              Team subscribers store data securely in the cloud to enable
+              cross-device sync and collaboration features.
+            </p>
+          </div>
+        </div>
+
+        <div class="dsec">
+          <div class="d-num">3</div>
+          <div class="d-body">
+            <div class="d-title">User Accounts</div>
+            <p class="d-text">
+              Free users are not required to create an account. Pro and Team
+              subscribers must create an account using a valid email address and
+              password. You are responsible for keeping your account credentials
+              secure. You must not share your account with others or use someone
+              else's account without permission.
+            </p>
+            <p class="d-text">
+              You must be at least 13 years old to create an account. By
+              registering, you confirm that the information you provide is
+              accurate and that you are legally permitted to enter into this
+              agreement.
+            </p>
+          </div>
+        </div>
+
+        <div class="dsec">
+          <div class="d-num">4</div>
+          <div class="d-body">
+            <div class="d-title">Free Trial and Subscriptions</div>
+            <p class="d-text">
+              When you create a QuickKeep account, you receive a
+              <strong style="color: var(--t1)">7-day free Pro trial</strong> —
+              no credit card required. During the trial you have full access to
+              all Pro features including sync, unlimited saves, search, folders,
+              and export. At the end of the trial your account automatically
+              reverts to the free plan unless you choose to subscribe.
+            </p>
+            <p class="d-text">
+              Paid plans (Pro and Team) are billed on a monthly or annual basis.
+              By subscribing, you authorise recurring charges to your payment
+              method until you cancel.
+            </p>
+            <div class="d-callout">
+              The free trial exists so you can experience the full product
+              before committing. We encourage you to use it fully before
+              deciding to subscribe.
+            </div>
+          </div>
+        </div>
+
+        <div class="dsec">
+          <div class="d-num">5</div>
+          <div class="d-body">
+            <div class="d-title">Refund Policy</div>
+            <p class="d-text">
+              If you believe you have been charged in error by QuickKeep — for
+              example, charged after cancellation, charged twice, or charged the
+              wrong amount — you may request a refund within
+              <strong style="color: var(--t1)">14 days</strong> of the charge
+              and we will correct it in full.
+            </p>
+            <div class="d-refund-box">
+              <strong>How to request a refund</strong>
+              Contact us within 14 days of the charge via the Chrome Web Store
+              support link. Include the email address on your account and a
+              description of the billing error. We respond within 48 hours and
+              process all valid refunds promptly.
+            </div>
+            <p class="d-text" style="margin-top: 12px">
+              Refunds are issued for genuine billing errors only. Cancelling a
+              subscription stops future charges — you retain access to paid
+              features until the end of the current billing period.
+            </p>
+          </div>
+        </div>
+
+        <div class="dsec">
+          <div class="d-num">6</div>
+          <div class="d-body">
+            <div class="d-title">Cancellation</div>
+            <p class="d-text">
+              You may cancel your subscription at any time. Cancellation takes
+              effect at the end of your current billing period — you retain
+              access to paid features until that date. After cancellation, your
+              account reverts to the free plan. Your saved data is not deleted
+              upon cancellation; it remains accessible on the free plan up to
+              the free tier limit.
+            </p>
+          </div>
+        </div>
+
+        <div class="dsec">
+          <div class="d-num">7</div>
+          <div class="d-body">
+            <div class="d-title">Acceptable Use</div>
+            <p class="d-text">
+              You agree to use QuickKeep only for lawful purposes. You must not
+              use the extension to save, store, or share content that is
+              illegal, harmful, abusive, defamatory, or infringes the
+              intellectual property rights of others. You must not attempt to
+              reverse-engineer, decompile, or tamper with the extension or its
+              backend systems.
+            </p>
+            <p class="d-text">
+              We reserve the right to suspend or terminate accounts that violate
+              these terms without prior notice.
+            </p>
+          </div>
+        </div>
+
+        <div class="dsec">
+          <div class="d-num">8</div>
+          <div class="d-body">
+            <div class="d-title">Your Data</div>
+            <p class="d-text">
+              You retain full ownership of all data you save using QuickKeep —
+              your URLs, notes, and any content you store. We do not claim any
+              rights over your saved content. Free users' data is stored
+              entirely on their local device. Pro and Team users' data is stored
+              securely in the cloud to enable sync features.
+            </p>
+            <p class="d-text">
+              We do not sell, share, or monetise your data in any form. See our
+              <a
+                href="index.html"
+                style="color: var(--violet-hi); text-decoration: none"
+                >Privacy Policy</a
+              >
+              for full details.
+            </p>
+          </div>
+        </div>
+
+        <div class="dsec">
+          <div class="d-num">9</div>
+          <div class="d-body">
+            <div class="d-title">Service Availability</div>
+            <p class="d-text">
+              We aim to keep QuickKeep running reliably, but we do not guarantee
+              uninterrupted availability. The service may be temporarily
+              unavailable due to maintenance, updates, or circumstances beyond
+              our control. We are not liable for any loss or inconvenience
+              caused by service downtime.
+            </p>
+          </div>
+        </div>
+
+        <div class="dsec">
+          <div class="d-num">10</div>
+          <div class="d-body">
+            <div class="d-title">Limitation of Liability</div>
+            <p class="d-text">
+              QuickKeep is provided "as is" without any warranty, express or
+              implied. To the fullest extent permitted by law, we are not liable
+              for any indirect, incidental, or consequential damages arising
+              from your use of the extension or service, including loss of data,
+              loss of revenue, or interruption of business.
+            </p>
+            <p class="d-text">
+              Our total liability to you for any claim arising from use of
+              QuickKeep shall not exceed the amount you paid us in the three
+              months preceding the claim.
+            </p>
+          </div>
+        </div>
+
+        <div class="dsec">
+          <div class="d-num">11</div>
+          <div class="d-body">
+            <div class="d-title">Changes to These Terms</div>
+            <p class="d-text">
+              We may update these Terms of Service from time to time. When we
+              do, we will update the date at the top of this page and notify
+              active subscribers via email for material changes. Continued use
+              of QuickKeep after changes are posted constitutes acceptance of
+              the new terms.
+            </p>
+          </div>
+        </div>
+
+        <div class="dsec">
+          <div class="d-num">12</div>
+          <div class="d-body">
+            <div class="d-title">Contact</div>
+            <p class="d-text">
+              If you have any questions about these Terms of Service, or to
+              request a refund, please reach out via the Chrome Web Store
+              support link on our extension listing page. We respond to all
+              inquiries within 48 hours.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <footer>
+        <div class="f-div">
+          <div class="f-div-line"></div>
+          <div class="f-div-ico">
+            <svg viewBox="0 0 24 24">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+            </svg>
+          </div>
+          <div class="f-div-line"></div>
+        </div>
+        <div class="f-meta">
+          Last updated: <strong style="color: var(--t2)">February 2026</strong>
+          <span class="fdot"></span>
+          <a href="index.html">Privacy Policy</a>
+          <span class="fdot"></span>
+          <a href="#">Chrome Web Store</a>
+          <br />No ads &nbsp;&middot;&nbsp; No tracking &nbsp;&middot;&nbsp; No
+          nonsense
+        </div>
+      </footer>
+    </div>
+
+    <script>
+      const rbar = document.getElementById("rbar");
+      window.addEventListener(
+        "scroll",
+        () => {
+          const pct =
+            window.scrollY / (document.body.scrollHeight - window.innerHeight);
+          rbar.style.width = `${Math.min(100, pct * 100)}%`;
+        },
+        { passive: true },
+      );
+
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add("in");
+              io.unobserve(e.target);
+            }
+          });
+        },
+        { threshold: 0.07, rootMargin: "0px 0px -36px 0px" },
+      );
+
+      document
+        .querySelectorAll(".dsec, .doc-shell, footer")
+        .forEach((el, i) => {
+          if (el.classList.contains("dsec"))
+            el.style.animationDelay = `${i * 0.04}s`;
+          io.observe(el);
+        });
+    </script>
+  </body>
+</html>
