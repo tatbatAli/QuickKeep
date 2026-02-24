@@ -46,23 +46,26 @@ service cloud.firestore {
     }
 
     // ── Entries collection ────────────────────────────────────
-    // Personal entries: userId must match the logged-in user.
-    // Team entries: user must be a member of the entry's teamId.
     match /entries/{entryId} {
 
-      // Reading personal entries
+      // Reading personal entries or team entries
       allow read: if isAuth() && (
         resource.data.userId == request.auth.uid ||
-        (resource.data.teamId != null && isTeamMember(resource.data.teamId))
+        (resource.data.teamId != null &&
+         resource.data.teamId == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.teamId)
       );
 
       // Creating an entry
       allow create: if isAuth()
         && request.resource.data.userId == request.auth.uid;
 
-      // Updating or deleting — must be the original saver
-      allow update, delete: if isAuth()
-        && resource.data.userId == request.auth.uid;
+      // Updating or deleting — must be the original saver OR team owner
+      allow update, delete: if isAuth() && (
+        resource.data.userId == request.auth.uid ||
+        (resource.data.teamId != null &&
+         resource.data.teamId == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.teamId &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'owner')
+      );
     }
 
     // ── Folders collection (Pro feature) ──────────────────────
@@ -73,8 +76,9 @@ service cloud.firestore {
 
     // ── Teams collection ──────────────────────────────────────
     match /teams/{teamId} {
-      // Any member can read the team
-      allow read: if isTeamMember(teamId);
+      // Members can read their own team (checked via user profile)
+      allow read: if isAuth() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.teamId == teamId;
       // Team plan users can create a team
       allow create: if isAuth()
         && request.resource.data.ownerId == request.auth.uid

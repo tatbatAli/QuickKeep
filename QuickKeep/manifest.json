@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "QuickKeep",
   "version": "1.1.0",
-  "description": "Save any webpage or video instantly with a note. One-click to reopen. No account. No cloud. 100% private.",
+  "description": "Save any webpage instantly with a note. Sync across devices with Pro. Share pages with your team. Free to start.",
 
   "permissions": ["storage", "activeTab", "tabs"],
 
@@ -36,12 +36,13 @@
   },
 
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; base-uri 'self'; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com;"
+    "extension_pages": "script-src 'self'; object-src 'self'; base-uri 'self'; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://us-central1-quickkeep-57a5e.cloudfunctions.net;"
   },
 
   "host_permissions": [
     "https://*.googleapis.com/*",
-    "https://*.firebaseio.com/*"
+    "https://*.firebaseio.com/*",
+    "https://us-central1-quickkeep-57a5e.cloudfunctions.net/*"
   ],
 
   "web_accessible_resources": [
@@ -50,7 +51,8 @@
         "styles.css",
         "firebase-app-compat.js",
         "firebase-auth-compat.js",
-        "firebase-firestore-compat.js"
+        "firebase-firestore-compat.js",
+        "firebase-functions-compat.js"
       ],
       "matches": ["http://*/*", "https://*/*"]
     }

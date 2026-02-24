@@ -1337,17 +1337,24 @@ body.qk-popup {
 .qk-team-info {
   padding: 12px 16px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
-.qk-team-name {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--qk-text);
+.qk-team-info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
-.qk-team-role {
+.qk-team-info-label {
   font-size: 11px;
   color: var(--qk-muted);
-  margin-top: 2px;
-  text-transform: capitalize;
+  font-weight: 500;
+}
+.qk-team-info-value {
+  font-size: 12px;
+  color: var(--qk-text);
+  font-weight: 600;
 }
 .qk-team-section-title {
   font-size: 10px;
@@ -1361,31 +1368,33 @@ body.qk-popup {
   justify-content: space-between;
 }
 .qk-members-list {
-  padding: 0 16px;
+  padding: 0 16px 16px;
   display: flex;
   flex-direction: column;
   gap: 6px;
-  max-height: 100px;
+  max-height: 160px;
   overflow-y: auto;
 }
 .qk-member-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 6px 10px;
+  padding: 8px 12px;
   background: rgba(255, 255, 255, 0.04);
   border-radius: 8px;
   font-size: 12px;
 }
 .qk-member-email {
   color: var(--qk-text);
+  flex: 1;
 }
 .qk-member-role {
   font-size: 10px;
   color: var(--qk-muted);
   background: rgba(255, 255, 255, 0.06);
-  padding: 2px 6px;
+  padding: 2px 8px;
   border-radius: 6px;
+  flex-shrink: 0;
 }
 .qk-invite-label {
   font-size: 11px;
@@ -1501,4 +1510,42 @@ body.qk-popup {
 }
 .qk-save-team-btn:hover {
   background: rgba(99, 102, 241, 0.25);
+}
+
+/* ── Team entry delete button (owner only) ── */
+.qk-delete-team-btn {
+  background: rgba(248, 113, 113, 0.1);
+  border: 1px solid rgba(248, 113, 113, 0.2);
+  cursor: pointer;
+  color: #f87171;
+  padding: 3px 6px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  transition:
+    opacity 0.15s,
+    background 0.15s;
+  margin-left: 8px;
+  flex-shrink: 0;
+}
+.qk-entry:hover .qk-delete-team-btn {
+  opacity: 1;
+}
+.qk-delete-team-btn:hover {
+  background: rgba(248, 113, 113, 0.2);
+}
+
+/* ── Delete Account button ── */
+.qk-delete-account-btn {
+  color: #f87171 !important;
+  font-size: 11px !important;
+  opacity: 0.7;
+  transition:
+    opacity 0.15s,
+    background 0.15s !important;
+}
+.qk-delete-account-btn:hover {
+  opacity: 1;
+  background: rgba(248, 113, 113, 0.1) !important;
 }

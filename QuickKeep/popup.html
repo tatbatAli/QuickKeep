@@ -179,6 +179,29 @@
           Export Markdown
           <span class="qk-pro-tag">Pro</span>
         </button>
+        <button class="qk-menu-item" id="teamMenuBtn" style="display: none">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            width="13"
+            height="13"
+          >
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>
+          Team
+          <span
+            class="qk-pro-tag"
+            style="background: rgba(99, 102, 241, 0.2); color: #a5b4fc"
+            >Team</span
+          >
+        </button>
         <div class="qk-menu-divider"></div>
         <button class="qk-menu-item danger" id="logoutBtn">
           <svg
@@ -196,6 +219,27 @@
             <line x1="21" y1="12" x2="9" y2="12" />
           </svg>
           Sign out
+        </button>
+        <button
+          class="qk-menu-item qk-delete-account-btn"
+          id="deleteAccountBtn"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            width="13"
+            height="13"
+          >
+            <polyline points="3 6 5 6 21 6" />
+            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+            <path d="M10 11v6M14 11v6" />
+            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+          </svg>
+          Delete Account
         </button>
       </div>
 
@@ -517,15 +561,17 @@
       <div class="qk-plan-card">
         <div class="qk-plan-name">Team</div>
         <div class="qk-plan-price">
-          <span class="popup-price-monthly">$9.99<span>/seat/mo</span></span>
+          <span class="popup-price-monthly"
+            >$13.99<span>/mo for 5 seats</span></span
+          >
           <span class="popup-price-yearly" style="display: none"
-            >$89<span>/seat/yr</span></span
+            >$99<span>/yr for 5 seats</span></span
           >
         </div>
         <div class="qk-plan-price-alt">
-          <span class="popup-alt-monthly">billed monthly per member</span>
+          <span class="popup-alt-monthly">up to 5 members, billed monthly</span>
           <span class="popup-alt-yearly" style="display: none"
-            >$7.42/seat/mo — save $31</span
+            >$8.25/mo — save $68</span
           >
         </div>
         <ul class="qk-plan-features">
@@ -591,9 +637,9 @@
           data-monthly="pri_01kj0c2jyfw46t720s405yzf0q"
           data-yearly="pri_01kj0c3egz8d6qzttdgqw87821"
         >
-          <span class="popup-btn-monthly">Get Team — $9.99/seat</span>
+          <span class="popup-btn-monthly">Get Team — $13.99/month</span>
           <span class="popup-btn-yearly" style="display: none"
-            >Get Team — $89/seat</span
+            >Get Team — $99/year</span
           >
         </button>
       </div>
@@ -663,17 +709,25 @@
       <div id="teamManageSection" style="display: none">
         <!-- Team info -->
         <div class="qk-team-info">
-          <div class="qk-team-name" id="teamNameDisplay"></div>
-          <div class="qk-team-role" id="teamRoleDisplay"></div>
+          <div class="qk-team-info-row">
+            <span class="qk-team-info-label">Team name</span>
+            <span class="qk-team-info-value" id="teamNameDisplay"></span>
+          </div>
+          <div class="qk-team-info-row">
+            <span class="qk-team-info-label">Role</span>
+            <span class="qk-team-info-value" id="teamRoleDisplay"></span>
+          </div>
         </div>
 
         <!-- Members list -->
         <div class="qk-team-section-title">Members</div>
         <div class="qk-members-list" id="membersList"></div>
 
-        <!-- Invite (owner only) -->
-        <div id="inviteSection">
-          <div class="qk-team-section-title">Invite Member</div>
+        <!-- Invite — owner only, hidden for members -->
+        <div id="inviteSection" style="display: none">
+          <div class="qk-team-section-title" style="margin-top: 4px">
+            Invite Member
+          </div>
           <div class="qk-team-form">
             <input
               type="email"
@@ -683,7 +737,7 @@
             />
             <button class="qk-save-btn" id="sendInviteBtn">Send Invite</button>
           </div>
-          <div id="inviteLinkWrap" style="display: none">
+          <div id="inviteLinkWrap" style="display: none; padding: 0 16px 12px">
             <p class="qk-invite-label">Share this invite link:</p>
             <div class="qk-invite-link-row">
               <input
@@ -696,19 +750,13 @@
             </div>
           </div>
         </div>
-
-        <!-- Shared saves toggle -->
-        <div class="qk-team-section-title" style="margin-top: 12px">
-          <span>Shared Saves</span>
-          <button class="qk-tab-toggle" id="toggleSharedBtn">View</button>
-        </div>
-        <div id="sharedEntriesList" style="display: none"></div>
       </div>
     </div>
 
     <script src="firebase-app-compat.js"></script>
     <script src="firebase-auth-compat.js"></script>
     <script src="firebase-firestore-compat.js"></script>
+    <script src="firebase-functions-compat.js"></script>
     <script src="firebase.js"></script>
     <script src="auth.js"></script>
     <script src="db-entries.js"></script>

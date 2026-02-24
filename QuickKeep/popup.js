@@ -102,7 +102,12 @@ function showToast(msg, type = "success") {
 //  VIEWS
 // ─────────────────────────────────────────────────────────────
 function showView(view) {
-  [authView, mainView, upgradeView].forEach((v) => (v.style.display = "none"));
+  [
+    authView,
+    mainView,
+    upgradeView,
+    document.getElementById("teamView"),
+  ].forEach((v) => v && (v.style.display = "none"));
   view.style.display = "flex";
 }
 
@@ -120,6 +125,10 @@ function updatePlanUI(plan) {
   document.getElementById("saveTeamBtn").style.display = isTeam ? "" : "none";
   document.getElementById("savesTabs").style.display = isTeam ? "" : "none";
   document.getElementById("listHeader").style.display = isTeam ? "none" : "";
+
+  // teamMenuBtn is added dynamically — safe check
+  const teamBtn = document.getElementById("teamMenuBtn");
+  if (teamBtn) teamBtn.style.display = isTeam ? "" : "none";
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -178,6 +187,52 @@ async function handleLogout() {
   currentEntries = [];
   isGuest = false;
   showView(authView);
+}
+
+async function handleDeleteAccount() {
+  userMenu.style.display = "none";
+
+  const confirmed = confirm(
+    "Are you sure you want to delete your account?\n\n" +
+      "This will permanently delete:\n" +
+      "• All your saved pages and notes\n" +
+      "• Your account and profile\n" +
+      "• Your active subscription (if any)\n\n" +
+      "This action cannot be undone.",
+  );
+  if (!confirmed) return;
+
+  const btn = document.getElementById("deleteAccountBtn");
+  btn.textContent = "Deleting…";
+  btn.disabled = true;
+
+  try {
+    // Call Cloud Function — handles Paddle cancellation + Firestore + Auth deletion
+    const deleteAccount = firebase.functions().httpsCallable("deleteAccount");
+    await deleteAccount();
+
+    // Clear local storage and listeners
+    await chrome.storage.local.clear();
+    if (unsubEntries) {
+      unsubEntries();
+      unsubEntries = null;
+    }
+    if (unsubTeamEntries) {
+      unsubTeamEntries();
+      unsubTeamEntries = null;
+    }
+
+    userProfile = null;
+    currentEntries = [];
+    isGuest = false;
+    showView(authView);
+    showToast("Account deleted.");
+  } catch (err) {
+    console.error("[QuickKeep] Delete account error:", err);
+    showToast("Failed to delete account. Please try again.", "error");
+    btn.textContent = "Delete Account";
+    btn.disabled = false;
+  }
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -334,27 +389,71 @@ function renderTeamList(entries) {
     return;
   }
 
+  const isOwner = userProfile && userProfile.role === "owner";
+
   container.innerHTML = entries
     .map(
       (e) => `
     <div class="qk-entry" data-id="${e.id}">
       <div class="qk-entry-top">
-        <div class="qk-entry-favicon">
-          <img src="https://www.google.com/s2/favicons?domain=${encodeURIComponent(e.url)}&sz=16"
-               width="14" height="14" alt="" onerror="this.style.display='none'" />
+        <div class="qk-entry-info" style="flex:1;min-width:0;">
+          <div class="qk-entry-title" style="cursor:default;">
+            ${escapeHtml(e.title || shortUrl(e.url))}
+          </div>
+          <div class="qk-entry-url">${escapeHtml(shortUrl(e.url))}</div>
         </div>
-        <a class="qk-entry-title" href="${escapeHtml(e.url)}"
-           target="_blank" title="${escapeHtml(e.title || e.url)}">
-          ${escapeHtml(e.title || shortUrl(e.url))}
-        </a>
-        <span class="qk-entry-date">${formatDate(e.savedAt)}</span>
+        <div class="qk-entry-actions">
+          <span class="qk-entry-date" style="font-size:10px;color:var(--qk-muted);align-self:center;">${formatDate(e.savedAt)}</span>
+          <button class="qk-icon-btn open" data-url="${escapeHtml(e.url)}" title="Open page">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round" width="12" height="12">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+              <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+            </svg>
+          </button>
+          ${
+            isOwner
+              ? `<button class="qk-icon-btn delete qk-delete-team-btn" data-id="${e.id}" title="Remove from team">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                 stroke-linecap="round" stroke-linejoin="round" width="12" height="12">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>`
+              : ""
+          }
+        </div>
       </div>
       ${e.note ? `<div class="qk-entry-note">${escapeHtml(e.note)}</div>` : ""}
-      <div class="qk-entry-url">${escapeHtml(shortUrl(e.url))}</div>
     </div>
   `,
     )
     .join("");
+
+  // Open button handlers
+  container.querySelectorAll(".qk-icon-btn.open").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      chrome.tabs.create({ url: btn.dataset.url });
+    });
+  });
+
+  // Delete button handlers (owner only)
+  if (isOwner) {
+    container.querySelectorAll(".qk-delete-team-btn").forEach((btn) => {
+      btn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const id = btn.dataset.id;
+        try {
+          await db.collection("entries").doc(id).delete();
+          showToast("Removed from team");
+        } catch (err) {
+          console.error("[QuickKeep] Team delete error:", err);
+          showToast("Failed to remove", "error");
+        }
+      });
+    });
+  }
 }
 
 // ── Tab switching ─────────────────────────────────────────────
@@ -734,6 +833,9 @@ document.addEventListener("click", () => (userMenu.style.display = "none"));
 // Menu actions
 document.getElementById("logoutBtn").addEventListener("click", handleLogout);
 document
+  .getElementById("deleteAccountBtn")
+  .addEventListener("click", handleDeleteAccount);
+document
   .getElementById("exportCsvBtn")
   .addEventListener("click", () => handleExport("csv"));
 document
@@ -801,14 +903,6 @@ document.querySelectorAll(".popup-pro-btn, .popup-team-btn").forEach((btn) => {
 const teamView = document.getElementById("teamView");
 let unsubShared = null;
 
-// Update showView to include teamView
-function showView(view) {
-  [authView, mainView, upgradeView, teamView].forEach(
-    (v) => (v.style.display = "none"),
-  );
-  view.style.display = "flex";
-}
-
 document
   .getElementById("backFromTeam")
   .addEventListener("click", () => showView(mainView));
@@ -822,12 +916,10 @@ async function openTeamView() {
   const manageSection = document.getElementById("teamManageSection");
 
   if (!userProfile?.teamId) {
-    // No team yet — show create form
     createSection.style.display = "";
     manageSection.style.display = "none";
     document.getElementById("teamViewTitle").textContent = "Create Team";
   } else {
-    // Has team — load it
     createSection.style.display = "none";
     manageSection.style.display = "";
     document.getElementById("teamViewTitle").textContent = "Team";
@@ -842,42 +934,44 @@ async function loadTeamData(teamId) {
     if (!teamDoc.exists) return;
 
     const team = teamDoc.data();
+    const isOwner = team.ownerId === userProfile.uid;
+
+    // Update role from team document
+    userProfile.role = isOwner ? "owner" : "member";
+
     document.getElementById("teamNameDisplay").textContent = team.name;
-    document.getElementById("teamRoleDisplay").textContent =
-      team.ownerId === userProfile.uid ? "Owner" : "Member";
+    document.getElementById("teamRoleDisplay").textContent = isOwner
+      ? "Owner"
+      : "Member";
 
-    // Show invite section only to owner
-    document.getElementById("inviteSection").style.display =
-      team.ownerId === userProfile.uid ? "" : "none";
+    // Show invite section ONLY for owner
+    document.getElementById("inviteSection").style.display = isOwner
+      ? ""
+      : "none";
+    document.getElementById("inviteLinkWrap").style.display = "none";
 
-    // Load member emails
+    // Display members from the team doc directly (no extra user doc fetches needed)
     const membersList = document.getElementById("membersList");
-    membersList.innerHTML =
-      '<div style="font-size:11px;color:var(--qk-muted);padding:4px 0">Loading members…</div>';
+    const members =
+      team.members ||
+      team.memberIds.map((uid) => ({
+        uid,
+        email: uid,
+        role: uid === team.ownerId ? "owner" : "member",
+      }));
 
-    const memberEmails = await Promise.all(
-      team.memberIds.map((uid) =>
-        db
-          .collection("users")
-          .doc(uid)
-          .get()
-          .then((d) => ({
-            email: d.data()?.email || uid,
-            isOwner: uid === team.ownerId,
-          })),
-      ),
-    );
-
-    membersList.innerHTML = memberEmails
-      .map(
-        (m) => `
-      <div class="qk-member-row">
-        <span class="qk-member-email">${escapeHtml(m.email)}</span>
-        <span class="qk-member-role">${m.isOwner ? "Owner" : "Member"}</span>
-      </div>
-    `,
-      )
-      .join("");
+    membersList.innerHTML = members.length
+      ? members
+          .map(
+            (m) => `
+          <div class="qk-member-row">
+            <span class="qk-member-email">${escapeHtml(m.email)}</span>
+            <span class="qk-member-role">${m.role === "owner" ? "Owner" : "Member"}</span>
+          </div>
+        `,
+          )
+          .join("")
+      : '<div style="font-size:11px;color:var(--qk-muted);padding:4px 0">No members yet.</div>';
   } catch (err) {
     console.error("[QuickKeep] Team load error:", err);
     showToast("Failed to load team", "error");
@@ -898,11 +992,14 @@ document.getElementById("createTeamBtn").addEventListener("click", async () => {
   btn.disabled = true;
 
   try {
-    // Create team document
+    // Create team document — store emails directly for easy access
     const teamRef = await db.collection("teams").add({
       name: teamName,
       ownerId: userProfile.uid,
       memberIds: [userProfile.uid],
+      members: [
+        { uid: userProfile.uid, email: userProfile.email, role: "owner" },
+      ],
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     });
 
@@ -975,81 +1072,9 @@ document.getElementById("copyInviteLinkBtn").addEventListener("click", () => {
   });
 });
 
-// ── Toggle shared entries ─────────────────────────────────────
-let sharedLoaded = false;
-document
-  .getElementById("toggleSharedBtn")
-  .addEventListener("click", async () => {
-    const sharedList = document.getElementById("sharedEntriesList");
-    const isVisible = sharedList.style.display !== "none";
+// toggleSharedBtn removed — shared saves now shown in Team tab on main view
 
-    if (isVisible) {
-      sharedList.style.display = "none";
-      document.getElementById("toggleSharedBtn").textContent = "View";
-      if (unsubShared) {
-        unsubShared();
-        unsubShared = null;
-      }
-      return;
-    }
-
-    sharedList.style.display = "";
-    document.getElementById("toggleSharedBtn").textContent = "Hide";
-    sharedList.innerHTML =
-      '<div style="padding:8px 16px;font-size:11px;color:var(--qk-muted)">Loading…</div>';
-
-    if (!userProfile?.teamId) return;
-
-    unsubShared = db
-      .collection("entries")
-      .where("teamId", "==", userProfile.teamId)
-      .orderBy("savedAt", "desc")
-      .limit(20)
-      .onSnapshot((snap) => {
-        if (snap.empty) {
-          sharedList.innerHTML =
-            '<div style="padding:8px 16px;font-size:11px;color:var(--qk-muted)">No shared saves yet.</div>';
-          return;
-        }
-        sharedList.innerHTML = snap.docs
-          .map((d) => {
-            const e = d.data();
-            return `
-          <div class="qk-shared-entry" style="cursor:pointer" onclick="chrome.tabs.create({url:'${escapeHtml(e.url)}'})">
-            <div class="qk-shared-entry-title">${escapeHtml(e.title || "Untitled")}</div>
-            <div class="qk-shared-entry-url">${escapeHtml(new URL(e.url).hostname.replace(/^www\./, ""))}</div>
-          </div>
-        `;
-          })
-          .join("");
-      });
-  });
-
-// ── Add Team button to user menu ──────────────────────────────
-const teamMenuBtn = document.createElement("button");
-teamMenuBtn.className = "qk-menu-item";
-teamMenuBtn.id = "teamMenuBtn";
-teamMenuBtn.innerHTML = `
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-       stroke-linecap="round" stroke-linejoin="round" width="13" height="13">
-    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-    <circle cx="9" cy="7" r="4"/>
-    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-  </svg>
-  Team
-  <span class="qk-pro-tag">Team</span>
-`;
-teamMenuBtn.addEventListener("click", () => {
-  if (userProfile?.plan !== "team") {
-    showToast("Team plan required", "error");
-    userMenu.style.display = "none";
-    showView(upgradeView);
-    return;
-  }
+// ── Team button in user menu ──────────────────────────────────
+document.getElementById("teamMenuBtn").addEventListener("click", () => {
   openTeamView();
 });
-
-// Insert team button before the divider above logout
-const menuDividers = userMenu.querySelectorAll(".qk-menu-divider");
-userMenu.insertBefore(teamMenuBtn, menuDividers[menuDividers.length - 1]);

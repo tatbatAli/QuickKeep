@@ -220,12 +220,21 @@ exports.acceptInvite = functions.https.onCall(async (data, context) => {
   const teamId = invite.data().teamId;
   const uid = context.auth.uid;
 
-  // Add user to team memberIds array
+  // Get user email to store in team members array
+  const userDoc = await db.collection("users").doc(uid).get();
+  const email = userDoc.data()?.email || context.auth.token.email || "";
+
+  // Add user to team memberIds array and members array
   await db
     .collection("teams")
     .doc(teamId)
     .update({
       memberIds: admin.firestore.FieldValue.arrayUnion(uid),
+      members: admin.firestore.FieldValue.arrayUnion({
+        uid,
+        email,
+        role: "member",
+      }),
     });
 
   // Update user record
@@ -239,4 +248,78 @@ exports.acceptInvite = functions.https.onCall(async (data, context) => {
   await invite.ref.update({ accepted: true });
 
   return { teamId };
+});
+
+// ── Cloud Function: deleteAccount ─────────────────────────────
+// Cancels Paddle subscription, deletes all Firestore data,
+// and deletes the Firebase Auth user.
+exports.deleteAccount = functions.https.onCall(async (data, context) => {
+  if (!context.auth) {
+    throw new functions.https.HttpsError(
+      "unauthenticated",
+      "Must be logged in.",
+    );
+  }
+
+  const uid = context.auth.uid;
+
+  // 1. Get user profile to find Paddle subscription ID
+  const userDoc = await db.collection("users").doc(uid).get();
+  const userData = userDoc.data() || {};
+  const paddleSubId = userData.paddleSubId;
+
+  // 2. Cancel Paddle subscription if exists
+  if (paddleSubId) {
+    try {
+      const paddleApiKey = process.env.PADDLE_API_KEY;
+      const response = await fetch(
+        `https://api.paddle.com/subscriptions/${paddleSubId}/cancel`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${paddleApiKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ effective_from: "immediately" }),
+        },
+      );
+      if (!response.ok) {
+        const err = await response.json();
+        functions.logger.error("[deleteAccount] Paddle cancel error:", err);
+        // Don't throw — still delete the account even if Paddle call fails
+      } else {
+        functions.logger.info(
+          "[deleteAccount] Paddle subscription cancelled:",
+          paddleSubId,
+        );
+      }
+    } catch (err) {
+      functions.logger.error("[deleteAccount] Paddle API error:", err);
+      // Continue with deletion even if Paddle fails
+    }
+  }
+
+  // 3. Delete all user's entries in batches
+  const entriesSnap = await db
+    .collection("entries")
+    .where("userId", "==", uid)
+    .get();
+
+  const batchSize = 400;
+  for (let i = 0; i < entriesSnap.docs.length; i += batchSize) {
+    const batch = db.batch();
+    entriesSnap.docs
+      .slice(i, i + batchSize)
+      .forEach((d) => batch.delete(d.ref));
+    await batch.commit();
+  }
+
+  // 4. Delete user Firestore document
+  await db.collection("users").doc(uid).delete();
+
+  // 5. Delete Firebase Auth user
+  await admin.auth().deleteUser(uid);
+
+  functions.logger.info("[deleteAccount] Account deleted:", uid);
+  return { success: true };
 });
