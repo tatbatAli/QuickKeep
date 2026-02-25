@@ -390,17 +390,74 @@ function renderTeamList(entries) {
   }
 
   const isOwner = userProfile && userProfile.role === "owner";
+  const myUid = window._qkUserUid || "";
+  const myEmail = window._qkUserEmail || "";
+
+  // Reaction definitions — SVG icons with colors
+  const REACTIONS = [
+    {
+      key: "mustsave",
+      title: "Must Save!",
+      color: "#f59e0b",
+      svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>`,
+    },
+    {
+      key: "meh",
+      title: "Meh 🥱",
+      color: "#94a3b8",
+      svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M8 12h8"/><circle cx="12" cy="12" r="10"/><path d="M8 9h.01M16 9h.01"/></svg>`,
+    },
+    {
+      key: "mindblown",
+      title: "Mind Blown 🤯",
+      color: "#f97316",
+      svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>`,
+    },
+    {
+      key: "watching",
+      title: "Watching 👀",
+      color: "#38bdf8",
+      svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>`,
+    },
+  ];
 
   container.innerHTML = entries
-    .map(
-      (e) => `
+    .map((e) => {
+      // Extract "saved by" name from email
+      const savedByEmail = e.savedByEmail || "";
+      const savedByName = savedByEmail ? savedByEmail.split("@")[0] : "";
+
+      // Build reactions row
+      const reactions = e.reactions || {
+        lightning: [],
+        diamond: [],
+        rocket: [],
+        brain: [],
+      };
+      const reactionsHtml = REACTIONS.map((r) => {
+        const uids = reactions[r.key] || [];
+        const count = uids.length;
+        const reacted = uids.includes(myUid);
+        return `<button class="qk-reaction-btn ${reacted ? "reacted" : ""}"
+                data-entry="${e.id}" data-key="${r.key}"
+                data-color="${r.color}" title="${r.title}"
+                style="${reacted ? `--r-color:${r.color}` : ""}">
+        ${r.svg}
+        ${count > 0 ? `<span class="qk-reaction-count">${count}</span>` : ""}
+      </button>`;
+      }).join("");
+
+      return `
     <div class="qk-entry" data-id="${e.id}">
       <div class="qk-entry-top">
         <div class="qk-entry-info" style="flex:1;min-width:0;">
           <div class="qk-entry-title" style="cursor:default;">
             ${escapeHtml(e.title || shortUrl(e.url))}
           </div>
-          <div class="qk-entry-url">${escapeHtml(shortUrl(e.url))}</div>
+          <div class="qk-entry-meta">
+            <span class="qk-entry-url">${escapeHtml(shortUrl(e.url))}</span>
+            ${savedByName ? `<span class="qk-saved-by">by ${escapeHtml(savedByName)}</span>` : ""}
+          </div>
         </div>
         <div class="qk-entry-actions">
           <span class="qk-entry-date" style="font-size:10px;color:var(--qk-muted);align-self:center;">${formatDate(e.savedAt)}</span>
@@ -424,9 +481,9 @@ function renderTeamList(entries) {
         </div>
       </div>
       ${e.note ? `<div class="qk-entry-note">${escapeHtml(e.note)}</div>` : ""}
-    </div>
-  `,
-    )
+      <div class="qk-reactions-row">${reactionsHtml}</div>
+    </div>`;
+    })
     .join("");
 
   // Open button handlers
@@ -454,6 +511,46 @@ function renderTeamList(entries) {
       });
     });
   }
+
+  // Reaction button handlers
+  container.querySelectorAll(".qk-reaction-btn").forEach((btn) => {
+    btn.addEventListener("click", async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const entryId = btn.dataset.entry;
+      const key = btn.dataset.key;
+      const color = btn.dataset.color;
+      const reacted = btn.classList.contains("reacted");
+
+      // Bounce animation
+      btn.classList.add("qk-reaction-bounce");
+      setTimeout(() => btn.classList.remove("qk-reaction-bounce"), 400);
+
+      try {
+        const allKeys = ["mustsave", "meh", "mindblown", "watching"];
+        const batch = {};
+
+        if (reacted) {
+          // Already reacted — remove it (toggle off)
+          batch[`reactions.${key}`] =
+            firebase.firestore.FieldValue.arrayRemove(myUid);
+        } else {
+          // Remove from all other keys first, then add to this one
+          allKeys.forEach((k) => {
+            batch[`reactions.${k}`] =
+              firebase.firestore.FieldValue.arrayRemove(myUid);
+          });
+          batch[`reactions.${key}`] =
+            firebase.firestore.FieldValue.arrayUnion(myUid);
+        }
+
+        await db.collection("entries").doc(entryId).update(batch);
+      } catch (err) {
+        console.error("[QuickKeep] Reaction error:", err);
+        showToast("Failed to react", "error");
+      }
+    });
+  });
 }
 
 // ── Tab switching ─────────────────────────────────────────────
@@ -660,6 +757,8 @@ async function initMain(user) {
     });
 
     userEmailEl.textContent = userProfile.email || user.email;
+    window._qkUserEmail = userProfile.email || user.email;
+    window._qkUserUid = user.uid;
     updatePlanUI(userProfile.plan || "free");
     startEntriesListener(user.uid);
 
@@ -1038,6 +1137,16 @@ document.getElementById("sendInviteBtn").addEventListener("click", async () => {
   btn.disabled = true;
 
   try {
+    // Check current member count — cap at 5 (owner + 4 members)
+    const teamDoc = await db.collection("teams").doc(userProfile.teamId).get();
+    const memberCount = teamDoc.data()?.memberIds?.length || 1;
+    if (memberCount >= 5) {
+      showToast("Team is full — max 5 members", "error");
+      btn.textContent = "Send Invite";
+      btn.disabled = false;
+      return;
+    }
+
     const token = Math.random().toString(36).slice(2) + Date.now().toString(36);
 
     await db.collection("invites").add({

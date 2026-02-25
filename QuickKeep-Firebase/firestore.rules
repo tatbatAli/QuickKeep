@@ -59,8 +59,20 @@ service cloud.firestore {
       allow create: if isAuth()
         && request.resource.data.userId == request.auth.uid;
 
-      // Updating or deleting — must be the original saver OR team owner
-      allow update, delete: if isAuth() && (
+      // Updating — original saver or team owner can update anything
+      // Any team member can update reactions only
+      allow update: if isAuth() && (
+        resource.data.userId == request.auth.uid ||
+        (resource.data.teamId != null &&
+         resource.data.teamId == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.teamId &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'owner') ||
+        (resource.data.teamId != null &&
+         resource.data.teamId == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.teamId &&
+         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions']))
+      );
+
+      // Deleting — original saver or team owner only
+      allow delete: if isAuth() && (
         resource.data.userId == request.auth.uid ||
         (resource.data.teamId != null &&
          resource.data.teamId == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.teamId &&

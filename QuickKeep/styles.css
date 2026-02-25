@@ -1549,3 +1549,124 @@ body.qk-popup {
   opacity: 1;
   background: rgba(248, 113, 113, 0.1) !important;
 }
+
+/* ── Saved By label ── */
+.qk-entry-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+}
+.qk-saved-by {
+  font-size: 10px;
+  color: #6366f1;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+/* ── Reactions row ── */
+.qk-reactions-row {
+  display: flex;
+  gap: 4px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.qk-reaction-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--qk-muted);
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+.qk-reaction-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: var(--qk-text);
+  transform: translateY(-1px);
+}
+.qk-reaction-btn.reacted {
+  background: rgba(var(--r-color), 0.12);
+  border-color: var(--r-color);
+  color: var(--r-color);
+  box-shadow: 0 0 8px rgba(var(--r-color), 0.2);
+}
+.qk-reaction-btn.reacted svg {
+  stroke: var(--r-color);
+}
+
+/* Fix: use filter for glow since CSS var in rgba doesn't work directly */
+.qk-reaction-btn[data-key="mustsave"].reacted {
+  background: rgba(245, 158, 11, 0.12);
+  border-color: #f59e0b;
+  color: #f59e0b;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.25);
+}
+.qk-reaction-btn[data-key="mustsave"].reacted svg {
+  stroke: #f59e0b;
+}
+
+.qk-reaction-btn[data-key="meh"].reacted {
+  background: rgba(148, 163, 184, 0.12);
+  border-color: #94a3b8;
+  color: #94a3b8;
+  box-shadow: 0 0 8px rgba(148, 163, 184, 0.25);
+}
+.qk-reaction-btn[data-key="meh"].reacted svg {
+  stroke: #94a3b8;
+}
+
+.qk-reaction-btn[data-key="mindblown"].reacted {
+  background: rgba(249, 115, 22, 0.12);
+  border-color: #f97316;
+  color: #f97316;
+  box-shadow: 0 0 8px rgba(249, 115, 22, 0.25);
+}
+.qk-reaction-btn[data-key="mindblown"].reacted svg {
+  stroke: #f97316;
+}
+
+.qk-reaction-btn[data-key="watching"].reacted {
+  background: rgba(56, 189, 248, 0.12);
+  border-color: #38bdf8;
+  color: #38bdf8;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.25);
+}
+.qk-reaction-btn[data-key="watching"].reacted svg {
+  stroke: #38bdf8;
+}
+
+.qk-reaction-count {
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Bounce animation on click */
+@keyframes qk-reaction-pop {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.3);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.qk-reaction-bounce {
+  animation: qk-reaction-pop 0.35s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
