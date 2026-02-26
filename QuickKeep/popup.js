@@ -221,6 +221,10 @@ async function handleDeleteAccount() {
       unsubTeamEntries();
       unsubTeamEntries = null;
     }
+    if (unsubActivity) {
+      unsubActivity();
+      unsubActivity = null;
+    }
 
     userProfile = null;
     currentEntries = [];
@@ -294,12 +298,26 @@ function renderList(entries) {
       <div class="qk-entry-meta">${formatDate(entry.savedAt)}</div>
     `;
 
-    card
-      .querySelector(".qk-entry-info")
-      .addEventListener("click", () => chrome.tabs.create({ url: entry.url }));
-    card
-      .querySelector(".qk-icon-btn.open")
-      .addEventListener("click", () => chrome.tabs.create({ url: entry.url }));
+    card.querySelector(".qk-entry-info").addEventListener("click", () => {
+      chrome.tabs.create({ url: entry.url });
+      if (!isGuest)
+        db.collection("entries")
+          .doc(entry.id)
+          .update({
+            lastOpenedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          })
+          .catch(() => {});
+    });
+    card.querySelector(".qk-icon-btn.open").addEventListener("click", () => {
+      chrome.tabs.create({ url: entry.url });
+      if (!isGuest)
+        db.collection("entries")
+          .doc(entry.id)
+          .update({
+            lastOpenedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          })
+          .catch(() => {});
+    });
     card
       .querySelector(".qk-icon-btn.delete")
       .addEventListener("click", async () => {
@@ -376,6 +394,81 @@ function startTeamEntriesListener(teamId) {
         console.error("[QuickKeep] Team listener error:", err);
       },
     );
+}
+
+// ── Activity Feed ─────────────────────────────────────────────
+let unsubActivity = null;
+
+function startActivityListener(teamId) {
+  if (unsubActivity) unsubActivity();
+
+  unsubActivity = db
+    .collection("activity")
+    .where("teamId", "==", teamId)
+    .orderBy("createdAt", "desc")
+    .limit(10)
+    .onSnapshot(
+      (snap) => {
+        const events = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        renderActivityFeed(events);
+      },
+      (err) => {
+        console.error("[QuickKeep] Activity listener error:", err);
+      },
+    );
+}
+
+function renderActivityFeed(events) {
+  const bar = document.getElementById("activityBar");
+  const barText = document.getElementById("activityBarText");
+  if (!bar || !barText) return;
+
+  // Always show bar when on team tab
+  if (activeTab === "team") bar.style.display = "flex";
+
+  if (!events.length) {
+    barText.innerHTML = "No activity yet — save something to the group!";
+    return;
+  }
+
+  // Show the most recent event
+  const ev = events[0];
+  const name = ev.actorEmail ? ev.actorEmail.split("@")[0] : "Someone";
+  const time = ev.createdAt
+    ? timeAgo(
+        ev.createdAt.toDate ? ev.createdAt.toDate() : new Date(ev.createdAt),
+      )
+    : "";
+  const reactionEmoji = {
+    mustsave: "🔖",
+    meh: "😑",
+    mindblown: "🤯",
+    watching: "👀",
+  };
+
+  let text;
+  if (ev.type === "save") {
+    text = `<strong>${escapeHtml(name)}</strong> saved "${escapeHtml(ev.title || "a page")}" — ${time}`;
+  } else if (ev.type === "reaction") {
+    const emoji = reactionEmoji[ev.reaction] || "👍";
+    text = `<strong>${escapeHtml(name)}</strong> reacted ${emoji} to "${escapeHtml(ev.title || "a save")}" — ${time}`;
+  }
+
+  if (text) {
+    barText.innerHTML = text;
+    barText.style.animation = "none";
+    barText.offsetHeight; // force reflow
+    barText.style.animation = "";
+  }
+}
+
+// ── Time ago helper ───────────────────────────────────────────
+function timeAgo(date) {
+  const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
+  if (seconds < 60) return "just now";
+  if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+  return `${Math.floor(seconds / 86400)}d ago`;
 }
 
 function renderTeamList(entries) {
@@ -491,6 +584,14 @@ function renderTeamList(entries) {
     btn.addEventListener("click", (e) => {
       e.preventDefault();
       chrome.tabs.create({ url: btn.dataset.url });
+      const entryId = btn.closest(".qk-entry")?.dataset.id;
+      if (entryId)
+        db.collection("entries")
+          .doc(entryId)
+          .update({
+            lastOpenedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          })
+          .catch(() => {});
     });
   });
 
@@ -545,6 +646,27 @@ function renderTeamList(entries) {
         }
 
         await db.collection("entries").doc(entryId).update(batch);
+
+        // Log reaction activity (only when adding, not removing)
+        if (!reacted) {
+          db.collection("activity")
+            .add({
+              teamId: userProfile.teamId,
+              type: "reaction",
+              actorEmail: window._qkUserEmail || "",
+              actorUid: myUid,
+              reaction: key,
+              title:
+                document
+                  .querySelector(
+                    `.qk-entry[data-id="${entryId}"] .qk-entry-title`,
+                  )
+                  ?.textContent?.trim() || "a save",
+              entryId,
+              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            })
+            .catch(() => {});
+        }
       } catch (err) {
         console.error("[QuickKeep] Reaction error:", err);
         showToast("Failed to react", "error");
@@ -560,6 +682,7 @@ document.getElementById("tabMySaves").addEventListener("click", () => {
   document.getElementById("tabTeamSaves").classList.remove("active");
   document.getElementById("listContainer").style.display = "";
   document.getElementById("teamListContainer").style.display = "none";
+  document.getElementById("activityBar").style.display = "none";
   const q = searchInput.value.trim();
   renderList(q ? searchEntries(currentEntries, q) : currentEntries);
 });
@@ -570,6 +693,7 @@ document.getElementById("tabTeamSaves").addEventListener("click", () => {
   document.getElementById("tabMySaves").classList.remove("active");
   document.getElementById("listContainer").style.display = "none";
   document.getElementById("teamListContainer").style.display = "";
+  document.getElementById("activityBar").style.display = "flex";
   renderTeamList(currentTeamEntries);
 });
 
@@ -765,6 +889,7 @@ async function initMain(user) {
     // Start team listener if user is on team plan and has a team
     if (userProfile.plan === "team" && userProfile.teamId) {
       startTeamEntriesListener(userProfile.teamId);
+      startActivityListener(userProfile.teamId);
     }
   } else {
     // Guest mode
@@ -899,8 +1024,21 @@ document.getElementById("saveTeamBtn").addEventListener("click", async () => {
       url: tab.url,
       title: tab.title,
       note,
-      teamId: userProfile.teamId, // ← saves to team collection
+      teamId: userProfile.teamId,
     });
+
+    // Log activity event
+    db.collection("activity")
+      .add({
+        teamId: userProfile.teamId,
+        type: "save",
+        actorEmail: window._qkUserEmail || "",
+        actorUid: userProfile.uid,
+        title: tab.title || shortUrl(tab.url),
+        url: tab.url,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      })
+      .catch(() => {});
 
     noteInput.value = "";
     showToast("Saved to team!");

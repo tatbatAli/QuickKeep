@@ -3,12 +3,94 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>QuickKeep — Privacy Policy</title>
+
+    <!-- ═══ PRIMARY SEO ═══ -->
+    <title>QuickKeep — Save Any Page Instantly | Chrome Extension</title>
+    <meta
+      name="description"
+      content="QuickKeep is the Chrome extension that saves any webpage, video, or article in one click. Add notes, sync across devices with Pro, and share links with your team. Free to start."
+    />
+    <meta
+      name="keywords"
+      content="chrome extension save pages, bookmark manager chrome, save webpage extension, read later chrome, link saver extension, tab manager chrome, save articles chrome, team bookmark sharing, productivity chrome extension"
+    />
+    <meta name="author" content="QuickKeep" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://usequickkeep.netlify.app/" />
+
+    <!-- ═══ OPEN GRAPH (Facebook, LinkedIn) ═══ -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://usequickkeep.netlify.app/" />
+    <meta property="og:title" content="QuickKeep — Save Any Page Instantly" />
+    <meta
+      property="og:description"
+      content="Stop losing important pages. Save anything in one click, add a note, and find it instantly. Free Chrome extension."
+    />
+    <meta
+      property="og:image"
+      content="https://usequickkeep.netlify.app/og-image.png"
+    />
+    <meta property="og:site_name" content="QuickKeep" />
+
+    <!-- ═══ TWITTER CARD ═══ -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="QuickKeep — Save Any Page Instantly" />
+    <meta
+      name="twitter:description"
+      content="Stop losing important pages. Save anything in one click, add a note, and find it instantly. Free Chrome extension."
+    />
+    <meta
+      name="twitter:image"
+      content="https://usequickkeep.netlify.app/og-image.png"
+    />
+
+    <!-- ═══ STRUCTURED DATA (JSON-LD) ═══ -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "QuickKeep",
+        "operatingSystem": "Chrome",
+        "applicationCategory": "BrowserApplication",
+        "description": "Save any webpage, video, or article in one click. Add notes, sync across devices, and share with your team.",
+        "offers": [
+          {
+            "@type": "Offer",
+            "name": "Free",
+            "price": "0",
+            "priceCurrency": "USD"
+          },
+          {
+            "@type": "Offer",
+            "name": "Pro",
+            "price": "3.99",
+            "priceCurrency": "USD",
+            "billingIncrement": "P1M"
+          },
+          {
+            "@type": "Offer",
+            "name": "Team",
+            "price": "13.99",
+            "priceCurrency": "USD",
+            "billingIncrement": "P1M"
+          }
+        ],
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "5",
+          "reviewCount": "3"
+        }
+      }
+    </script>
+
+    <!-- ═══ FONTS ═══ -->
+    <!-- Paddle.js -->
     <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
 
@@ -22,7 +104,7 @@
       }
 
       :root {
-        --ink: #0b0b10;
+        --ink: #080810;
         --violet: #6366f1;
         --violet-mid: #7c7ff5;
         --violet-hi: #a5b4fc;
@@ -31,17 +113,16 @@
         --rule: rgba(255, 255, 255, 0.07);
         --t1: #f0f0f8;
         --t2: #9898b8;
-        --t3: #55556e;
+        --t3: #44445a;
+        --gold: #f59e0b;
         --ff-display: "Instrument Serif", Georgia, serif;
         --ff-body: "Geist", system-ui, sans-serif;
         --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
-        --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
       }
 
       html {
         scroll-behavior: smooth;
       }
-
       body {
         font-family: var(--ff-body);
         background: var(--ink);
@@ -50,7 +131,6 @@
         -webkit-font-smoothing: antialiased;
         overflow-x: hidden;
       }
-
       ::selection {
         background: rgba(99, 102, 241, 0.3);
         color: var(--t1);
@@ -62,35 +142,35 @@
         inset: -50%;
         width: 200%;
         height: 200%;
-        opacity: 0.03;
+        opacity: 0.025;
         background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
         pointer-events: none;
         z-index: 0;
       }
-      .bg-halo-top {
+      .bg-halo {
         position: fixed;
-        top: -20vh;
+        top: -30vh;
         left: 50%;
         transform: translateX(-50%);
-        width: 900px;
-        height: 500px;
+        width: 1100px;
+        height: 600px;
         background: radial-gradient(
           ellipse,
-          rgba(99, 102, 241, 0.13) 0%,
+          rgba(99, 102, 241, 0.15) 0%,
           transparent 70%
         );
         pointer-events: none;
         z-index: 0;
       }
-      .bg-halo-btm {
+      .bg-halo-2 {
         position: fixed;
-        bottom: 5vh;
-        right: -10vw;
-        width: 500px;
-        height: 500px;
+        bottom: -10vh;
+        right: -15vw;
+        width: 600px;
+        height: 600px;
         background: radial-gradient(
           ellipse,
-          rgba(139, 92, 246, 0.06) 0%,
+          rgba(139, 92, 246, 0.07) 0%,
           transparent 65%
         );
         pointer-events: none;
@@ -100,56 +180,70 @@
         position: fixed;
         inset: 0;
         background-image: radial-gradient(
-          rgba(255, 255, 255, 0.055) 1px,
+          rgba(255, 255, 255, 0.04) 1px,
           transparent 1px
         );
-        background-size: 28px 28px;
+        background-size: 32px 32px;
         pointer-events: none;
         z-index: 0;
         mask-image: radial-gradient(
-          ellipse 85% 85% at 50% 50%,
+          ellipse 90% 90% at 50% 50%,
           black 20%,
           transparent 100%
         );
         -webkit-mask-image: radial-gradient(
-          ellipse 85% 85% at 50% 50%,
+          ellipse 90% 90% at 50% 50%,
           black 20%,
           transparent 100%
         );
       }
 
-      /* ── Reading bar ── */
-      #rbar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        height: 2px;
-        width: 0%;
-        background: linear-gradient(90deg, var(--violet), var(--violet-hi));
-        z-index: 1000;
-        box-shadow: 0 0 12px rgba(99, 102, 241, 0.5);
-        transition: width 0.08s linear;
-      }
-
       /* ── Layout ── */
-      .page {
+      .wrap {
         position: relative;
         z-index: 1;
-        max-width: 700px;
+        max-width: 1100px;
         margin: 0 auto;
-        padding: 0 24px 120px;
+        padding: 0 24px;
+      }
+      section {
+        position: relative;
+        z-index: 1;
       }
 
-      /* ── Nav ── */
+      /* ── Reveal animation ── */
+      @keyframes reveal {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .reveal {
+        opacity: 0;
+        animation: reveal 0.8s var(--ease-expo) forwards;
+      }
+
+      /* ══════════════════════════════════════
+       NAV
+    ══════════════════════════════════════ */
       nav {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        background: rgba(8, 8, 16, 0.7);
+      }
+      .nav-inner {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 30px 0 0;
-        margin-bottom: 100px;
-        opacity: 0;
-        transform: translateY(-14px);
-        animation: reveal 0.7s var(--ease-expo) 0.1s forwards;
+        padding: 16px 0;
       }
       .brand {
         display: flex;
@@ -158,260 +252,409 @@
         text-decoration: none;
       }
       .brand-mark {
-        width: 36px;
-        height: 36px;
+        width: 34px;
+        height: 34px;
         background: linear-gradient(140deg, #6366f1, #4338ca);
-        border-radius: 10px;
+        border-radius: 9px;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow:
-          0 0 22px rgba(99, 102, 241, 0.45),
-          inset 0 1px 0 rgba(255, 255, 255, 0.15);
-        transition:
-          transform 0.35s var(--ease-spring),
-          box-shadow 0.3s;
-      }
-      .brand-mark:hover {
-        transform: scale(1.1) rotate(-4deg);
-        box-shadow: 0 0 36px rgba(99, 102, 241, 0.65);
-      }
-      .brand-mark svg {
-        width: 18px;
-        height: 18px;
+        box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
       }
       .brand-name {
-        font-size: 15px;
+        font-size: 16px;
         font-weight: 700;
         color: var(--t1);
-        letter-spacing: -0.3px;
+        letter-spacing: -0.02em;
       }
-      .brand-name em {
-        font-style: normal;
-        color: var(--violet-hi);
-      }
-      .nav-tag {
-        font-size: 10.5px;
-        font-weight: 600;
-        color: var(--t3);
-        background: var(--fog);
-        border: 1px solid var(--rule);
-        padding: 5px 13px;
-        border-radius: 20px;
-        text-transform: uppercase;
-        letter-spacing: 0.6px;
-      }
-
-      .nav-legal-links {
+      .nav-links {
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 28px;
       }
-      .nav-legal-link {
-        font-size: 11px;
-        font-weight: 600;
-        color: var(--t3);
-        background: var(--fog);
-        border: 1px solid var(--rule);
-        padding: 5px 12px;
-        border-radius: 20px;
+      .nav-links a {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--t2);
         text-decoration: none;
-        letter-spacing: 0.4px;
-        transition:
-          color 0.2s,
-          border-color 0.2s;
+        transition: color 0.2s;
       }
-      .nav-legal-link:hover {
-        color: var(--violet-hi);
-        border-color: rgba(99, 102, 241, 0.3);
+      .nav-links a:hover {
+        color: var(--t1);
+      }
+      .nav-cta {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 18px;
+        border-radius: 10px;
+        background: var(--violet);
+        color: #fff !important;
+        font-weight: 600 !important;
+        font-size: 13px !important;
+        transition:
+          background 0.2s,
+          transform 0.2s,
+          box-shadow 0.2s !important;
+        box-shadow: 0 0 20px rgba(99, 102, 241, 0.35);
+      }
+      .nav-cta:hover {
+        background: #5254e7 !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 24px rgba(99, 102, 241, 0.5) !important;
+      }
+      @media (max-width: 640px) {
+        .nav-links {
+          display: none;
+        }
       }
 
-      /* ── Hero ── */
+      /* ══════════════════════════════════════
+       HERO
+    ══════════════════════════════════════ */
       .hero {
         text-align: center;
-        margin-bottom: 70px;
+        padding: 100px 0 80px;
       }
-
       .hero-badge {
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        font-size: 11px;
+        padding: 6px 14px;
+        border-radius: 100px;
+        background: rgba(99, 102, 241, 0.1);
+        border: 1px solid rgba(99, 102, 241, 0.25);
+        font-size: 12px;
         font-weight: 600;
         color: var(--violet-hi);
-        background: rgba(99, 102, 241, 0.09);
-        border: 1px solid rgba(99, 102, 241, 0.22);
-        padding: 6px 14px;
-        border-radius: 20px;
-        letter-spacing: 0.7px;
+        letter-spacing: 0.04em;
         text-transform: uppercase;
         margin-bottom: 28px;
-        opacity: 0;
-        transform: translateY(10px) scale(0.95);
-        animation: reveal 0.65s var(--ease-expo) 0.25s forwards;
+        animation: reveal 0.6s var(--ease-expo) 0.1s both;
       }
-      .pulse-dot {
-        width: 6px;
-        height: 6px;
+      .pulse {
+        width: 7px;
+        height: 7px;
+        background: #4ade80;
         border-radius: 50%;
-        background: var(--violet-hi);
-        position: relative;
-      }
-      .pulse-dot::after {
-        content: "";
-        position: absolute;
-        inset: -3px;
-        border-radius: 50%;
-        border: 1px solid var(--violet-hi);
-        opacity: 0;
-        animation: pulse 2s ease-out infinite;
+        animation: pulse 2s infinite;
       }
       @keyframes pulse {
-        0% {
-          transform: scale(0.6);
-          opacity: 0.9;
-        }
+        0%,
         100% {
-          transform: scale(2.4);
-          opacity: 0;
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.5;
+          transform: scale(0.7);
         }
       }
 
-      h1.hero-title {
+      .hero h1 {
         font-family: var(--ff-display);
+        font-size: clamp(46px, 7vw, 84px);
         font-weight: 400;
-        font-size: clamp(40px, 7vw, 60px);
         color: var(--t1);
         line-height: 1.1;
-        letter-spacing: -1.5px;
-        margin-bottom: 20px;
-        opacity: 0;
-        transform: translateY(20px);
-        animation: reveal 0.8s var(--ease-expo) 0.38s forwards;
+        letter-spacing: -0.02em;
+        margin-bottom: 24px;
+        animation: reveal 0.7s var(--ease-expo) 0.2s both;
       }
-      h1.hero-title em {
+      .hero h1 em {
         font-style: italic;
-        color: transparent;
-        background: linear-gradient(
-          125deg,
-          var(--violet-mid),
-          var(--violet-hi)
-        );
-        -webkit-background-clip: text;
-        background-clip: text;
+        color: var(--violet-hi);
+      }
+      .hero h1 .strike {
+        position: relative;
+        color: var(--t3);
+      }
+      .hero h1 .strike::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 50%;
+        width: 100%;
+        height: 2px;
+        background: var(--violet);
+        transform: translateY(-50%);
       }
 
       .hero-sub {
-        font-size: 16px;
-        font-weight: 300;
-        color: var(--t2);
-        max-width: 460px;
-        margin: 0 auto 0;
-        line-height: 1.8;
-        opacity: 0;
-        transform: translateY(16px);
-        animation: reveal 0.75s var(--ease-expo) 0.5s forwards;
-      }
-
-      /* ── Scenarios ── */
-      .scenarios {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-        margin: 44px auto 0;
         max-width: 560px;
-        opacity: 0;
-        transform: translateY(22px);
-        animation: reveal 0.8s var(--ease-expo) 0.62s forwards;
-      }
-      @media (max-width: 520px) {
-        .scenarios {
-          grid-template-columns: 1fr;
-        }
+        margin: 0 auto 40px;
+        font-size: 18px;
+        color: var(--t2);
+        line-height: 1.7;
+        animation: reveal 0.7s var(--ease-expo) 0.3s both;
       }
 
-      .scenario-card {
-        background: rgba(244, 63, 94, 0.045);
-        border: 1px solid rgba(244, 63, 94, 0.12);
-        border-radius: 14px;
-        padding: 16px 16px 16px 14px;
-        display: flex;
-        gap: 12px;
-        align-items: flex-start;
-        text-align: left;
-        transition:
-          transform 0.3s var(--ease-spring),
-          border-color 0.25s,
-          background 0.25s;
-        position: relative;
-        overflow: hidden;
-      }
-      .scenario-card::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 10%;
-        right: 10%;
-        height: 1px;
-        background: linear-gradient(
-          90deg,
-          transparent,
-          rgba(244, 63, 94, 0.35),
-          transparent
-        );
-      }
-      .scenario-card:hover {
-        transform: translateY(-3px);
-        background: rgba(244, 63, 94, 0.07);
-        border-color: rgba(244, 63, 94, 0.22);
-      }
-
-      .sc-icon {
-        flex-shrink: 0;
-        width: 32px;
-        height: 32px;
-        margin-top: 1px;
-        background: rgba(244, 63, 94, 0.1);
-        border: 1px solid rgba(244, 63, 94, 0.18);
-        border-radius: 8px;
+      .hero-actions {
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #fb7185;
-        transition: transform 0.3s var(--ease-spring);
+        gap: 12px;
+        flex-wrap: wrap;
+        animation: reveal 0.7s var(--ease-expo) 0.4s both;
       }
-      .scenario-card:hover .sc-icon {
-        transform: scale(1.1) rotate(-4deg);
+      .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 14px 28px;
+        border-radius: 12px;
+        background: var(--violet);
+        color: #fff;
+        font-size: 15px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.2s;
+        border: none;
+        cursor: pointer;
+        box-shadow:
+          0 0 30px rgba(99, 102, 241, 0.45),
+          0 4px 16px rgba(0, 0, 0, 0.3);
       }
-      .sc-icon svg {
-        width: 14px;
-        height: 14px;
+      .btn-primary:hover {
+        background: #5254e7;
+        transform: translateY(-2px);
+        box-shadow:
+          0 0 40px rgba(99, 102, 241, 0.6),
+          0 8px 24px rgba(0, 0, 0, 0.4);
       }
-
-      .sc-text {
-        font-size: 13px;
-        font-weight: 300;
-        color: var(--t2);
-        line-height: 1.7;
-        text-align: left;
-      }
-      .sc-text strong {
+      .btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 14px 24px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.05);
         color: var(--t1);
+        font-size: 15px;
         font-weight: 600;
-        display: block;
-        margin-bottom: 3px;
+        text-decoration: none;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.2s;
+      }
+      .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.2);
       }
 
-      /* ── Divider ── */
+      .hero-note {
+        margin-top: 16px;
+        font-size: 12px;
+        color: var(--t3);
+        animation: reveal 0.7s var(--ease-expo) 0.5s both;
+      }
+
+      /* ── Extension mockup ── */
+      .hero-mockup {
+        margin: 60px auto 0;
+        max-width: 340px;
+        animation: reveal 0.9s var(--ease-expo) 0.5s both;
+      }
+      .mockup-shell {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 14px;
+        box-shadow:
+          0 40px 80px rgba(0, 0, 0, 0.5),
+          0 0 60px rgba(99, 102, 241, 0.1);
+        backdrop-filter: blur(10px);
+      }
+      .mockup-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+      }
+      .mockup-logo {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .mockup-logo-mark {
+        width: 22px;
+        height: 22px;
+        background: linear-gradient(140deg, #6366f1, #4338ca);
+        border-radius: 6px;
+      }
+      .mockup-logo-name {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--t1);
+      }
+      .mockup-plan {
+        font-size: 9px;
+        font-weight: 700;
+        padding: 2px 7px;
+        border-radius: 20px;
+        background: linear-gradient(90deg, #6366f1, #8b5cf6);
+        color: #fff;
+      }
+      .mockup-input {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        padding: 8px 10px;
+        margin-bottom: 8px;
+        font-size: 11px;
+        color: var(--t3);
+        font-family: var(--ff-body);
+      }
+      .mockup-save-row {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 12px;
+      }
+      .mockup-btn {
+        flex: 1;
+        padding: 7px;
+        border-radius: 8px;
+        font-size: 11px;
+        font-weight: 600;
+        text-align: center;
+      }
+      .mockup-btn.primary {
+        background: var(--violet);
+        color: #fff;
+      }
+      .mockup-btn.secondary {
+        background: rgba(99, 102, 241, 0.15);
+        color: var(--violet-hi);
+        border: 1px solid rgba(99, 102, 241, 0.3);
+      }
+      .mockup-divider {
+        height: 1px;
+        background: var(--rule);
+        margin-bottom: 10px;
+      }
+      .mockup-entry {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 7px 8px;
+        border-radius: 8px;
+        margin-bottom: 6px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .mockup-entry-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .mockup-entry-title {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--t1);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .mockup-entry-url {
+        font-size: 9px;
+        color: var(--t3);
+        margin-top: 1px;
+      }
+      .mockup-entry-time {
+        font-size: 9px;
+        color: var(--t3);
+        flex-shrink: 0;
+        margin-left: 8px;
+      }
+
+      /* ══════════════════════════════════════
+       PROBLEM SECTION
+    ══════════════════════════════════════ */
+      .section-label {
+        text-align: center;
+        margin-bottom: 52px;
+      }
+      .section-label h2 {
+        font-family: var(--ff-display);
+        font-size: clamp(32px, 4vw, 52px);
+        font-weight: 400;
+        color: var(--t1);
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        margin-bottom: 12px;
+      }
+      .section-label h2 em {
+        font-style: italic;
+        color: var(--violet-hi);
+      }
+      .section-label p {
+        font-size: 16px;
+        color: var(--t2);
+        max-width: 480px;
+        margin: 0 auto;
+      }
+
+      .problem-section {
+        padding: 80px 0;
+      }
+      .problem-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+      }
+      @media (max-width: 768px) {
+        .problem-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (min-width: 769px) and (max-width: 1024px) {
+        .problem-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      .problem-card {
+        padding: 22px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        transition:
+          border-color 0.2s,
+          background 0.2s;
+      }
+      .problem-card:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(99, 102, 241, 0.2);
+      }
+      .problem-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: rgba(248, 113, 113, 0.1);
+        border: 1px solid rgba(248, 113, 113, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 14px;
+        color: #f87171;
+      }
+      .problem-card h3 {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--t1);
+        margin-bottom: 6px;
+      }
+      .problem-card p {
+        font-size: 13px;
+        color: var(--t2);
+        line-height: 1.6;
+      }
+
+      /* Divider */
       .story-divider {
         display: flex;
         align-items: center;
-        gap: 14px;
-        margin: 44px auto;
-        max-width: 560px;
-        opacity: 0;
-        transform: translateY(16px);
-        animation: reveal 0.7s var(--ease-expo) 0.7s forwards;
+        gap: 16px;
+        padding: 0 0 60px;
+        margin-top: 20px;
       }
       .story-divider-line {
         flex: 1;
@@ -421,821 +664,598 @@
       .story-divider-badge {
         display: flex;
         align-items: center;
-        gap: 7px;
-        background: rgba(99, 102, 241, 0.1);
-        border: 1px solid rgba(99, 102, 241, 0.22);
-        color: var(--violet-hi);
-        font-size: 11px;
-        font-weight: 600;
-        padding: 7px 14px;
-        border-radius: 20px;
-        white-space: nowrap;
-        letter-spacing: 0.3px;
-      }
-
-      /* ── Solutions grid ── */
-      .solutions {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-        margin: 0 auto 52px;
-        max-width: 560px;
-        opacity: 0;
-        transform: translateY(22px);
-        animation: reveal 0.8s var(--ease-expo) 0.78s forwards;
-      }
-      @media (max-width: 520px) {
-        .solutions {
-          grid-template-columns: 1fr;
-        }
-      }
-
-      .sol-card {
-        background: rgba(99, 102, 241, 0.06);
-        border: 1px solid rgba(99, 102, 241, 0.14);
-        border-radius: 14px;
-        padding: 18px 16px 16px 14px;
-        display: flex;
-        gap: 12px;
-        align-items: flex-start;
-        text-align: left;
-        position: relative;
-        overflow: hidden;
-        transition:
-          transform 0.3s var(--ease-spring),
-          border-color 0.25s,
-          background 0.25s;
-      }
-      .sol-card::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 10%;
-        right: 10%;
-        height: 1px;
-        background: linear-gradient(
-          90deg,
-          transparent,
-          rgba(99, 102, 241, 0.5),
-          transparent
-        );
-      }
-      .sol-card:hover {
-        transform: translateY(-3px);
-        background: rgba(99, 102, 241, 0.1);
-        border-color: rgba(99, 102, 241, 0.26);
-      }
-
-      .sol-icon {
-        flex-shrink: 0;
-        width: 32px;
-        height: 32px;
-        margin-top: 1px;
+        gap: 8px;
+        padding: 8px 16px;
+        border-radius: 100px;
         background: rgba(99, 102, 241, 0.1);
         border: 1px solid rgba(99, 102, 241, 0.2);
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        font-size: 13px;
+        font-weight: 600;
         color: var(--violet-hi);
-        transition: transform 0.3s var(--ease-spring);
-      }
-      .sol-card:hover .sol-icon {
-        transform: scale(1.1) rotate(-4deg);
-      }
-      .sol-icon svg {
-        width: 14px;
-        height: 14px;
+        white-space: nowrap;
       }
 
-      .sol-title {
-        font-size: 12.5px;
-        font-weight: 600;
-        color: var(--t1);
-        margin-bottom: 5px;
-        line-height: 1.3;
+      /* ══════════════════════════════════════
+       FEATURES
+    ══════════════════════════════════════ */
+      .features-section {
+        padding: 20px 0 100px;
       }
-      .sol-body p {
-        font-size: 12.5px;
-        font-weight: 300;
-        color: var(--t2);
-        line-height: 1.7;
-        text-align: left;
-        margin: 0;
-      }
-
-      /* ── Scroll hint ── */
-      .scroll-hint {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 8px;
-        opacity: 0;
-        animation: reveal 0.7s var(--ease-expo) 0.85s forwards;
-      }
-      .scroll-hint span {
-        font-size: 10px;
-        letter-spacing: 1.5px;
-        text-transform: uppercase;
-        color: var(--t3);
-        font-weight: 600;
-      }
-      .scroll-line {
-        width: 1px;
-        height: 40px;
-        background: linear-gradient(to bottom, var(--violet), transparent);
-        animation: scroll-pulse 1.9s ease-in-out infinite;
-      }
-      @keyframes scroll-pulse {
-        0%,
-        100% {
-          transform: scaleY(0);
-          transform-origin: top;
-        }
-        45% {
-          transform: scaleY(1);
-          transform-origin: top;
-        }
-        46% {
-          transform: scaleY(1);
-          transform-origin: bottom;
-        }
-        90% {
-          transform: scaleY(0);
-          transform-origin: bottom;
-        }
-      }
-
-      /* ── Promise Cards ── */
-      .promises {
+      .features-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 12px;
-        margin-bottom: 64px;
+        gap: 14px;
       }
-      @media (max-width: 520px) {
-        .promises {
+      @media (max-width: 768px) {
+        .features-grid {
           grid-template-columns: 1fr;
         }
       }
-
-      .pc {
-        background: var(--fog);
-        border: 1px solid var(--rule);
-        border-radius: 18px;
-        padding: 24px 20px;
-        text-align: center;
-        position: relative;
-        overflow: hidden;
-        transition:
-          transform 0.35s var(--ease-spring),
-          border-color 0.25s,
-          box-shadow 0.35s;
-        opacity: 0;
-        transform: translateY(28px);
-      }
-      .pc.in {
-        animation: reveal 0.55s var(--ease-expo) forwards;
-      }
-      .pc:hover {
-        transform: translateY(-5px);
-        border-color: rgba(99, 102, 241, 0.28);
-        box-shadow:
-          0 24px 56px rgba(0, 0, 0, 0.45),
-          0 0 0 1px rgba(99, 102, 241, 0.1);
-      }
-      .pc::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(
-          135deg,
-          rgba(255, 255, 255, 0.04) 0%,
-          transparent 55%
-        );
-        opacity: 0;
-        transition: opacity 0.3s;
-      }
-      .pc:hover::before {
-        opacity: 1;
-      }
-      .pc::after {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 15%;
-        right: 15%;
-        height: 1px;
-        background: linear-gradient(
-          90deg,
-          transparent,
-          var(--violet),
-          transparent
-        );
-        opacity: 0;
-        transition: opacity 0.3s;
-      }
-      .pc:hover::after {
-        opacity: 1;
-      }
-
-      .pc-ico {
-        width: 42px;
-        height: 42px;
-        margin: 0 auto 14px;
-        background: rgba(99, 102, 241, 0.09);
-        border: 1px solid rgba(99, 102, 241, 0.18);
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition:
-          background 0.3s,
-          transform 0.35s var(--ease-spring);
-      }
-      .pc:hover .pc-ico {
-        background: rgba(99, 102, 241, 0.16);
-        transform: scale(1.12) rotate(-5deg);
-      }
-      .pc-ico svg {
-        width: 18px;
-        height: 18px;
-        stroke: var(--violet-hi);
-        fill: none;
-        stroke-width: 1.7;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-      }
-      .pc-title {
-        font-size: 13px;
-        font-weight: 600;
-        color: var(--t1);
-        margin-bottom: 5px;
-      }
-      .pc-desc {
-        font-size: 12px;
-        color: var(--t3);
-        line-height: 1.55;
-      }
-
-      /* ── Policy Shell ── */
-      .policy-shell {
-        background: var(--fog);
-        border: 1px solid var(--rule);
-        border-radius: 24px;
-        overflow: hidden;
-        position: relative;
-        opacity: 0;
-        transform: translateY(32px);
-      }
-      .policy-shell.in {
-        animation: reveal 0.7s var(--ease-expo) 0.05s forwards;
-      }
-      .policy-shell::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 8%;
-        right: 8%;
-        height: 1px;
-        background: linear-gradient(
-          90deg,
-          transparent,
-          rgba(99, 102, 241, 0.45),
-          transparent
-        );
-      }
-
-      /* ── Section ── */
-      .psec {
-        display: flex;
-        align-items: flex-start;
-        gap: 18px;
-        padding: 28px 36px;
-        border-bottom: 1px solid var(--rule);
-        position: relative;
-        transition: background 0.22s;
-        opacity: 0;
-        transform: translateX(-16px);
-      }
-      .psec.in {
-        animation: slide-in 0.5s var(--ease-expo) forwards;
-      }
-      @keyframes slide-in {
-        to {
-          opacity: 1;
-          transform: none;
-        }
-      }
-      .psec:last-child {
-        border-bottom: none;
-      }
-      .psec:hover {
-        background: rgba(255, 255, 255, 0.016);
-      }
-      .psec::before {
-        content: "";
-        position: absolute;
-        left: 0;
-        top: 25%;
-        bottom: 25%;
-        width: 2px;
-        background: linear-gradient(
-          to bottom,
-          transparent,
-          var(--violet),
-          transparent
-        );
-        border-radius: 2px;
-        opacity: 0;
-        transition:
-          opacity 0.3s,
-          top 0.3s,
-          bottom 0.3s;
-      }
-      .psec:hover::before {
-        opacity: 1;
-        top: 10%;
-        bottom: 10%;
-      }
-      @media (max-width: 520px) {
-        .psec {
-          padding: 22px 20px;
-          gap: 14px;
+      @media (min-width: 769px) and (max-width: 1024px) {
+        .features-grid {
+          grid-template-columns: repeat(2, 1fr);
         }
       }
 
-      .s-ico {
-        flex-shrink: 0;
-        width: 34px;
-        height: 34px;
-        margin-top: 1px;
-        background: rgba(99, 102, 241, 0.08);
-        border: 1px solid rgba(99, 102, 241, 0.16);
-        border-radius: 9px;
+      .feature-card {
+        padding: 24px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        transition: all 0.25s;
+      }
+      .feature-card:hover {
+        background: rgba(99, 102, 241, 0.06);
+        border-color: rgba(99, 102, 241, 0.25);
+        transform: translateY(-2px);
+      }
+      .feature-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 11px;
+        background: rgba(99, 102, 241, 0.12);
+        border: 1px solid rgba(99, 102, 241, 0.2);
         display: flex;
         align-items: center;
         justify-content: center;
-        transition:
-          transform 0.35s var(--ease-spring),
-          background 0.25s;
-      }
-      .psec:hover .s-ico {
-        transform: scale(1.1);
-        background: rgba(99, 102, 241, 0.14);
-      }
-      .s-ico svg {
-        width: 15px;
-        height: 15px;
-        stroke: var(--violet-hi);
-        fill: none;
-        stroke-width: 1.8;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-      }
-
-      .s-title {
-        font-size: 14px;
-        font-weight: 600;
-        color: var(--t1);
-        margin-bottom: 5px;
-        letter-spacing: -0.1px;
-        line-height: 1.3;
-      }
-      .s-text {
-        font-size: 14px;
-        font-weight: 300;
-        color: var(--t2);
-        line-height: 1.75;
-        margin: 0;
-      }
-
-      /* ── Footer ── */
-      footer {
-        margin-top: 56px;
-        text-align: center;
-        opacity: 0;
-        transform: translateY(18px);
-      }
-      footer.in {
-        animation: reveal 0.6s var(--ease-expo) 0.15s forwards;
-      }
-
-      .f-div {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        margin-bottom: 26px;
-      }
-      .f-div::before,
-      .f-div::after {
-        content: "";
-        flex: 1;
-        height: 1px;
-        background: var(--rule);
-      }
-      .f-div-ico {
-        width: 28px;
-        height: 28px;
-        background: var(--fog);
-        border: 1px solid var(--rule);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .f-div-ico svg {
-        width: 11px;
-        height: 11px;
-        stroke: var(--t3);
-        fill: none;
-        stroke-width: 2;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-      }
-      .f-meta {
-        font-size: 12px;
-        color: var(--t3);
-        line-height: 2.1;
-      }
-      .f-meta a {
+        margin-bottom: 16px;
         color: var(--violet-hi);
-        text-decoration: none;
-        transition: color 0.2s;
       }
-      .f-meta a:hover {
+      .feature-card h3 {
+        font-size: 15px;
+        font-weight: 700;
         color: var(--t1);
+        margin-bottom: 8px;
       }
-      .fdot {
+      .feature-card p {
+        font-size: 13px;
+        color: var(--t2);
+        line-height: 1.65;
+      }
+      .feature-tag {
         display: inline-block;
-        width: 3px;
-        height: 3px;
-        background: var(--t3);
-        border-radius: 50%;
-        margin: 0 10px;
-        vertical-align: middle;
+        margin-top: 12px;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        padding: 3px 9px;
+        border-radius: 20px;
+        text-transform: uppercase;
+      }
+      .tag-free {
+        background: rgba(74, 222, 128, 0.1);
+        color: #4ade80;
+        border: 1px solid rgba(74, 222, 128, 0.2);
+      }
+      .tag-pro {
+        background: rgba(99, 102, 241, 0.1);
+        color: var(--violet-hi);
+        border: 1px solid rgba(99, 102, 241, 0.2);
+      }
+      .tag-team {
+        background: rgba(245, 158, 11, 0.1);
+        color: #fbbf24;
+        border: 1px solid rgba(245, 158, 11, 0.2);
       }
 
-      /* ── Pricing toggle ── */
-      .pricing-toggle-wrap {
+      /* ══════════════════════════════════════
+       PLANS COMPARISON
+    ══════════════════════════════════════ */
+      .plans-section {
+        padding: 80px 0;
+      }
+      .plans-toggle-wrap {
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 12px;
-        margin-bottom: 28px;
+        margin-bottom: 48px;
       }
       .toggle-label {
         font-size: 13px;
-        font-weight: 500;
+        font-weight: 600;
         color: var(--t2);
-        display: flex;
-        align-items: center;
-        gap: 7px;
       }
-      .toggle-save {
-        font-size: 10px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        color: #6ee7b7;
-        background: rgba(110, 231, 183, 0.1);
-        border: 1px solid rgba(110, 231, 183, 0.2);
-        padding: 2px 7px;
-        border-radius: 10px;
+      .toggle-label.active {
+        color: var(--t1);
       }
-      .pricing-toggle {
+      .plans-toggle {
         width: 44px;
         height: 24px;
+        border-radius: 100px;
         background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
         cursor: pointer;
         position: relative;
-        transition: background 0.25s;
-        flex-shrink: 0;
+        transition: background 0.2s;
       }
-      .pricing-toggle.active {
+      .plans-toggle.yearly {
         background: var(--violet);
-        border-color: var(--violet);
       }
       .toggle-thumb {
-        position: absolute;
-        top: 3px;
-        left: 3px;
-        width: 16px;
-        height: 16px;
-        background: #fff;
+        width: 18px;
+        height: 18px;
         border-radius: 50%;
-        transition: transform 0.25s var(--ease-spring);
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+        background: #fff;
+        position: absolute;
+        top: 2px;
+        left: 3px;
+        transition: transform 0.2s var(--ease-expo);
       }
-      .pricing-toggle.active .toggle-thumb {
+      .plans-toggle.yearly .toggle-thumb {
         transform: translateX(20px);
       }
-      #labelMonthly {
-        color: var(--t1);
-      }
-      #labelYearly {
-        color: var(--t2);
-      }
-      .pricing-toggle.active ~ #labelYearly,
-      .yearly-active #labelYearly {
-        color: var(--t1);
-      }
-
-      /* ── Pricing ── */
-      .pricing-wrap {
-        margin-bottom: 72px;
+      .save-badge {
+        font-size: 11px;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 20px;
+        background: rgba(74, 222, 128, 0.15);
+        color: #4ade80;
+        border: 1px solid rgba(74, 222, 128, 0.25);
       }
 
-      .pricing-grid {
+      .plans-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 12px;
+        gap: 16px;
       }
-      @media (max-width: 600px) {
-        .pricing-grid {
+      @media (max-width: 768px) {
+        .plans-grid {
           grid-template-columns: 1fr;
         }
       }
 
-      .pricing-card {
-        background: var(--fog);
-        border: 1px solid var(--rule);
-        border-radius: 20px;
-        padding: 24px 20px;
+      .plan-card {
+        padding: 28px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        transition: all 0.25s;
         position: relative;
-        overflow: hidden;
-        transition:
-          transform 0.3s var(--ease-spring),
-          border-color 0.25s,
-          box-shadow 0.3s;
       }
-      .pricing-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 20px 48px rgba(0, 0, 0, 0.4);
+      .plan-card.featured {
+        background: rgba(99, 102, 241, 0.08);
+        border-color: rgba(99, 102, 241, 0.35);
+        box-shadow: 0 0 40px rgba(99, 102, 241, 0.1);
       }
-      .pricing-card.featured {
-        background: rgba(99, 102, 241, 0.07);
-        border-color: rgba(99, 102, 241, 0.28);
-      }
-      .pricing-card.featured::before {
-        content: "";
+      .plan-popular {
         position: absolute;
-        top: 0;
-        left: 10%;
-        right: 10%;
-        height: 1px;
-        background: linear-gradient(
-          90deg,
-          transparent,
-          rgba(99, 102, 241, 0.6),
-          transparent
-        );
-      }
-      .pricing-popular {
-        display: inline-block;
-        font-size: 9.5px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.7px;
-        color: var(--violet-hi);
-        background: rgba(99, 102, 241, 0.15);
-        padding: 3px 9px;
-        border-radius: 6px;
-        margin-bottom: 10px;
-      }
-      .pricing-name {
-        font-size: 16px;
-        font-weight: 800;
-        color: var(--t1);
-        letter-spacing: -0.3px;
-        margin-bottom: 8px;
-      }
-      .pricing-price {
-        font-size: 28px;
-        font-weight: 800;
-        color: var(--t1);
-        letter-spacing: -1.5px;
-        line-height: 1;
-        margin-bottom: 4px;
-      }
-      .pricing-price span {
-        font-size: 13px;
-        font-weight: 400;
-        color: var(--t3);
-        letter-spacing: 0;
-      }
-      .pricing-alt {
+        top: -12px;
+        left: 50%;
+        transform: translateX(-50%);
         font-size: 11px;
-        color: var(--t3);
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        padding: 4px 14px;
+        border-radius: 100px;
+        background: var(--violet);
+        color: #fff;
+        white-space: nowrap;
+      }
+      .plan-name {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--t2);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
         margin-bottom: 16px;
       }
-      .pricing-features {
+      .plan-price {
+        font-size: 40px;
+        font-weight: 800;
+        color: var(--t1);
+        letter-spacing: -0.03em;
+        line-height: 1;
+      }
+      .plan-price sup {
+        font-size: 18px;
+        font-weight: 600;
+        vertical-align: top;
+        margin-top: 6px;
+      }
+      .plan-price span {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--t2);
+      }
+      .plan-yearly-price {
+        font-size: 12px;
+        color: var(--t3);
+        margin-top: 4px;
+        min-height: 18px;
+      }
+      .plan-desc {
+        font-size: 13px;
+        color: var(--t2);
+        margin: 16px 0;
+        line-height: 1.6;
+        border-top: 1px solid var(--rule);
+        padding-top: 16px;
+      }
+      .plan-features {
         list-style: none;
-        padding: 0;
-        margin: 0 0 18px;
+        margin-bottom: 24px;
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: 9px;
       }
-      .pricing-features li {
+      .plan-features li {
+        display: flex;
+        align-items: flex-start;
+        gap: 9px;
+        font-size: 13px;
+        color: var(--t2);
+      }
+      .plan-features li svg {
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+      .plan-features li.dim {
+        color: var(--t3);
+      }
+      .plan-btn {
+        display: block;
+        width: 100%;
+        padding: 12px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 700;
+        text-align: center;
+        text-decoration: none;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s;
+      }
+      .plan-btn.primary {
+        background: var(--violet);
+        color: #fff;
+        box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+      }
+      .plan-btn.primary:hover {
+        background: #5254e7;
+        box-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
+      }
+      .plan-btn.outline {
+        background: transparent;
+        color: var(--t1);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+      }
+      .plan-btn.outline:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.25);
+      }
+
+      /* ══════════════════════════════════════
+       HOW IT WORKS
+    ══════════════════════════════════════ */
+      .how-section {
+        padding: 80px 0;
+      }
+      .steps-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 2px;
+        position: relative;
+      }
+      @media (max-width: 768px) {
+        .steps-grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 14px;
+        }
+      }
+      .step-connector {
+        display: none;
+      }
+      @media (min-width: 769px) {
+        .steps-grid::before {
+          content: "";
+          position: absolute;
+          top: 28px;
+          left: 14%;
+          right: 14%;
+          height: 1px;
+          background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(99, 102, 241, 0.3),
+            rgba(99, 102, 241, 0.3),
+            transparent
+          );
+          z-index: 0;
+        }
+      }
+      .step {
+        padding: 24px 20px;
+        text-align: center;
+        position: relative;
+        z-index: 1;
+      }
+      .step-num {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: rgba(99, 102, 241, 0.1);
+        border: 1px solid rgba(99, 102, 241, 0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        font-weight: 800;
+        color: var(--violet-hi);
+        margin: 0 auto 16px;
+      }
+      .step h3 {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--t1);
+        margin-bottom: 8px;
+      }
+      .step p {
+        font-size: 12px;
+        color: var(--t2);
+        line-height: 1.6;
+      }
+
+      /* ══════════════════════════════════════
+       TEAM SECTION
+    ══════════════════════════════════════ */
+      .team-section {
+        padding: 80px 0;
+        border-top: 1px solid var(--rule);
+      }
+      .team-inner {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+        align-items: center;
+      }
+      @media (max-width: 768px) {
+        .team-inner {
+          grid-template-columns: 1fr;
+        }
+      }
+      .team-copy h2 {
+        font-family: var(--ff-display);
+        font-size: clamp(30px, 3.5vw, 46px);
+        font-weight: 400;
+        color: var(--t1);
+        line-height: 1.2;
+        letter-spacing: -0.02em;
+        margin-bottom: 18px;
+      }
+      .team-copy h2 em {
+        font-style: italic;
+        color: #fbbf24;
+      }
+      .team-copy p {
+        font-size: 15px;
+        color: var(--t2);
+        line-height: 1.7;
+        margin-bottom: 14px;
+      }
+      .team-perks {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin: 24px 0;
+      }
+      .team-perks li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+        color: var(--t2);
+      }
+      .team-perks li svg {
+        color: #fbbf24;
+        flex-shrink: 0;
+      }
+      .team-price-badge {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 6px;
+        padding: 10px 18px;
+        border-radius: 12px;
+        background: rgba(245, 158, 11, 0.08);
+        border: 1px solid rgba(245, 158, 11, 0.2);
+      }
+      .team-price-badge strong {
+        font-size: 22px;
+        font-weight: 800;
+        color: #fbbf24;
+      }
+      .team-price-badge span {
+        font-size: 13px;
+        color: var(--t3);
+      }
+
+      /* Team mockup */
+      .team-mockup {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow:
+          0 30px 60px rgba(0, 0, 0, 0.4),
+          0 0 40px rgba(245, 158, 11, 0.05);
+      }
+      .team-mockup-header {
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--rule);
         display: flex;
         align-items: center;
         gap: 8px;
-        font-size: 12.5px;
-        color: var(--t2);
-        font-weight: 300;
-        line-height: 1.4;
       }
-      .pricing-features li svg {
-        flex-shrink: 0;
-        stroke: #6ee7b7;
-      }
-      .pricing-btn {
-        display: block;
-        text-align: center;
-        background: linear-gradient(135deg, #6366f1, #4f46e5);
-        border: none;
-        border-radius: 11px;
-        color: #fff;
-        font-family: var(--ff-body);
-        font-size: 13px;
-        font-weight: 700;
-        padding: 12px 16px;
-        cursor: pointer;
-        text-decoration: none;
-        box-shadow: 0 4px 20px rgba(99, 102, 241, 0.35);
-        transition:
-          opacity 0.2s,
-          transform 0.2s;
-      }
-      .pricing-btn:hover {
-        opacity: 0.9;
-        transform: scale(1.02);
-      }
-      .pricing-btn.secondary {
-        background: rgba(255, 255, 255, 0.06);
-        box-shadow: none;
-        border: 1px solid var(--rule);
-        color: var(--t2);
-      }
-      .pricing-btn.secondary:hover {
-        background: rgba(255, 255, 255, 0.1);
-        color: var(--t1);
-      }
-      .pricing-note {
+      .team-mockup-title {
         font-size: 12px;
-        color: var(--t3);
-        text-align: center;
-        margin-top: 16px;
-        line-height: 1.7;
-      }
-
-      /* ── Section headings ── */
-      .section-label {
-        text-align: center;
-        margin-bottom: 36px;
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      .section-label.in {
-        animation: reveal 0.6s var(--ease-expo) forwards;
-      }
-      .section-label h2 {
-        font-family: var(--ff-display);
-        font-weight: 400;
-        font-size: clamp(26px, 5vw, 36px);
+        font-weight: 700;
         color: var(--t1);
-        letter-spacing: -0.8px;
-        line-height: 1.15;
-        margin-bottom: 10px;
       }
-      .section-label h2 em {
-        font-style: italic;
-        color: transparent;
-        background: linear-gradient(
-          125deg,
-          var(--violet-mid),
-          var(--violet-hi)
-        );
-        -webkit-background-clip: text;
-        background-clip: text;
+      .live-dot {
+        width: 7px;
+        height: 7px;
+        background: #4ade80;
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+        margin-left: auto;
       }
-      .section-label p {
-        font-size: 14px;
-        font-weight: 300;
+      .team-mockup-feed {
+        padding: 10px 0;
+      }
+      .feed-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 16px;
+        font-size: 11px;
+        color: var(--t2);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      }
+      .feed-item:last-child {
+        border-bottom: none;
+      }
+      .feed-avatar {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 9px;
+        font-weight: 800;
+        flex-shrink: 0;
+      }
+      .av-a {
+        background: rgba(99, 102, 241, 0.3);
+        color: var(--violet-hi);
+      }
+      .av-b {
+        background: rgba(245, 158, 11, 0.3);
+        color: #fbbf24;
+      }
+      .av-c {
+        background: rgba(74, 222, 128, 0.3);
+        color: #4ade80;
+      }
+      .feed-text {
+        flex: 1;
+      }
+      .feed-text strong {
+        color: var(--t1);
+      }
+      .feed-time {
+        font-size: 10px;
         color: var(--t3);
+        flex-shrink: 0;
+      }
+      .team-entry {
+        margin: 8px 12px;
+        padding: 10px 12px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 10px;
+      }
+      .team-entry-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+      }
+      .team-entry-title {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--t1);
+      }
+      .team-entry-saver {
+        font-size: 10px;
+        color: var(--violet-hi);
+      }
+      .team-reactions {
+        display: flex;
+        gap: 6px;
+      }
+      .reaction-pill {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 2px 8px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: 600;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: var(--t2);
       }
 
-      /* ── Reviews ── */
-      .reviews-wrap {
-        margin-bottom: 72px;
+      /* ══════════════════════════════════════
+       REVIEWS
+    ══════════════════════════════════════ */
+      .reviews-section {
+        padding: 80px 0;
+        border-top: 1px solid var(--rule);
       }
-
       .reviews-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 14px;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
       }
-      @media (max-width: 520px) {
+      @media (max-width: 768px) {
         .reviews-grid {
           grid-template-columns: 1fr;
         }
       }
-
       .review-card {
-        background: var(--fog);
-        border: 1px solid var(--rule);
-        border-radius: 18px;
-        padding: 24px 22px;
-        position: relative;
-        overflow: hidden;
-        transition:
-          transform 0.35s var(--ease-spring),
-          border-color 0.25s,
-          box-shadow 0.3s;
-        opacity: 0;
-        transform: translateY(24px);
-      }
-      .review-card.in {
-        animation: reveal 0.55s var(--ease-expo) forwards;
+        padding: 24px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        transition: all 0.25s;
       }
       .review-card:hover {
-        transform: translateY(-4px);
-        border-color: rgba(99, 102, 241, 0.25);
-        box-shadow: 0 20px 48px rgba(0, 0, 0, 0.4);
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.12);
+        transform: translateY(-2px);
       }
-      .review-card::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(
-          135deg,
-          rgba(255, 255, 255, 0.035) 0%,
-          transparent 60%
-        );
-        opacity: 0;
-        transition: opacity 0.3s;
-      }
-      .review-card:hover::before {
-        opacity: 1;
-      }
-      /* Top highlight line on hover */
-      .review-card::after {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 15%;
-        right: 15%;
-        height: 1px;
-        background: linear-gradient(
-          90deg,
-          transparent,
-          var(--violet),
-          transparent
-        );
-        opacity: 0;
-        transition: opacity 0.3s;
-      }
-      .review-card:hover::after {
-        opacity: 1;
-      }
-
-      /* Large decorative quote mark */
-      .review-quote-mark {
-        font-family: var(--ff-display);
-        font-size: 56px;
-        line-height: 1;
-        color: var(--violet);
-        opacity: 0.25;
-        margin-bottom: -8px;
-        display: block;
-        font-style: italic;
-      }
-
       .review-stars {
         display: flex;
         gap: 3px;
-        margin-bottom: 12px;
+        margin-bottom: 14px;
       }
       .review-stars svg {
-        width: 13px;
-        height: 13px;
-        fill: #fbbf24;
-        stroke: #fbbf24;
-        stroke-width: 1;
+        fill: #f59e0b;
+        stroke: none;
+        width: 14px;
+        height: 14px;
       }
-
       .review-text {
         font-size: 14px;
-        font-weight: 300;
         color: var(--t2);
-        line-height: 1.75;
+        line-height: 1.7;
         margin-bottom: 18px;
         font-style: italic;
       }
-
       .review-author {
         display: flex;
         align-items: center;
@@ -1248,343 +1268,458 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 13px;
-        font-weight: 700;
-        color: white;
-        flex-shrink: 0;
-        box-shadow: 0 0 12px rgba(99, 102, 241, 0.3);
+        font-size: 12px;
+        font-weight: 800;
       }
-      .av-a {
-        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      .rv-a {
+        background: rgba(99, 102, 241, 0.2);
+        color: var(--violet-hi);
       }
-      .av-b {
-        background: linear-gradient(135deg, #0ea5e9, #6366f1);
+      .rv-b {
+        background: rgba(245, 158, 11, 0.2);
+        color: #fbbf24;
       }
-      .av-c {
-        background: linear-gradient(135deg, #f59e0b, #ef4444);
+      .rv-c {
+        background: rgba(74, 222, 128, 0.2);
+        color: #4ade80;
       }
-
       .review-name {
         font-size: 13px;
-        font-weight: 600;
+        font-weight: 700;
         color: var(--t1);
       }
-      .review-role {
-        font-size: 11px;
-        color: var(--t3);
-        margin-top: 1px;
-      }
 
-      /* Third card spans full width */
-      .review-card.full {
-        grid-column: 1 / -1;
+      /* ══════════════════════════════════════
+       CTA BANNER
+    ══════════════════════════════════════ */
+      .cta-section {
+        padding: 80px 0 100px;
       }
-
-      /* ── FAQ ── */
-      .faq-wrap {
-        margin-bottom: 72px;
-      }
-
-      .faq-list {
-        background: var(--fog);
-        border: 1px solid var(--rule);
-        border-radius: 20px;
-        overflow: hidden;
+      .cta-box {
+        text-align: center;
+        padding: 64px 40px;
+        background: rgba(99, 102, 241, 0.06);
+        border: 1px solid rgba(99, 102, 241, 0.2);
+        border-radius: 24px;
+        box-shadow: 0 0 80px rgba(99, 102, 241, 0.08);
         position: relative;
-        opacity: 0;
-        transform: translateY(28px);
+        overflow: hidden;
       }
-      .faq-list.in {
-        animation: reveal 0.65s var(--ease-expo) forwards;
-      }
-      .faq-list::before {
+      .cta-box::before {
         content: "";
         position: absolute;
-        top: 0;
-        left: 8%;
-        right: 8%;
-        height: 1px;
-        background: linear-gradient(
-          90deg,
-          transparent,
-          rgba(99, 102, 241, 0.4),
-          transparent
+        top: -50%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 600px;
+        height: 300px;
+        background: radial-gradient(
+          ellipse,
+          rgba(99, 102, 241, 0.12) 0%,
+          transparent 70%
         );
+        pointer-events: none;
       }
-
-      .faq-item {
-        border-bottom: 1px solid var(--rule);
-      }
-      .faq-item:last-child {
-        border-bottom: none;
-      }
-
-      .faq-q {
-        width: 100%;
-        background: none;
-        border: none;
-        padding: 22px 28px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-        text-align: left;
-        transition: background 0.2s;
-      }
-      .faq-q:hover {
-        background: rgba(255, 255, 255, 0.02);
-      }
-
-      .faq-q-text {
-        font-family: var(--ff-body);
-        font-size: 14.5px;
-        font-weight: 500;
+      .cta-box h2 {
+        font-family: var(--ff-display);
+        font-size: clamp(32px, 4vw, 52px);
+        font-weight: 400;
         color: var(--t1);
-        line-height: 1.4;
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        margin-bottom: 16px;
+        position: relative;
       }
-
-      .faq-icon {
-        flex-shrink: 0;
-        width: 26px;
-        height: 26px;
-        background: rgba(99, 102, 241, 0.08);
-        border: 1px solid rgba(99, 102, 241, 0.15);
-        border-radius: 50%;
+      .cta-box h2 em {
+        font-style: italic;
+        color: var(--violet-hi);
+      }
+      .cta-box p {
+        font-size: 16px;
+        color: var(--t2);
+        margin-bottom: 36px;
+        position: relative;
+      }
+      .cta-actions {
         display: flex;
         align-items: center;
         justify-content: center;
-        transition:
-          background 0.25s,
-          transform 0.35s var(--ease-spring),
-          border-color 0.25s;
-      }
-      .faq-icon svg {
-        width: 12px;
-        height: 12px;
-        stroke: var(--violet-hi);
-        fill: none;
-        stroke-width: 2.5;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-        transition: transform 0.35s var(--ease-spring);
+        gap: 12px;
+        flex-wrap: wrap;
+        position: relative;
       }
 
-      .faq-item.open .faq-icon {
-        background: rgba(99, 102, 241, 0.16);
-        border-color: rgba(99, 102, 241, 0.35);
-        transform: rotate(180deg);
+      /* ══════════════════════════════════════
+       FOOTER
+    ══════════════════════════════════════ */
+      footer {
+        border-top: 1px solid var(--rule);
+        padding: 32px 0;
       }
-
-      /* Smooth answer drawer */
-      .faq-a-wrap {
-        display: grid;
-        grid-template-rows: 0fr;
-        transition: grid-template-rows 0.38s var(--ease-expo);
+      .footer-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 16px;
       }
-      .faq-item.open .faq-a-wrap {
-        grid-template-rows: 1fr;
+      .footer-brand {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
       }
-      .faq-a-inner {
-        overflow: hidden;
+      .footer-brand-mark {
+        width: 24px;
+        height: 24px;
+        background: linear-gradient(140deg, #6366f1, #4338ca);
+        border-radius: 6px;
       }
-
-      .faq-a {
-        padding: 0 28px 22px;
-        font-size: 14px;
-        font-weight: 300;
+      .footer-brand-name {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--t1);
+      }
+      .footer-links {
+        display: flex;
+        gap: 20px;
+      }
+      .footer-links a {
+        font-size: 12px;
+        color: var(--t3);
+        text-decoration: none;
+        transition: color 0.2s;
+      }
+      .footer-links a:hover {
         color: var(--t2);
-        line-height: 1.8;
+      }
+      .footer-copy {
+        font-size: 12px;
+        color: var(--t3);
       }
 
-      /* ── Base animation ── */
-      @keyframes reveal {
-        to {
-          opacity: 1;
-          transform: none;
-        }
+      /* ══════════════════════════════════════
+       SCROLL REVEAL
+    ══════════════════════════════════════ */
+      .sr {
+        opacity: 0;
+        transform: translateY(24px);
+        transition:
+          opacity 0.7s var(--ease-expo),
+          transform 0.7s var(--ease-expo);
+      }
+      .sr.visible {
+        opacity: 1;
+        transform: translateY(0);
       }
     </style>
   </head>
   <body>
-    <div id="rbar"></div>
     <div class="bg-noise"></div>
-    <div class="bg-halo-top"></div>
-    <div class="bg-halo-btm"></div>
+    <div class="bg-halo"></div>
+    <div class="bg-halo-2"></div>
     <div class="bg-grid"></div>
 
-    <div class="page">
-      <!-- Nav -->
-      <nav>
-        <a href="#" class="brand">
-          <div class="brand-mark">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="white"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+    <!-- ═══════════════════════════════════════
+     NAV
+═══════════════════════════════════════ -->
+    <nav>
+      <div class="wrap">
+        <div class="nav-inner">
+          <a href="/" class="brand">
+            <div class="brand-mark">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#fff"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                width="16"
+                height="16"
+              >
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+              </svg>
+            </div>
+            <span class="brand-name">QuickKeep</span>
+          </a>
+          <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#team">Team</a>
+            <a href="privacy_policy.html">Privacy</a>
+            <a
+              href="https://chrome.google.com/webstore"
+              target="_blank"
+              class="nav-cta"
             >
-              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-            </svg>
-          </div>
-          <span class="brand-name">Quick<em>Keep</em></span>
-        </a>
-        <span class="nav-tag">Privacy Policy</span>
-        <div class="nav-legal-links">
-          <a href="terms.html" class="nav-legal-link">Terms</a>
-        </div>
-      </nav>
-
-      <!-- Hero / Story -->
-      <section class="hero">
-        <div class="hero-badge">
-          <div class="pulse-dot"></div>
-          We've all been there
-        </div>
-
-        <h1 class="hero-title">You found it.<br /><em>Then lost it.</em></h1>
-
-        <p class="hero-sub">
-          That perfect article. That YouTube tutorial you were halfway through.
-          That tool someone recommended in a forum. You told yourself you'd
-          remember — you didn't.
-        </p>
-
-        <!-- ── Scenario strip ── -->
-        <div class="scenarios">
-          <div class="scenario-card">
-            <div class="sc-icon">
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                stroke-width="1.7"
+                stroke-width="2.5"
                 stroke-linecap="round"
                 stroke-linejoin="round"
+                width="13"
+                height="13"
+              >
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              Add to Chrome — Free
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ═══════════════════════════════════════
+     HERO
+═══════════════════════════════════════ -->
+    <section class="hero">
+      <div class="wrap">
+        <div class="hero-badge">
+          <div class="pulse"></div>
+          Free Chrome Extension
+        </div>
+
+        <h1>
+          Stop losing<br />
+          the pages that <em>matter.</em>
+        </h1>
+
+        <p class="hero-sub">
+          You found it. You told yourself you'd remember. You didn't. QuickKeep
+          saves any page, video, or article in one click — with a note, forever.
+        </p>
+
+        <div class="hero-actions">
+          <a
+            href="https://chrome.google.com/webstore"
+            target="_blank"
+            class="btn-primary"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              width="15"
+              height="15"
+            >
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            Add to Chrome — It's Free
+          </a>
+          <a href="#features" class="btn-secondary">See how it works</a>
+        </div>
+
+        <p class="hero-note">
+          No credit card required · Free forever · 30 second setup
+        </p>
+
+        <!-- Extension Mockup -->
+        <div class="hero-mockup">
+          <div class="mockup-shell">
+            <div class="mockup-bar">
+              <div class="mockup-logo">
+                <div class="mockup-logo-mark"></div>
+                <span class="mockup-logo-name">QuickKeep</span>
+              </div>
+              <span class="mockup-plan">Pro</span>
+            </div>
+            <div class="mockup-input">Add a note (optional)…</div>
+            <div class="mockup-save-row">
+              <div class="mockup-btn primary">Save This Page</div>
+              <div class="mockup-btn secondary">Team</div>
+            </div>
+            <div class="mockup-divider"></div>
+            <div class="mockup-entry">
+              <div class="mockup-entry-info">
+                <div class="mockup-entry-title">
+                  How to deploy a Chrome extension
+                </div>
+                <div class="mockup-entry-url">developer.chrome.com</div>
+              </div>
+              <div class="mockup-entry-time">2m ago</div>
+            </div>
+            <div class="mockup-entry">
+              <div class="mockup-entry-info">
+                <div class="mockup-entry-title">
+                  The best productivity systems in 2025
+                </div>
+                <div class="mockup-entry-url">medium.com</div>
+              </div>
+              <div class="mockup-entry-time">1h ago</div>
+            </div>
+            <div class="mockup-entry">
+              <div class="mockup-entry-info">
+                <div class="mockup-entry-title">
+                  React hooks — complete guide
+                </div>
+                <div class="mockup-entry-url">youtube.com</div>
+              </div>
+              <div class="mockup-entry-time">yesterday</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════
+     PROBLEM
+═══════════════════════════════════════ -->
+    <section class="problem-section">
+      <div class="wrap">
+        <div class="section-label sr">
+          <h2>Sound <em>familiar?</em></h2>
+          <p>
+            These are the moments that happen every day — and every day we lose
+            valuable things because of them.
+          </p>
+        </div>
+
+        <div class="problem-grid">
+          <div class="problem-card sr">
+            <div class="problem-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                width="18"
+                height="18"
               >
                 <rect x="2" y="3" width="20" height="14" rx="2" />
                 <path d="M8 21h8M12 17v4" />
               </svg>
             </div>
-            <div class="sc-text">
-              <strong>17 open tabs.</strong> You're afraid to close them because
-              one of them had something important. You just don't remember which
-              one.
-            </div>
+            <h3>17 open tabs, held hostage</h3>
+            <p>
+              You're afraid to close them because one might be important. You
+              just don't know which one.
+            </p>
           </div>
-
-          <div class="scenario-card">
-            <div class="sc-icon">
+          <div class="problem-card sr">
+            <div class="problem-icon">
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                stroke-width="1.7"
+                stroke-width="2"
                 stroke-linecap="round"
                 stroke-linejoin="round"
+                width="18"
+                height="18"
               >
                 <polygon points="23 7 16 12 23 17 23 7" />
                 <rect x="1" y="5" width="15" height="14" rx="2" />
               </svg>
             </div>
-            <div class="sc-text">
-              <strong>A YouTube video changed your mind</strong> about
-              something. You want to rewatch it next week. You can't find it
-              again in your watch history.
-            </div>
+            <h3>That YouTube video is gone</h3>
+            <p>
+              It changed your mind about something. Now it's buried somewhere in
+              watch history. Forever.
+            </p>
           </div>
-
-          <div class="scenario-card">
-            <div class="sc-icon">
+          <div class="problem-card sr">
+            <div class="problem-icon">
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                stroke-width="1.7"
+                stroke-width="2"
                 stroke-linecap="round"
                 stroke-linejoin="round"
+                width="18"
+                height="18"
               >
                 <path
                   d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
                 />
               </svg>
             </div>
-            <div class="sc-text">
-              <strong>Someone dropped a link in a chat.</strong> You said "I'll
-              check it later." The chat scrolled away. The link is gone. The
-              person is gone. It's gone.
-            </div>
+            <h3>"I'll check it later"</h3>
+            <p>
+              The link someone dropped in chat. The chat scrolled. The link is
+              gone. So is the person.
+            </p>
           </div>
-
-          <div class="scenario-card">
-            <div class="sc-icon">
+          <div class="problem-card sr">
+            <div class="problem-icon">
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                stroke-width="1.7"
+                stroke-width="2"
                 stroke-linecap="round"
                 stroke-linejoin="round"
+                width="18"
+                height="18"
               >
                 <circle cx="11" cy="11" r="8" />
                 <line x1="21" y1="21" x2="16.65" y2="16.65" />
               </svg>
             </div>
-            <div class="sc-text">
-              <strong>You've Googled the same thing 4 times.</strong> That
-              recipe. That CSS trick. That keyboard shortcut. You keep finding
-              it and keep losing it.
-            </div>
+            <h3>Googled the same thing 4 times</h3>
+            <p>
+              That CSS trick. That recipe. That keyboard shortcut. You keep
+              finding it and keep losing it.
+            </p>
           </div>
-
-          <div class="scenario-card">
-            <div class="sc-icon">
+          <div class="problem-card sr">
+            <div class="problem-icon">
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                stroke-width="1.7"
+                stroke-width="2"
                 stroke-linecap="round"
                 stroke-linejoin="round"
+                width="18"
+                height="18"
               >
                 <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
                 <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
               </svg>
             </div>
-            <div class="sc-text">
-              <strong>Research rabbit holes.</strong> You're deep into reading,
-              bouncing between 8 pages. Tomorrow you can't rebuild that chain of
-              thought. It's all gone.
-            </div>
+            <h3>Research rabbit holes</h3>
+            <p>
+              Deep in 8 pages, building a chain of thought. Tomorrow you can't
+              rebuild it. It's all gone.
+            </p>
           </div>
-
-          <div class="scenario-card">
-            <div class="sc-icon">
+          <div class="problem-card sr">
+            <div class="problem-icon">
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                stroke-width="1.7"
+                stroke-width="2"
                 stroke-linecap="round"
                 stroke-linejoin="round"
+                width="18"
+                height="18"
               >
                 <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
                 <line x1="3" y1="6" x2="21" y2="6" />
                 <path d="M16 10a4 4 0 0 1-8 0" />
               </svg>
             </div>
-            <div class="sc-text">
-              <strong>A product you almost bought.</strong> You closed the tab
-              to think about it. Now you can't find the exact listing, the
+            <h3>That product you almost bought</h3>
+            <p>
+              You closed the tab to think. Now you can't find the listing, the
               price, or even the store.
-            </div>
+            </p>
           </div>
         </div>
 
-        <!-- ── Big divider ── -->
-        <div class="story-divider">
+        <div class="story-divider sr">
           <div class="story-divider-line"></div>
           <div class="story-divider-badge">
             <svg
@@ -1597,71 +1732,64 @@
               width="14"
               height="14"
             >
-              <polyline points="6 9 12 15 18 9" />
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
             </svg>
             QuickKeep fixes all of this
           </div>
           <div class="story-divider-line"></div>
         </div>
+      </div>
+    </section>
 
-        <!-- ── Solution features ── -->
-        <div class="solutions">
-          <div class="sol-card">
-            <div class="sol-icon">
+    <!-- ═══════════════════════════════════════
+     FEATURES
+═══════════════════════════════════════ -->
+    <section class="features-section" id="features">
+      <div class="wrap">
+        <div class="section-label sr">
+          <h2>Everything you need to <em>never lose</em> a page again</h2>
+          <p>
+            Built for real browsing — fast, clean, and completely out of your
+            way.
+          </p>
+        </div>
+
+        <div class="features-grid">
+          <div class="feature-card sr">
+            <div class="feature-icon">
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                stroke-width="1.7"
+                stroke-width="2"
                 stroke-linecap="round"
                 stroke-linejoin="round"
+                width="18"
+                height="18"
               >
                 <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
               </svg>
             </div>
-            <div class="sol-body">
-              <div class="sol-title">Save any page in one click</div>
-              <p>
-                Articles, tools, product pages, documentation — click the
-                extension and hit save. Done. It's yours forever, one click
-                away.
-              </p>
-            </div>
+            <h3>One-click save</h3>
+            <p>
+              Open the extension, hit save. Your page is captured with its
+              title, URL, and any note you add. No forms, no folders, no
+              friction.
+            </p>
+            <span class="feature-tag tag-free">Free</span>
           </div>
 
-          <div class="sol-card">
-            <div class="sol-icon">
+          <div class="feature-card sr">
+            <div class="feature-icon">
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                stroke-width="1.7"
+                stroke-width="2"
                 stroke-linecap="round"
                 stroke-linejoin="round"
-              >
-                <polygon points="23 7 16 12 23 17 23 7" />
-                <rect x="1" y="5" width="15" height="14" rx="2" />
-              </svg>
-            </div>
-            <div class="sol-body">
-              <div class="sol-title">Save videos, come back anytime</div>
-              <p>
-                On a YouTube tutorial or a documentary? Save it instantly. Open
-                it back with one click — right where you left off in your saved
-                list.
-              </p>
-            </div>
-          </div>
-
-          <div class="sol-card">
-            <div class="sol-icon">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.7"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                width="18"
+                height="18"
               >
                 <path d="M12 20h9" />
                 <path
@@ -1669,598 +1797,782 @@
                 />
               </svg>
             </div>
-            <div class="sol-body">
-              <div class="sol-title">Add a note to remember why</div>
-              <p>
-                Don't just save a link — save your thought. "Use this for the
-                project", "compare with the other pricing", "send to mom".
-                Future you will thank you.
-              </p>
-            </div>
+            <h3>Double-click to capture text</h3>
+            <p>
+              Highlight any text on a page, double-click it, and it auto-fills
+              as your note. Perfect for grabbing quotes, stats, and ideas on the
+              fly.
+            </p>
+            <span class="feature-tag tag-free">Free</span>
           </div>
 
-          <div class="sol-card">
-            <div class="sol-icon">
+          <div class="feature-card sr">
+            <div class="feature-icon">
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                stroke-width="1.7"
+                stroke-width="2"
                 stroke-linecap="round"
                 stroke-linejoin="round"
-              >
-                <path
-                  d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
-                />
-                <polyline points="14 2 14 8 20 8" />
-                <line x1="16" y1="13" x2="8" y2="13" />
-                <line x1="16" y1="17" x2="8" y2="17" />
-              </svg>
-            </div>
-            <div class="sol-body">
-              <div class="sol-title">Double-click to capture selected text</div>
-              <p>
-                Highlight a quote, a keyword, a stat — double-click anywhere on
-                the page and it auto-fills as your note. No copy-pasting, no
-                app-switching.
-              </p>
-            </div>
-          </div>
-
-          <div class="sol-card">
-            <div class="sol-icon">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.7"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                width="18"
+                height="18"
               >
                 <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
               </svg>
             </div>
-            <div class="sol-body">
-              <div class="sol-title">Close your tabs without fear</div>
-              <p>
-                Once it's saved, it's safe. Close the tab. Shut down the
-                computer. Restart the browser. Your saved list is right there
-                the next time you open it.
-              </p>
-            </div>
+            <h3>Close tabs fearlessly</h3>
+            <p>
+              Once it's saved, it's safe. Close the tab, shut the laptop,
+              restart the browser. Your list is exactly where you left it.
+            </p>
+            <span class="feature-tag tag-free">Free</span>
           </div>
 
-          <div class="sol-card">
-            <div class="sol-icon">
+          <div class="feature-card sr">
+            <div class="feature-icon">
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                stroke-width="1.7"
+                stroke-width="2"
                 stroke-linecap="round"
                 stroke-linejoin="round"
+                width="18"
+                height="18"
               >
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
               </svg>
             </div>
-            <div class="sol-body">
-              <div class="sol-title">Start free, no account needed</div>
-              <p>
-                Use QuickKeep instantly without signing up. Save pages locally,
-                no account required. When you're ready for sync and sharing,
-                upgrading to Pro or Team takes 30 seconds.
-              </p>
+            <h3>Instant search</h3>
+            <p>
+              Find any saved page by title, URL, or note in milliseconds. Your
+              saves become a personal search engine you actually control.
+            </p>
+            <span class="feature-tag tag-pro">Pro</span>
+          </div>
+
+          <div class="feature-card sr">
+            <div class="feature-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                width="18"
+                height="18"
+              >
+                <rect x="2" y="3" width="20" height="14" rx="2" />
+                <path d="M8 21h8M12 17v4" />
+              </svg>
+            </div>
+            <h3>Sync across devices</h3>
+            <p>
+              Saved something on your laptop? Find it on your work PC.
+              Everything syncs automatically in real time via your account.
+            </p>
+            <span class="feature-tag tag-pro">Pro</span>
+          </div>
+
+          <div class="feature-card sr">
+            <div class="feature-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                width="18"
+                height="18"
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+            </div>
+            <h3>Export your library</h3>
+            <p>
+              Download all your saves as CSV or Markdown anytime. Your data is
+              always yours — no lock-in, no hostage situations.
+            </p>
+            <span class="feature-tag tag-pro">Pro</span>
+          </div>
+
+          <div class="feature-card sr">
+            <div
+              class="feature-icon"
+              style="
+                background: rgba(245, 158, 11, 0.1);
+                border-color: rgba(245, 158, 11, 0.2);
+                color: #fbbf24;
+              "
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                width="18"
+                height="18"
+              >
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+            </div>
+            <h3>Shared saves</h3>
+            <p>
+              You and your friends share one place. Save a page and everyone
+              sees it instantly.
+            </p>
+            <span class="feature-tag tag-team">Team</span>
+          </div>
+
+          <div class="feature-card sr">
+            <div
+              class="feature-icon"
+              style="
+                background: rgba(245, 158, 11, 0.1);
+                border-color: rgba(245, 158, 11, 0.2);
+                color: #fbbf24;
+              "
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                width="18"
+                height="18"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+            </div>
+            <h3>Live activity feed</h3>
+            <p>
+              See what your friends is saving in real time. "David saved React
+              patterns — 2m ago."
+            </p>
+            <span class="feature-tag tag-team">Team</span>
+          </div>
+
+          <div class="feature-card sr">
+            <div
+              class="feature-icon"
+              style="
+                background: rgba(245, 158, 11, 0.1);
+                border-color: rgba(245, 158, 11, 0.2);
+                color: #fbbf24;
+              "
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                width="18"
+                height="18"
+              >
+                <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
+              </svg>
+            </div>
+            <h3>Reactions on saves</h3>
+            <p>React to any friend save. Keep the honest feedback flowing.</p>
+            <span class="feature-tag tag-team">Team</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════
+     HOW IT WORKS
+═══════════════════════════════════════ -->
+    <section class="how-section">
+      <div class="wrap">
+        <div class="section-label sr">
+          <h2>Up and running in <em>30 seconds</em></h2>
+          <p>
+            No account needed to start. No configuration. No learning curve.
+          </p>
+        </div>
+        <div class="steps-grid">
+          <div class="step sr">
+            <div class="step-num">1</div>
+            <h3>Install the extension</h3>
+            <p>
+              Add QuickKeep from the Chrome Web Store. One click, free forever.
+            </p>
+          </div>
+          <div class="step sr">
+            <div class="step-num">2</div>
+            <h3>Open any page</h3>
+            <p>
+              Browse normally. When you find something worth keeping, open
+              QuickKeep.
+            </p>
+          </div>
+          <div class="step sr">
+            <div class="step-num">3</div>
+            <h3>Hit save</h3>
+            <p>Add an optional note, click Save. Done in under 3 seconds.</p>
+          </div>
+          <div class="step sr">
+            <div class="step-num">4</div>
+            <h3>Find it later</h3>
+            <p>
+              Open your list, search for it, click to reopen. It's always there.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════
+     TEAM SECTION
+═══════════════════════════════════════ -->
+    <section class="team-section" id="team">
+      <div class="wrap">
+        <div class="team-inner">
+          <div class="team-copy sr">
+            <h2>Your crew's <em>shared brain.</em></h2>
+            <p>
+              Stop sending links in WhatsApp that get buried in 200 other
+              messages. Stop pasting URLs in group chats nobody checks. Share
+              the plan with your friends and have one place where every great
+              find lives together — articles, videos, tools, anything worth
+              sharing.
+            </p>
+            <ul class="team-perks">
+              <li>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  width="15"
+                  height="15"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Up to 5 members — owner pays, everyone benefits
+              </li>
+              <li>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  width="15"
+                  height="15"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Personal saves stay private — only team saves are shared
+              </li>
+              <li>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  width="15"
+                  height="15"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Live activity feed shows who saved what
+              </li>
+              <li>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  width="15"
+                  height="15"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Reactions to rate what's worth reading
+              </li>
+              <li>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  width="15"
+                  height="15"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Invite via link — members join free
+              </li>
+            </ul>
+            <div class="team-price-badge">
+              <strong>$13.99</strong>
+              <span>/ month for the whole team</span>
+            </div>
+          </div>
+
+          <div class="team-mockup sr">
+            <div class="team-mockup-header">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#a5b4fc"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                width="13"
+                height="13"
+              >
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+              <span class="team-mockup-title">Team Tab</span>
+              <div class="live-dot"></div>
+            </div>
+            <div class="team-mockup-feed">
+              <div class="feed-item">
+                <div class="feed-avatar av-a">A</div>
+                <div class="feed-text">
+                  <strong>David</strong> saved "Best Pizza in New York 🍕"
+                </div>
+                <div class="feed-time">2m ago</div>
+              </div>
+              <div class="feed-item">
+                <div class="feed-avatar av-b">S</div>
+                <div class="feed-text">
+                  <strong>Ava</strong> reacted 🤯 to "Budget trip to Japan
+                  guide"
+                </div>
+                <div class="feed-time">1h ago</div>
+              </div>
+              <div class="feed-item">
+                <div class="feed-avatar av-c">M</div>
+                <div class="feed-text">
+                  <strong>Omar</strong> saved "Secret 10-minute pasta recipe"
+                </div>
+                <div class="feed-time">3h ago</div>
+              </div>
+            </div>
+            <div class="team-entry">
+              <div class="team-entry-top">
+                <span class="team-entry-title">Summer Vacation 2026 Ideas</span>
+                <span class="team-entry-saver">by David</span>
+              </div>
+              <div class="team-reactions">
+                <div class="reaction-pill">🤯 <span>3</span></div>
+                <div class="reaction-pill">🔖 <span>2</span></div>
+                <div class="reaction-pill">👀 <span>1</span></div>
+              </div>
             </div>
           </div>
         </div>
-
-        <div class="scroll-hint">
-          <span>Our Privacy Promise</span>
-          <div class="scroll-line"></div>
-        </div>
-      </section>
-
-      <!-- Promise Cards -->
-      <div class="promises">
-        <div class="pc">
-          <div class="pc-ico">
-            <svg viewBox="0 0 24 24">
-              <rect x="2" y="3" width="20" height="14" rx="2" />
-              <path d="M8 21h8M12 17v4" />
-            </svg>
-          </div>
-          <div class="pc-title">Free = Local</div>
-          <div class="pc-desc">
-            No account? Everything stays on your device.
-          </div>
-        </div>
-        <div class="pc">
-          <div class="pc-ico">
-            <svg viewBox="0 0 24 24">
-              <path d="M1 1l22 22M16.72 11.06A10.94 10.94 0 0 1 19 12.55" />
-              <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39" />
-              <path d="M10.71 5.05A16 16 0 0 1 22.56 9" />
-              <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88" />
-              <path d="M8.53 16.11a6 6 0 0 1 6.95 0" />
-              <circle cx="12" cy="20" r="1" />
-            </svg>
-          </div>
-          <div class="pc-title">No Tracking</div>
-          <div class="pc-desc">Zero analytics or fingerprinting.</div>
-        </div>
-        <div class="pc">
-          <div class="pc-ico">
-            <svg viewBox="0 0 24 24">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-              <polyline points="9 12 11 14 15 10" />
-            </svg>
-          </div>
-          <div class="pc-title">Never Sold</div>
-          <div class="pc-desc">Your data isn't a product. Ever.</div>
-        </div>
       </div>
+    </section>
 
-      <!-- Policy Sections -->
-      <div class="policy-shell">
-        <div class="psec">
-          <div class="s-ico">
-            <svg viewBox="0 0 24 24">
-              <ellipse cx="12" cy="5" rx="9" ry="3" />
-              <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" />
-              <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
-            </svg>
-          </div>
-          <div class="s-body">
-            <div class="s-title">We only collect what you choose to sync</div>
-            <p class="s-text">
-              Free users save everything locally — no account, no server,
-              nothing leaves your device. If you upgrade to Pro or Team, your
-              saves sync to Firebase (by Google) so you can access them across
-              devices. We never read, sell, or share what you save.
-            </p>
-          </div>
-        </div>
-
-        <div class="psec">
-          <div class="s-ico">
-            <svg viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="10" />
-              <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
-            </svg>
-          </div>
-          <div class="s-body">
-            <div class="s-title">No tracking, ever</div>
-            <p class="s-text">
-              There are no analytics, cookies, or tracking scripts inside the
-              extension. We don't track what you browse, how often you use the
-              app, or anything about your behavior. Your account email is used
-              only for login — nothing else.
-            </p>
-          </div>
-        </div>
-
-        <div class="psec">
-          <div class="s-ico">
-            <svg viewBox="0 0 24 24">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-            </svg>
-          </div>
-          <div class="s-body">
-            <div class="s-title">Permissions we ask for</div>
-            <p class="s-text">
-              QuickKeep needs permission to read the current tab's URL and title
-              when you save, inject the quick-save overlay on pages, and store
-              your saves locally or sync them to Firebase if you're on a paid
-              plan. We never read page content unless you highlight text to save
-              as a note.
-            </p>
-          </div>
-        </div>
-
-        <div class="psec">
-          <div class="s-ico">
-            <svg viewBox="0 0 24 24">
-              <polyline points="3 6 5 6 21 6" />
-              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-              <path d="M10 11v6M14 11v6" />
-              <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
-            </svg>
-          </div>
-          <div class="s-body">
-            <div class="s-title">You're in full control</div>
-            <p class="s-text">
-              Delete any save, clear your entire list, or cancel your plan
-              anytime. Free users: uninstalling removes everything permanently.
-              Pro/Team users: your cloud data stays in Firebase until you delete
-              your account. Your personal saves are always private — team
-              members can only see what you explicitly share to the team.
-            </p>
-          </div>
-        </div>
-
-        <div class="psec">
-          <div class="s-ico">
-            <svg viewBox="0 0 24 24">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-            </svg>
-          </div>
-          <div class="s-body">
-            <div class="s-title">Third-party services we use</div>
-            <p class="s-text">
-              <strong>Paddle</strong> — Payments on QuickKeep are processed by
-              Paddle (our Merchant of Record). When you upgrade, your payment
-              info is collected directly by Paddle. We never see your card
-              details.
-              <a
-                href="https://paddle.com/legal/privacy/"
-                target="_blank"
-                style="color: #a5b4fc"
-                >Paddle Privacy Policy →</a
-              ><br /><br /><strong>Firebase (by Google)</strong> — We use
-              Firebase to provide cloud sync, database storage, and
-              authentication for Pro and Team users. Firebase processes your
-              email and saved content on our behalf to deliver the service.
-              <a
-                href="https://firebase.google.com/support/privacy"
-                target="_blank"
-                style="color: #a5b4fc"
-                >Firebase Privacy Policy →</a
-              >
-            </p>
-          </div>
-        </div>
-
-        <div class="psec">
-          <div class="s-ico">
-            <svg viewBox="0 0 24 24">
-              <path
-                d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
-              />
-              <polyline points="22,6 12,13 2,6" />
-            </svg>
-          </div>
-          <div class="s-body">
-            <div class="s-title">Your Data Rights</div>
-            <p class="s-text">
-              Reach out via the Chrome Web Store support link. We're a small
-              team and always happy to help with anything — whether it's a
-              billing question, a privacy concern, or just feedback about the
-              product.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <!-- ═══ Pricing ═══ -->
-      <div class="pricing-wrap">
-        <div class="section-label">
+    <!-- ═══════════════════════════════════════
+     PRICING
+═══════════════════════════════════════ -->
+    <section class="plans-section" id="pricing">
+      <div class="wrap">
+        <div class="section-label sr">
           <h2>Simple, honest <em>pricing</em></h2>
           <p>Start free. Upgrade when you're ready. Cancel anytime.</p>
         </div>
 
-        <!-- Billing toggle -->
-        <div class="pricing-toggle-wrap">
-          <span class="toggle-label" id="labelMonthly">Monthly</span>
-          <button
-            class="pricing-toggle"
-            id="billingToggle"
-            aria-label="Toggle billing period"
-          >
+        <div class="plans-toggle-wrap sr">
+          <span class="toggle-label active" id="labelMonthly">Monthly</span>
+          <button class="plans-toggle" id="billingToggle">
             <span class="toggle-thumb"></span>
           </button>
           <span class="toggle-label" id="labelYearly"
-            >Yearly <span class="toggle-save">Save 27%</span></span
+            >Yearly <span class="save-badge">Save 39%</span></span
           >
         </div>
 
-        <div class="pricing-grid">
+        <div class="plans-grid sr">
           <!-- Free -->
-          <div class="pricing-card">
-            <div class="pricing-name">Free</div>
-            <div class="pricing-price">$0<span>/forever</span></div>
-            <ul class="pricing-features">
+          <div class="plan-card">
+            <div class="plan-name">Free</div>
+            <div class="plan-price"><sup>$</sup>0</div>
+            <div class="plan-yearly-price">&nbsp;</div>
+            <div class="plan-desc">
+              Everything you need to get started — no account, no credit card.
+            </div>
+            <ul class="plan-features">
               <li>
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
-                  stroke="currentColor"
+                  stroke="#4ade80"
                   stroke-width="2.5"
                   stroke-linecap="round"
                   stroke-linejoin="round"
-                  width="13"
-                  height="13"
+                  width="14"
+                  height="14"
                 >
-                  <polyline points="20 6 9 17 4 12" /></svg
-                >Save up to 30 pages
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Up to 30 saved pages
               </li>
               <li>
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
-                  stroke="currentColor"
+                  stroke="#4ade80"
                   stroke-width="2.5"
                   stroke-linecap="round"
                   stroke-linejoin="round"
-                  width="13"
-                  height="13"
+                  width="14"
+                  height="14"
                 >
-                  <polyline points="20 6 9 17 4 12" /></svg
-                >Notes on every saved page
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                One-click save
               </li>
               <li>
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
-                  stroke="currentColor"
+                  stroke="#4ade80"
                   stroke-width="2.5"
                   stroke-linecap="round"
                   stroke-linejoin="round"
-                  width="13"
-                  height="13"
+                  width="14"
+                  height="14"
                 >
-                  <polyline points="20 6 9 17 4 12" /></svg
-                >Double-click to save
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Double-click text capture
               </li>
               <li>
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
-                  stroke="currentColor"
+                  stroke="#4ade80"
                   stroke-width="2.5"
                   stroke-linecap="round"
                   stroke-linejoin="round"
-                  width="13"
-                  height="13"
+                  width="14"
+                  height="14"
                 >
-                  <polyline points="20 6 9 17 4 12" /></svg
-                >100% private, local storage
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Notes on every save
+              </li>
+              <li class="dim">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  width="14"
+                  height="14"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+                No sync across devices
+              </li>
+              <li class="dim">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  width="14"
+                  height="14"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+                No search
               </li>
             </ul>
             <a
               href="https://chrome.google.com/webstore"
-              class="pricing-btn secondary"
               target="_blank"
+              class="plan-btn outline"
+              >Add to Chrome Free</a
             >
-              Install free
-            </a>
           </div>
 
           <!-- Pro -->
-          <div class="pricing-card featured">
-            <div class="pricing-popular">Most Popular</div>
-            <div class="pricing-name">Pro</div>
-            <div class="pricing-price">
-              <span class="price-monthly">$3.99<span>/month</span></span>
-              <span class="price-yearly" style="display: none"
-                >$29<span>/year</span></span
-              >
+          <div class="plan-card featured">
+            <div class="plan-popular">Most Popular</div>
+            <div class="plan-name">Pro</div>
+            <div class="plan-price plan-price-monthly">
+              <sup>$</sup>3<span>.99/mo</span>
             </div>
-            <div class="pricing-alt">
-              <span class="alt-monthly">billed monthly — cancel anytime</span>
-              <span class="alt-yearly" style="display: none"
-                >that's $2.42/month — save $19</span
-              >
+            <div class="plan-price plan-price-yearly" style="display: none">
+              <sup>$</sup>29<span>/yr</span>
             </div>
-            <ul class="pricing-features">
+            <div class="plan-yearly-price" id="proYearlySub">
+              billed monthly
+            </div>
+            <div class="plan-desc">
+              For power users who want their saves everywhere and organized.
+            </div>
+            <ul class="plan-features">
               <li>
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
-                  stroke="currentColor"
+                  stroke="#a5b4fc"
                   stroke-width="2.5"
                   stroke-linecap="round"
                   stroke-linejoin="round"
-                  width="13"
-                  height="13"
+                  width="14"
+                  height="14"
                 >
-                  <polyline points="20 6 9 17 4 12" /></svg
-                >Everything in Free
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Unlimited saves
               </li>
               <li>
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
-                  stroke="currentColor"
+                  stroke="#a5b4fc"
                   stroke-width="2.5"
                   stroke-linecap="round"
                   stroke-linejoin="round"
-                  width="13"
-                  height="13"
+                  width="14"
+                  height="14"
                 >
-                  <polyline points="20 6 9 17 4 12" /></svg
-                >Sync across all devices
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Sync across all devices
               </li>
               <li>
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
-                  stroke="currentColor"
+                  stroke="#a5b4fc"
                   stroke-width="2.5"
                   stroke-linecap="round"
                   stroke-linejoin="round"
-                  width="13"
-                  height="13"
+                  width="14"
+                  height="14"
                 >
-                  <polyline points="20 6 9 17 4 12" /></svg
-                >Unlimited saves
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Instant search
               </li>
               <li>
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
-                  stroke="currentColor"
+                  stroke="#a5b4fc"
                   stroke-width="2.5"
                   stroke-linecap="round"
                   stroke-linejoin="round"
-                  width="13"
-                  height="13"
+                  width="14"
+                  height="14"
                 >
-                  <polyline points="20 6 9 17 4 12" /></svg
-                >Export CSV, JSON, Markdown
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Export CSV & Markdown
               </li>
               <li>
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
-                  stroke="currentColor"
+                  stroke="#a5b4fc"
                   stroke-width="2.5"
                   stroke-linecap="round"
                   stroke-linejoin="round"
-                  width="13"
-                  height="13"
+                  width="14"
+                  height="14"
                 >
-                  <polyline points="20 6 9 17 4 12" /></svg
-                >Folders and tags
-              </li>
-              <li>
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  width="13"
-                  height="13"
-                >
-                  <polyline points="20 6 9 17 4 12" /></svg
-                >Search across all notes
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Priority support
               </li>
             </ul>
             <button
-              class="pricing-btn pro-btn"
-              data-monthly="pri_01khz3fzn7vn5b6nwjjvg05rcr"
-              data-yearly="pri_01khz3jett0nyxc2nkrk4pwcvp"
+              class="plan-btn primary plan-cta-monthly"
+              data-price="pri_01khz3fzn7vn5b6nwjjvg05rcr"
             >
-              <span class="btn-monthly">Get Pro — $3.99/month</span>
-              <span class="btn-yearly" style="display: none"
-                >Get Pro — $29/year</span
-              >
+              Get Pro — $3.99/mo
+            </button>
+            <button
+              class="plan-btn primary plan-cta-yearly"
+              style="display: none"
+              data-price="pri_01khz3jett0nyxc2nkrk4pwcvp"
+            >
+              Get Pro — $29/yr
             </button>
           </div>
 
           <!-- Team -->
-          <div class="pricing-card">
-            <div class="pricing-name">Team</div>
-            <div class="pricing-price">
-              <span class="price-monthly"
-                >$13.99<span>/mo for 5 seats</span></span
-              >
-              <span class="price-yearly" style="display: none"
-                >$99<span>/yr for 5 seats</span></span
-              >
+          <div class="plan-card">
+            <div class="plan-name">Team</div>
+            <div class="plan-price plan-price-monthly">
+              <sup>$</sup>13<span>.99/mo</span>
             </div>
-            <div class="pricing-alt">
-              <span class="alt-monthly">up to 5 members, billed monthly</span>
-              <span class="alt-yearly" style="display: none"
-                >that's $8.25/month — save $68</span
-              >
+            <div class="plan-price plan-price-yearly" style="display: none">
+              <sup>$</sup>99<span>/yr</span>
             </div>
-            <ul class="pricing-features">
+            <div class="plan-yearly-price" id="teamYearlySub">
+              up to 5 members
+            </div>
+            <div class="plan-desc">
+              For friend groups, small teams, and anyone who shares links
+              constantly.
+            </div>
+            <ul class="plan-features">
               <li>
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
-                  stroke="currentColor"
+                  stroke="#fbbf24"
                   stroke-width="2.5"
                   stroke-linecap="round"
                   stroke-linejoin="round"
-                  width="13"
-                  height="13"
+                  width="14"
+                  height="14"
                 >
-                  <polyline points="20 6 9 17 4 12" /></svg
-                >Everything in Pro
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Everything in Pro
               </li>
               <li>
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
-                  stroke="currentColor"
+                  stroke="#fbbf24"
                   stroke-width="2.5"
                   stroke-linecap="round"
                   stroke-linejoin="round"
-                  width="13"
-                  height="13"
+                  width="14"
+                  height="14"
                 >
-                  <polyline points="20 6 9 17 4 12" /></svg
-                >Shared team collections
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Up to 5 members total
               </li>
               <li>
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
-                  stroke="currentColor"
+                  stroke="#fbbf24"
                   stroke-width="2.5"
                   stroke-linecap="round"
                   stroke-linejoin="round"
-                  width="13"
-                  height="13"
+                  width="14"
+                  height="14"
                 >
-                  <polyline points="20 6 9 17 4 12" /></svg
-                >Comment on saved pages
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Shared team saves tab
               </li>
               <li>
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
-                  stroke="currentColor"
+                  stroke="#fbbf24"
                   stroke-width="2.5"
                   stroke-linecap="round"
                   stroke-linejoin="round"
-                  width="13"
-                  height="13"
+                  width="14"
+                  height="14"
                 >
-                  <polyline points="20 6 9 17 4 12" /></svg
-                >Admin dashboard
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Live activity feed
               </li>
               <li>
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
-                  stroke="currentColor"
+                  stroke="#fbbf24"
                   stroke-width="2.5"
                   stroke-linecap="round"
                   stroke-linejoin="round"
-                  width="13"
-                  height="13"
+                  width="14"
+                  height="14"
                 >
-                  <polyline points="20 6 9 17 4 12" /></svg
-                >Invite members by email
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Reactions on saves
+              </li>
+              <li>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#fbbf24"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  width="14"
+                  height="14"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Members join free
               </li>
             </ul>
             <button
-              class="pricing-btn secondary team-btn"
-              data-monthly="pri_01kj0c2jyfw46t720s405yzf0q"
-              data-yearly="pri_01kj0c3egz8d6qzttdgqw87821"
+              class="plan-btn outline plan-cta-monthly"
+              data-price="pri_01kj0c2jyfw46t720s405yzf0q"
             >
-              <span class="btn-monthly">Get Team — $13.99/month</span>
-              <span class="btn-yearly" style="display: none"
-                >Get Team — $99/year</span
-              >
+              Get Team — $13.99/mo
+            </button>
+            <button
+              class="plan-btn outline plan-cta-yearly"
+              style="display: none"
+              data-price="pri_01kj0c3egz8d6qzttdgqw87821"
+            >
+              Get Team — $99/yr
             </button>
           </div>
         </div>
-
-        <p class="pricing-note">
-          Payments processed securely by Paddle. Cancel anytime.
-        </p>
       </div>
+    </section>
 
-      <!-- ═══ Reviews ═══ -->
-      <div class="reviews-wrap">
-        <div class="section-label">
+    <!-- ═══════════════════════════════════════
+     REVIEWS
+═══════════════════════════════════════ -->
+    <section class="reviews-section">
+      <div class="wrap">
+        <div class="section-label sr">
           <h2>Loved by <em>real users</em></h2>
           <p>Here's what people are saying about QuickKeep.</p>
         </div>
-
         <div class="reviews-grid">
-          <div class="review-card">
-            <span class="review-quote-mark">"</span>
+          <div class="review-card sr">
             <div class="review-stars">
               <svg viewBox="0 0 24 24">
                 <polygon
@@ -2289,20 +2601,16 @@
               </svg>
             </div>
             <p class="review-text">
-              I started with the free plan just to try it. No sign-up, no
+              "I started with the free plan just to try it. No sign-up, no
               friction — I was saving pages in 10 seconds. Upgraded to Pro a
-              week later and the sync across my laptop and work PC is seamless.
+              week later and the sync across my laptop and work PC is seamless."
             </p>
             <div class="review-author">
-              <div class="review-avatar av-a">S</div>
-              <div>
-                <div class="review-name">Sarah M.</div>
-              </div>
+              <div class="review-avatar rv-a">S</div>
+              <div class="review-name">Sarah M.</div>
             </div>
           </div>
-
-          <div class="review-card">
-            <span class="review-quote-mark">"</span>
+          <div class="review-card sr">
             <div class="review-stars">
               <svg viewBox="0 0 24 24">
                 <polygon
@@ -2331,20 +2639,17 @@
               </svg>
             </div>
             <p class="review-text">
-              I got the Team plan for me and my friends. We share articles and
-              videos we find interesting instead of spamming each other on
-              WhatsApp. Best $13.99 I spend every month.
+              "I got the Team plan for me and my friends. We share articles and
+              videos instead of spamming each other on WhatsApp. The reactions
+              are hilarious — someone always hits Meh on my saves. Best $13.99 I
+              spend."
             </p>
             <div class="review-author">
-              <div class="review-avatar av-b">J</div>
-              <div>
-                <div class="review-name">James K.</div>
-              </div>
+              <div class="review-avatar rv-b">J</div>
+              <div class="review-name">James K.</div>
             </div>
           </div>
-
-          <div class="review-card full">
-            <span class="review-quote-mark">"</span>
+          <div class="review-card sr">
             <div class="review-stars">
               <svg viewBox="0 0 24 24">
                 <polygon
@@ -2373,295 +2678,93 @@
               </svg>
             </div>
             <p class="review-text">
-              The Pro plan export feature alone is worth it. I export my saves
-              as Markdown every week and drop them into my notes app. Also the
-              search is instant — it finds anything in seconds.
+              "The Pro plan export is worth it alone. I export my saves as
+              Markdown every week into my notes app. Also the search is instant
+              — it finds anything in seconds. I've replaced my entire bookmark
+              system."
             </p>
             <div class="review-author">
-              <div class="review-avatar av-c">N</div>
-              <div>
-                <div class="review-name">Nour A.</div>
-              </div>
+              <div class="review-avatar rv-c">N</div>
+              <div class="review-name">Olivia A.</div>
             </div>
           </div>
         </div>
       </div>
+    </section>
 
-      <!-- ═══ FAQ ═══ -->
-      <div class="faq-wrap">
-        <div class="section-label">
-          <h2>Common <em>questions</em></h2>
-          <p>Click any question to see the answer.</p>
-        </div>
-
-        <div class="faq-list">
-          <div class="faq-item">
-            <button class="faq-q">
-              <span class="faq-q-text">Can QuickKeep see what I save?</span>
-              <span class="faq-icon"
-                ><svg viewBox="0 0 24 24">
-                  <polyline points="6 9 12 15 18 9" /></svg
-              ></span>
-            </button>
-            <div class="faq-a-wrap">
-              <div class="faq-a-inner">
-                <p class="faq-a">
-                  Free users: no. Everything stays in your browser and we have
-                  no way to access it. Pro and Team users: your saves are stored
-                  in Firebase (Google's cloud), which we use to power sync. We
-                  can technically access the database, but we never read, sell,
-                  or share your data.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div class="faq-item">
-            <button class="faq-q">
-              <span class="faq-q-text"
-                >Does it work without an internet connection?</span
+    <!-- ═══════════════════════════════════════
+     CTA
+═══════════════════════════════════════ -->
+    <section class="cta-section">
+      <div class="wrap">
+        <div class="cta-box sr">
+          <h2>Start saving the things<br />that <em>matter to you.</em></h2>
+          <p>
+            Free forever. No account needed to get started. Upgrade when you're
+            ready.
+          </p>
+          <div class="cta-actions">
+            <a
+              href="https://chrome.google.com/webstore"
+              target="_blank"
+              class="btn-primary"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                width="15"
+                height="15"
               >
-              <span class="faq-icon"
-                ><svg viewBox="0 0 24 24">
-                  <polyline points="6 9 12 15 18 9" /></svg
-              ></span>
-            </button>
-            <div class="faq-a-wrap">
-              <div class="faq-a-inner">
-                <p class="faq-a">
-                  Free users: yes, everything is local so it works fully
-                  offline. Pro and Team users: your saves are synced to the
-                  cloud, so you need an internet connection to save and load
-                  your list. Once loaded, the extension caches your recent saves
-                  so you can still browse them offline.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div class="faq-item">
-            <button class="faq-q">
-              <span class="faq-q-text"
-                >What happens to my data if I uninstall QuickKeep?</span
-              >
-              <span class="faq-icon"
-                ><svg viewBox="0 0 24 24">
-                  <polyline points="6 9 12 15 18 9" /></svg
-              ></span>
-            </button>
-            <div class="faq-a-wrap">
-              <div class="faq-a-inner">
-                <p class="faq-a">
-                  Free users: all data is permanently deleted when you uninstall
-                  — nothing lingers. Pro and Team users: your saves remain in
-                  Firebase after uninstalling. You can delete your account and
-                  all cloud data at any time directly from the extension — click
-                  your profile icon and select "Delete Account."
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div class="faq-item">
-            <button class="faq-q">
-              <span class="faq-q-text"
-                >Will this privacy policy ever change?</span
-              >
-              <span class="faq-icon"
-                ><svg viewBox="0 0 24 24">
-                  <polyline points="6 9 12 15 18 9" /></svg
-              ></span>
-            </button>
-            <div class="faq-a-wrap">
-              <div class="faq-a-inner">
-                <p class="faq-a">
-                  If we make meaningful changes we'll update the date on this
-                  page and note it in the Chrome Web Store changelog. We're
-                  committed to keeping this policy short, honest, and free of
-                  legal jargon.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div class="faq-item">
-            <button class="faq-q">
-              <span class="faq-q-text"
-                >Do you use any third-party services?</span
-              >
-              <span class="faq-icon"
-                ><svg viewBox="0 0 24 24">
-                  <polyline points="6 9 12 15 18 9" /></svg
-              ></span>
-            </button>
-            <div class="faq-a-wrap">
-              <div class="faq-a-inner">
-                <p class="faq-a">
-                  Yes — two. Paddle for payment processing (Pro and Team plans),
-                  and Firebase by Google for cloud sync and authentication (Pro
-                  and Team plans). Free users have no third-party services at
-                  all. We do not use any analytics tools, ad networks, or
-                  tracking SDKs.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div class="faq-item">
-            <button class="faq-q">
-              <span class="faq-q-text"
-                >Can my team members see my personal saves?</span
-              >
-              <span class="faq-icon"
-                ><svg viewBox="0 0 24 24">
-                  <polyline points="6 9 12 15 18 9" /></svg
-              ></span>
-            </button>
-            <div class="faq-a-wrap">
-              <div class="faq-a-inner">
-                <p class="faq-a">
-                  No. Personal saves are completely private — only you can see
-                  them. Team members only see pages you explicitly save using
-                  the "Team" button. Nothing in your personal list is ever
-                  shared automatically.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div class="faq-item">
-            <button class="faq-q">
-              <span class="faq-q-text">Who pays for the Team plan?</span>
-              <span class="faq-icon"
-                ><svg viewBox="0 0 24 24">
-                  <polyline points="6 9 12 15 18 9" /></svg
-              ></span>
-            </button>
-            <div class="faq-a-wrap">
-              <div class="faq-a-inner">
-                <p class="faq-a">
-                  Only the team owner pays — $13.99/month for the whole group
-                  (up to 5 members). Members join for free using an invite link.
-                  They just need to create a free QuickKeep account with the
-                  email address they were invited with.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div class="faq-item">
-            <button class="faq-q">
-              <span class="faq-q-text"
-                >What happens to shared team saves if the owner cancels?</span
-              >
-              <span class="faq-icon"
-                ><svg viewBox="0 0 24 24">
-                  <polyline points="6 9 12 15 18 9" /></svg
-              ></span>
-            </button>
-            <div class="faq-a-wrap">
-              <div class="faq-a-inner">
-                <p class="faq-a">
-                  If the owner cancels their Team plan, the shared team
-                  collection becomes inaccessible. Each member keeps their own
-                  personal saves. We recommend the owner exports the shared
-                  collection before cancelling.
-                </p>
-              </div>
-            </div>
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              Add to Chrome — Free
+            </a>
+            <a href="#pricing" class="btn-secondary">View pricing</a>
           </div>
         </div>
       </div>
-      <footer>
-        <div class="f-div">
-          <div class="f-div-ico">
-            <svg viewBox="0 0 24 24">
-              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-            </svg>
+    </section>
+
+    <!-- ═══════════════════════════════════════
+     FOOTER
+═══════════════════════════════════════ -->
+    <footer>
+      <div class="wrap">
+        <div class="footer-inner">
+          <a href="/" class="footer-brand">
+            <div class="footer-brand-mark"></div>
+            <span class="footer-brand-name">QuickKeep</span>
+          </a>
+          <div class="footer-links">
+            <a href="#features">Features</a>
+            <a href="#pricing">Pricing</a>
+            <a href="privacy_policy.html">Privacy Policy</a>
+            <a href="terms.html">Terms of Service</a>
+            <a href="https://chrome.google.com/webstore" target="_blank"
+              >Chrome Web Store</a
+            >
           </div>
+          <div class="footer-copy">© 2026 QuickKeep. All rights reserved.</div>
         </div>
-        <div class="f-meta">
-          Last updated: <strong style="color: var(--t2)">February 2026</strong>
-          <span class="fdot"></span>
-          <a href="terms.html">Terms of Service</a>
-          <span class="fdot"></span>
-          <a href="#">Chrome Web Store</a>
-          <br />No cookies &nbsp;&middot;&nbsp; No analytics
-          &nbsp;&middot;&nbsp; No nonsense
-        </div>
-      </footer>
-    </div>
+      </div>
+    </footer>
 
     <script>
-      // Initialize Paddle + pricing toggle
+      // ── Paddle init ───────────────────────────────────────────────
       window.addEventListener("DOMContentLoaded", () => {
         if (typeof Paddle !== "undefined") {
           Paddle.Initialize({ token: "live_67ab1894eb53170faa613ff26dd" });
         }
 
-        // Auto-open checkout if price ID passed via URL parameter (from extension popup)
-        const params = new URLSearchParams(window.location.search);
-        const priceId = params.get("checkout");
-        const inviteToken = params.get("invite");
-
-        if (priceId && typeof Paddle !== "undefined") {
-          setTimeout(() => {
-            Paddle.Checkout.open({ items: [{ priceId, quantity: 1 }] });
-          }, 500);
-        }
-
-        if (inviteToken) {
-          // Show invite acceptance message
-          const banner = document.createElement("div");
-          banner.style.cssText = `
-          position:fixed; top:0; left:0; right:0; z-index:9999;
-          background:#6366f1; color:#fff; text-align:center;
-          padding:14px 20px; font-size:14px; font-weight:500;
-        `;
-          banner.innerHTML = `
-          🎉 You've been invited to a QuickKeep team!
-          <a href="https://chrome.google.com/webstore" target="_blank"
-             style="color:#fff;font-weight:700;margin-left:8px;text-decoration:underline">
-            Install the extension to accept →
-          </a>
-        `;
-          document.body.prepend(banner);
-        }
-
-        const toggle = document.getElementById("billingToggle");
-        const labelMonthly = document.getElementById("labelMonthly");
-        const labelYearly = document.getElementById("labelYearly");
-        let isYearly = false;
-
-        toggle.addEventListener("click", () => {
-          isYearly = !isYearly;
-          toggle.classList.toggle("active", isYearly);
-          labelMonthly.style.color = isYearly ? "var(--t2)" : "var(--t1)";
-          labelYearly.style.color = isYearly ? "var(--t1)" : "var(--t2)";
-
-          document
-            .querySelectorAll(".price-monthly")
-            .forEach((el) => (el.style.display = isYearly ? "none" : ""));
-          document
-            .querySelectorAll(".price-yearly")
-            .forEach((el) => (el.style.display = isYearly ? "" : "none"));
-          document
-            .querySelectorAll(".alt-monthly")
-            .forEach((el) => (el.style.display = isYearly ? "none" : ""));
-          document
-            .querySelectorAll(".alt-yearly")
-            .forEach((el) => (el.style.display = isYearly ? "" : "none"));
-          document
-            .querySelectorAll(".btn-monthly")
-            .forEach((el) => (el.style.display = isYearly ? "none" : ""));
-          document
-            .querySelectorAll(".btn-yearly")
-            .forEach((el) => (el.style.display = isYearly ? "" : "none"));
-        });
-
-        document.querySelectorAll(".pro-btn, .team-btn").forEach((btn) => {
+        // Wire up all checkout buttons
+        document.querySelectorAll("[data-price]").forEach((btn) => {
           btn.addEventListener("click", () => {
-            const priceId = isYearly ? btn.dataset.yearly : btn.dataset.monthly;
+            const priceId = btn.dataset.price;
             if (typeof Paddle !== "undefined") {
               Paddle.Checkout.open({ items: [{ priceId, quantity: 1 }] });
             } else {
@@ -2671,74 +2774,52 @@
         });
       });
 
-      // Reading progress bar
-      const rbar = document.getElementById("rbar");
-      window.addEventListener(
-        "scroll",
-        () => {
-          const pct =
-            window.scrollY / (document.body.scrollHeight - window.innerHeight);
-          rbar.style.width = `${Math.min(100, pct * 100)}%`;
-        },
-        { passive: true },
-      );
-
-      // Scroll-triggered reveals
-      const io = new IntersectionObserver(
+      // ── Scroll reveal ─────────────────────────────────────────────
+      const observer = new IntersectionObserver(
         (entries) => {
-          entries.forEach((e) => {
+          entries.forEach((e, i) => {
             if (e.isIntersecting) {
-              e.target.classList.add("in");
-              io.unobserve(e.target);
+              setTimeout(() => e.target.classList.add("visible"), i * 80);
+              observer.unobserve(e.target);
             }
           });
         },
-        { threshold: 0.07, rootMargin: "0px 0px -36px 0px" },
+        { threshold: 0.1 },
       );
+      document.querySelectorAll(".sr").forEach((el) => observer.observe(el));
 
-      document.querySelectorAll(".pc").forEach((el, i) => {
-        el.style.animationDelay = `${i * 0.1}s`;
-        io.observe(el);
-      });
-      document
-        .querySelectorAll(".policy-shell, .faq-list, footer")
-        .forEach((el) => io.observe(el));
-      document.querySelectorAll(".psec").forEach((el, i) => {
-        el.style.animationDelay = `${i * 0.06}s`;
-        io.observe(el);
-      });
-      document
-        .querySelectorAll(".section-label")
-        .forEach((el) => io.observe(el));
-      document.querySelectorAll(".review-card").forEach((el, i) => {
-        el.style.animationDelay = `${i * 0.1}s`;
-        io.observe(el);
-      });
+      // ── Pricing toggle ────────────────────────────────────────────
+      const toggle = document.getElementById("billingToggle");
+      const labelM = document.getElementById("labelMonthly");
+      const labelY = document.getElementById("labelYearly");
+      let yearly = false;
 
-      // FAQ accordion
-      document.querySelectorAll(".faq-item").forEach((item) => {
-        item.querySelector(".faq-q").addEventListener("click", () => {
-          const isOpen = item.classList.contains("open");
-          // Close all
-          document
-            .querySelectorAll(".faq-item")
-            .forEach((i) => i.classList.remove("open"));
-          // Toggle clicked
-          if (!isOpen) item.classList.add("open");
-        });
-      });
+      toggle.addEventListener("click", () => {
+        yearly = !yearly;
+        toggle.classList.toggle("yearly", yearly);
+        labelM.classList.toggle("active", !yearly);
+        labelY.classList.toggle("active", yearly);
 
-      // Hero parallax
-      const title = document.querySelector(".hero-title");
-      window.addEventListener(
-        "mousemove",
-        (e) => {
-          const x = (e.clientX / window.innerWidth - 0.5) * 7;
-          const y = (e.clientY / window.innerHeight - 0.5) * 4;
-          title.style.transform = `translate(${x}px, ${y}px)`;
-        },
-        { passive: true },
-      );
+        document
+          .querySelectorAll(".plan-price-monthly")
+          .forEach((el) => (el.style.display = yearly ? "none" : ""));
+        document
+          .querySelectorAll(".plan-price-yearly")
+          .forEach((el) => (el.style.display = yearly ? "" : "none"));
+        document
+          .querySelectorAll(".plan-cta-monthly")
+          .forEach((el) => (el.style.display = yearly ? "none" : ""));
+        document
+          .querySelectorAll(".plan-cta-yearly")
+          .forEach((el) => (el.style.display = yearly ? "" : "none"));
+
+        document.getElementById("proYearlySub").textContent = yearly
+          ? "$2.42/mo — save $18.88"
+          : "billed monthly";
+        document.getElementById("teamYearlySub").textContent = yearly
+          ? "$8.25/mo — save $68.88"
+          : "up to 5 members";
+      });
     </script>
   </body>
 </html>

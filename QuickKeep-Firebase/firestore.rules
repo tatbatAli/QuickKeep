@@ -125,6 +125,17 @@ service cloud.firestore {
       allow delete: if isAuth() && resource.data.userId == request.auth.uid;
     }
 
+    // ── Activity Feed (Team feature) ─────────────────────────
+    match /activity/{activityId} {
+      // Team members can read activity for their team
+      allow read: if isAuth() &&
+        resource.data.teamId == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.teamId;
+      // Team members can create activity events
+      allow create: if isAuth()
+        && request.resource.data.actorUid == request.auth.uid
+        && request.resource.data.teamId == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.teamId;
+    }
+
     // ── Pending upgrades (paid before account creation) ──────────
     match /pending_upgrades/{email} {
       allow read, delete: if isAuth() && request.auth.token.email == email;
