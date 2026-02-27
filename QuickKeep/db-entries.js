@@ -8,7 +8,7 @@
  * no HTTP server or API needed.
  */
 
-const FREE_LIMIT = 30;
+const FREE_LIMIT = 20;
 
 // ═══════════════════════════════════════════════════
 //  ENTRIES

@@ -253,7 +253,7 @@ function renderList(entries) {
   // Save limit indicator
   const plan = userProfile?.plan || "free";
   if (plan === "free") {
-    saveLimitLabel.textContent = `${n} / 30`;
+    saveLimitLabel.textContent = `${n} / 20`;
     saveLimitLabel.style.display = "";
   } else {
     saveLimitLabel.style.display = "none";
@@ -349,7 +349,11 @@ function renderList(entries) {
 // ─────────────────────────────────────────────────────────────
 let unsubTeamEntries = null;
 let currentTeamEntries = [];
-let activeTab = "personal"; // 'personal' | 'team'
+let activeTab = "personal"; // 'personal' | 'team' | 'notifs'
+let lastSeenGroup = parseInt(
+  localStorage.getItem("qk_last_seen_group") || "0",
+  10,
+);
 
 function startEntriesListener(uid) {
   if (unsubEntries) unsubEntries();
@@ -384,9 +388,23 @@ function startTeamEntriesListener(teamId) {
       (snap) => {
         currentTeamEntries = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 
-        // Update team count badge
-        document.getElementById("teamCountBadge").textContent =
-          currentTeamEntries.length;
+        // Only show badge when NOT on the group tab — shows new saves since last visit
+        if (activeTab !== "team") {
+          const newCount = currentTeamEntries.filter((e) => {
+            if (!e.savedAt) return false;
+            const ts = e.savedAt.toDate
+              ? e.savedAt.toDate().getTime()
+              : new Date(e.savedAt).getTime();
+            return ts > lastSeenGroup;
+          }).length;
+          const badge = document.getElementById("teamCountBadge");
+          if (newCount > 0) {
+            badge.textContent = newCount > 9 ? "9+" : String(newCount);
+            badge.style.display = "";
+          } else {
+            badge.style.display = "none";
+          }
+        }
 
         if (activeTab === "team") renderTeamList(currentTeamEntries);
       },
@@ -399,6 +417,15 @@ function startTeamEntriesListener(teamId) {
 // ── Activity Feed ─────────────────────────────────────────────
 let unsubActivity = null;
 
+// ─────────────────────────────────────────────────────────────
+//  NOTIFICATIONS
+// ─────────────────────────────────────────────────────────────
+let allActivityEvents = [];
+let lastSeenTimestamp = parseInt(
+  localStorage.getItem("qk_last_seen_notif") || "0",
+  10,
+);
+
 function startActivityListener(teamId) {
   if (unsubActivity) unsubActivity();
 
@@ -406,11 +433,13 @@ function startActivityListener(teamId) {
     .collection("activity")
     .where("teamId", "==", teamId)
     .orderBy("createdAt", "desc")
-    .limit(10)
+    .limit(50)
     .onSnapshot(
       (snap) => {
-        const events = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-        renderActivityFeed(events);
+        allActivityEvents = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        updateNotifTabBadge(allActivityEvents);
+        // If notifs tab is open, re-render live
+        if (activeTab === "notifs") renderNotifPanel(allActivityEvents);
       },
       (err) => {
         console.error("[QuickKeep] Activity listener error:", err);
@@ -418,48 +447,139 @@ function startActivityListener(teamId) {
     );
 }
 
-function renderActivityFeed(events) {
-  const bar = document.getElementById("activityBar");
-  const barText = document.getElementById("activityBarText");
-  if (!bar || !barText) return;
+function updateNotifTabBadge(events) {
+  const badge = document.getElementById("notifTabBadge");
+  if (!badge) return;
+  // Only show badge if user is NOT currently on notifs tab
+  if (activeTab === "notifs") {
+    badge.style.display = "none";
+    return;
+  }
+  const unread = events.filter((ev) => {
+    if (!ev.createdAt) return false;
+    const ts = ev.createdAt.toDate
+      ? ev.createdAt.toDate().getTime()
+      : new Date(ev.createdAt).getTime();
+    return ts > lastSeenTimestamp;
+  }).length;
+  if (unread > 0) {
+    badge.textContent = unread > 9 ? "9+" : String(unread);
+    badge.style.display = "";
+  } else {
+    badge.style.display = "none";
+  }
+}
 
-  // Always show bar when on team tab
-  if (activeTab === "team") bar.style.display = "flex";
+// Keep legacy names so nothing else breaks
+function renderActivityBar() {}
+function renderNotifBadge(events) {
+  updateNotifTabBadge(events);
+}
 
-  if (!events.length) {
-    barText.innerHTML = "No activity yet — save something to the group!";
+function renderNotifPanel(events) {
+  const list = document.getElementById("notifList");
+  if (!list) {
+    console.error("[QK] notifList not found");
     return;
   }
 
-  // Show the most recent event
-  const ev = events[0];
-  const name = ev.actorEmail ? ev.actorEmail.split("@")[0] : "Someone";
-  const time = ev.createdAt
-    ? timeAgo(
-        ev.createdAt.toDate ? ev.createdAt.toDate() : new Date(ev.createdAt),
-      )
-    : "";
   const reactionEmoji = {
     mustsave: "🔖",
     meh: "😑",
     mindblown: "🤯",
     watching: "👀",
   };
+  const reactionLabels = {
+    mustsave: "Must Save",
+    meh: "Meh",
+    mindblown: "Mind Blown",
+    watching: "Watching",
+  };
 
-  let text;
-  if (ev.type === "save") {
-    text = `<strong>${escapeHtml(name)}</strong> saved "${escapeHtml(ev.title || "a page")}" — ${time}`;
-  } else if (ev.type === "reaction") {
-    const emoji = reactionEmoji[ev.reaction] || "👍";
-    text = `<strong>${escapeHtml(name)}</strong> reacted ${emoji} to "${escapeHtml(ev.title || "a save")}" — ${time}`;
+  if (!events || !events.length) {
+    list.innerHTML = `
+      <div class="qk-notif-empty">
+        <div class="qk-notif-empty-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+               stroke-linecap="round" stroke-linejoin="round" width="26" height="26">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+        </div>
+        <div class="qk-notif-empty-title">All quiet here</div>
+        <div class="qk-notif-empty-sub">When your friends save pages or react, it'll show up here.</div>
+      </div>`;
+    return;
   }
 
-  if (text) {
-    barText.innerHTML = text;
-    barText.style.animation = "none";
-    barText.offsetHeight; // force reflow
-    barText.style.animation = "";
-  }
+  list.innerHTML = events
+    .map((ev, i) => {
+      const name = ev.actorEmail ? ev.actorEmail.split("@")[0] : "Someone";
+      const time = ev.createdAt
+        ? timeAgo(
+            ev.createdAt.toDate
+              ? ev.createdAt.toDate()
+              : new Date(ev.createdAt),
+          )
+        : "";
+      const ts = ev.createdAt
+        ? ev.createdAt.toDate
+          ? ev.createdAt.toDate().getTime()
+          : new Date(ev.createdAt).getTime()
+        : 0;
+      const isUnread = ts > lastSeenTimestamp;
+
+      let iconHtml = "",
+        textHtml = "",
+        pageHtml = "";
+
+      if (ev.type === "save") {
+        iconHtml = `<div class="qk-notif-icon save">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" width="13" height="13">
+          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+        </svg></div>`;
+        textHtml = `<strong>${escapeHtml(name)}</strong> saved a page to the group`;
+        pageHtml = `<div class="qk-notif-page">${escapeHtml(ev.title || ev.url || "a page")}</div>`;
+      } else if (ev.type === "reaction") {
+        const emoji = reactionEmoji[ev.reaction] || "👍";
+        const label = reactionLabels[ev.reaction] || "";
+        iconHtml = `<div class="qk-notif-icon react"><span style="font-size:14px;line-height:1">${emoji}</span></div>`;
+        textHtml = `<strong>${escapeHtml(name)}</strong> reacted ${emoji}${label ? ` (${label})` : ""} to a save`;
+        pageHtml = ev.title
+          ? `<div class="qk-notif-page">${escapeHtml(ev.title)}</div>`
+          : "";
+      } else if (ev.type === "remove") {
+        iconHtml = `<div class="qk-notif-icon remove">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fb7185" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" width="13" height="13">
+          <polyline points="3 6 5 6 21 6"/>
+          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+        </svg></div>`;
+        textHtml = `<strong>${escapeHtml(name)}</strong> removed a save from the group`;
+        pageHtml = ev.title
+          ? `<div class="qk-notif-page">${escapeHtml(ev.title)}</div>`
+          : "";
+      } else {
+        return "";
+      }
+
+      return `<div class="qk-notif-item${isUnread ? " unread" : ""}" style="animation-delay:${i * 0.04}s">
+      ${iconHtml}
+      <div class="qk-notif-body">
+        <div class="qk-notif-text">${textHtml}</div>
+        ${pageHtml}
+      </div>
+      <div class="qk-notif-time">${time}</div>
+      ${isUnread ? '<div class="qk-notif-dot"></div>' : ""}
+    </div>`;
+    })
+    .join("");
+}
+
+// ── legacy alias ───────────────────────────────────────────────
+function renderActivityFeed(events) {
+  updateNotifTabBadge(events);
 }
 
 // ── Time ago helper ───────────────────────────────────────────
@@ -676,26 +796,63 @@ function renderTeamList(entries) {
 }
 
 // ── Tab switching ─────────────────────────────────────────────
-document.getElementById("tabMySaves").addEventListener("click", () => {
-  activeTab = "personal";
-  document.getElementById("tabMySaves").classList.add("active");
-  document.getElementById("tabTeamSaves").classList.remove("active");
-  document.getElementById("listContainer").style.display = "";
-  document.getElementById("teamListContainer").style.display = "none";
-  document.getElementById("activityBar").style.display = "none";
-  const q = searchInput.value.trim();
-  renderList(q ? searchEntries(currentEntries, q) : currentEntries);
-});
+// ─────────────────────────────────────────────────────────────
+//  TAB SWITCHING
+// ─────────────────────────────────────────────────────────────
+function setActiveTab(tab) {
+  activeTab = tab;
 
-document.getElementById("tabTeamSaves").addEventListener("click", () => {
-  activeTab = "team";
-  document.getElementById("tabTeamSaves").classList.add("active");
-  document.getElementById("tabMySaves").classList.remove("active");
-  document.getElementById("listContainer").style.display = "none";
-  document.getElementById("teamListContainer").style.display = "";
-  document.getElementById("activityBar").style.display = "flex";
-  renderTeamList(currentTeamEntries);
-});
+  // Update tab button states
+  document
+    .getElementById("tabMySaves")
+    .classList.toggle("active", tab === "personal");
+  document
+    .getElementById("tabTeamSaves")
+    .classList.toggle("active", tab === "team");
+  document
+    .getElementById("tabNotifs")
+    .classList.toggle("active", tab === "notifs");
+
+  // Show/hide containers
+  document.getElementById("listContainer").style.display =
+    tab === "personal" ? "" : "none";
+  document.getElementById("teamListContainer").style.display =
+    tab === "team" ? "" : "none";
+  document.getElementById("notifContainer").style.display =
+    tab === "notifs" ? "" : "none";
+
+  // Clear badge when user visits the tab
+  if (tab === "team") {
+    lastSeenGroup = Date.now();
+    localStorage.setItem("qk_last_seen_group", String(lastSeenGroup));
+    document.getElementById("teamCountBadge").style.display = "none";
+  }
+  if (tab === "notifs") {
+    // Mark all as read
+    lastSeenTimestamp = Date.now();
+    localStorage.setItem("qk_last_seen_notif", String(lastSeenTimestamp));
+    document.getElementById("notifTabBadge").style.display = "none";
+    renderNotifPanel(allActivityEvents);
+  }
+
+  if (tab === "personal") {
+    const q = searchInput.value.trim();
+    renderList(q ? searchEntries(currentEntries, q) : currentEntries);
+  }
+  if (tab === "team") {
+    renderTeamList(currentTeamEntries);
+  }
+}
+
+document
+  .getElementById("tabMySaves")
+  .addEventListener("click", () => setActiveTab("personal"));
+document
+  .getElementById("tabTeamSaves")
+  .addEventListener("click", () => setActiveTab("team"));
+document
+  .getElementById("tabNotifs")
+  .addEventListener("click", () => setActiveTab("notifs"));
 
 // ─────────────────────────────────────────────────────────────
 //  SAVE

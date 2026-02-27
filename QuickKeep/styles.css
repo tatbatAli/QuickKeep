@@ -1458,13 +1458,13 @@ body.qk-popup {
 .qk-saves-tabs {
   display: flex;
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-  padding: 0 16px;
-  gap: 4px;
+  padding: 0 12px;
+  gap: 2px;
 }
 .qk-saves-tab {
   flex: 1;
   padding: 8px 4px;
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 500;
   color: var(--qk-muted);
   background: none;
@@ -1477,19 +1477,32 @@ body.qk-popup {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 5px;
+  white-space: nowrap;
 }
 .qk-saves-tab.active {
   color: var(--qk-text);
   border-bottom-color: #6366f1;
 }
-.qk-team-count {
+.qk-saves-tab:hover:not(.active) {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Count badge inside tabs */
+.qk-tab-count {
   background: rgba(99, 102, 241, 0.2);
   color: #a5b4fc;
   font-size: 10px;
   font-weight: 700;
   padding: 1px 5px;
   border-radius: 8px;
+  min-width: 16px;
+  text-align: center;
+}
+.qk-tab-count--notif {
+  background: #6366f1;
+  color: #fff;
+  animation: qk-pop-in 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* ── Save to Team button ── */
@@ -1766,57 +1779,137 @@ body.qk-popup {
 }
 
 /* ── Activity Notification Bar ── */
-.qk-activity-bar {
+/* ══════════════════════════════════════
+   NOTIFICATIONS TAB
+══════════════════════════════════════ */
+
+/* Scrollable list inside notifContainer */
+.qk-notif-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 0;
+}
+.qk-notif-list::-webkit-scrollbar {
+  width: 3px;
+}
+.qk-notif-list::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.3);
+  border-radius: 10px;
+}
+
+/* Empty state */
+.qk-notif-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 48px 20px;
+  text-align: center;
+}
+.qk-notif-empty-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.2);
   display: flex;
   align-items: center;
-  gap: 7px;
-  margin: 0 12px 6px;
-  padding: 6px 10px;
-  background: rgba(99, 102, 241, 0.08);
-  border: 1px solid rgba(99, 102, 241, 0.15);
-  border-radius: 8px;
-  min-height: 28px;
-  overflow: hidden;
+  justify-content: center;
+  color: rgba(99, 102, 241, 0.5);
 }
-.qk-activity-bar-dot {
-  width: 6px;
-  height: 6px;
+.qk-notif-empty-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.4);
+}
+.qk-notif-empty-sub {
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.2);
+  line-height: 1.6;
+  max-width: 180px;
+}
+
+/* Individual notification row */
+.qk-notif-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  transition: background 0.15s;
+  animation: qk-fade-in 0.3s ease both;
+}
+.qk-notif-item:last-child {
+  border-bottom: none;
+}
+.qk-notif-item:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+.qk-notif-item.unread {
+  background: rgba(99, 102, 241, 0.06);
+}
+.qk-notif-item.unread:hover {
+  background: rgba(99, 102, 241, 0.1);
+}
+
+/* Icon circle */
+.qk-notif-icon {
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  background: #6366f1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
-  animation: qk-pulse-dot 2s infinite;
+  font-size: 13px;
+  margin-top: 1px;
 }
-@keyframes qk-pulse-dot {
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.4;
-    transform: scale(0.7);
-  }
+.qk-notif-icon.save {
+  background: rgba(99, 102, 241, 0.15);
 }
-.qk-activity-bar-text {
-  font-size: 10.5px;
-  color: #a5b4fc;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.qk-notif-icon.react {
+  background: rgba(245, 158, 11, 0.12);
+}
+.qk-notif-icon.remove {
+  background: rgba(244, 63, 94, 0.12);
+}
+
+/* Text content */
+.qk-notif-body {
   flex: 1;
-  animation: qk-fade-in 0.4s ease;
+  min-width: 0;
 }
-.qk-activity-bar-text strong {
+.qk-notif-text {
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.5;
+  margin-bottom: 2px;
+}
+.qk-notif-text strong {
   color: #e0e0ff;
   font-weight: 600;
 }
-@keyframes qk-fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.qk-notif-page {
+  font-size: 10.5px;
+  color: rgba(99, 102, 241, 0.8);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-style: italic;
+}
+.qk-notif-time {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
+  margin-top: 2px;
+  white-space: nowrap;
+}
+.qk-notif-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #6366f1;
+  flex-shrink: 0;
+  margin-top: 6px;
 }

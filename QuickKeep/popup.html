@@ -13,7 +13,7 @@
   </head>
   <body class="qk-popup">
     <!-- ══════════════════════════════════════
-       AUTH VIEW — shown when logged out
+       AUTH VIEW
   ══════════════════════════════════════ -->
     <div id="authView" class="qk-view" style="display: none">
       <div class="qk-auth-header">
@@ -36,14 +36,10 @@
         </div>
         <p class="qk-auth-tagline">Save anything. Find it instantly.</p>
       </div>
-
-      <!-- Tab switcher -->
       <div class="qk-auth-tabs">
         <button class="qk-tab-btn active" id="tabLogin">Sign in</button>
         <button class="qk-tab-btn" id="tabRegister">Create account</button>
       </div>
-
-      <!-- Login form -->
       <form class="qk-auth-form" id="loginForm">
         <input
           type="email"
@@ -63,8 +59,6 @@
         />
         <button type="submit" class="qk-save-btn" id="loginBtn">Sign in</button>
       </form>
-
-      <!-- Register form -->
       <form class="qk-auth-form" id="registerForm" style="display: none">
         <input
           type="email"
@@ -86,7 +80,6 @@
           Create free account
         </button>
       </form>
-
       <p class="qk-auth-note">
         Or use without an account —
         <button class="qk-link-btn" id="skipAuthBtn">continue as guest</button>
@@ -94,10 +87,9 @@
     </div>
 
     <!-- ══════════════════════════════════════
-       MAIN VIEW — shown when logged in or guest
+       MAIN VIEW
   ══════════════════════════════════════ -->
     <div id="mainView" class="qk-view" style="display: none">
-      <!-- Header -->
       <header class="qk-header">
         <div class="qk-logo">
           <div class="qk-logo-icon">
@@ -116,11 +108,8 @@
           </div>
           <span class="qk-logo-name">Quick<span>Keep</span></span>
         </div>
-
         <div class="qk-header-right">
-          <!-- Plan badge — changes based on user plan -->
           <span class="qk-plan-badge" id="planBadge">Free</span>
-          <!-- User menu trigger -->
           <button class="qk-user-btn" id="userMenuBtn" title="Account">
             <svg
               viewBox="0 0 24 24"
@@ -139,7 +128,7 @@
         </div>
       </header>
 
-      <!-- User dropdown menu -->
+      <!-- User dropdown -->
       <div class="qk-user-menu" id="userMenu" style="display: none">
         <div class="qk-user-email" id="userEmail">guest</div>
         <div class="qk-menu-divider"></div>
@@ -158,8 +147,7 @@
             <polyline points="7 10 12 15 17 10" />
             <line x1="12" y1="15" x2="12" y2="3" />
           </svg>
-          Export CSV
-          <span class="qk-pro-tag">Pro</span>
+          Export CSV <span class="qk-pro-tag">Pro</span>
         </button>
         <button class="qk-menu-item" id="exportMdBtn">
           <svg
@@ -176,8 +164,7 @@
             <polyline points="7 10 12 15 17 10" />
             <line x1="12" y1="15" x2="12" y2="3" />
           </svg>
-          Export Markdown
-          <span class="qk-pro-tag">Pro</span>
+          Export Markdown <span class="qk-pro-tag">Pro</span>
         </button>
         <button class="qk-menu-item" id="teamMenuBtn" style="display: none">
           <svg
@@ -195,7 +182,7 @@
             <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
             <path d="M16 3.13a4 4 0 0 1 0 7.75" />
           </svg>
-          Team
+          Group
           <span
             class="qk-pro-tag"
             style="background: rgba(99, 102, 241, 0.2); color: #a5b4fc"
@@ -243,7 +230,7 @@
         </button>
       </div>
 
-      <!-- Upgrade banner — only shown on free plan -->
+      <!-- Upgrade banner -->
       <div class="qk-upgrade-banner" id="upgradeBanner">
         <div class="qk-upgrade-text">
           <strong>Upgrade to Pro</strong>
@@ -278,12 +265,10 @@
             </svg>
             Save This Page
           </button>
-          <!-- Save to Team button — only visible for team plan users -->
           <button
             class="qk-save-team-btn"
             id="saveTeamBtn"
             style="display: none"
-            title="Save to shared team collection"
           >
             <svg
               viewBox="0 0 24 24"
@@ -300,13 +285,13 @@
               <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
               <path d="M16 3.13a4 4 0 0 1 0 7.75" />
             </svg>
-            Team
+            Group
           </button>
           <span class="qk-save-limit" id="saveLimitLabel"></span>
         </div>
       </section>
 
-      <!-- Search bar — Pro feature -->
+      <!-- Search -->
       <div class="qk-search-wrap" id="searchWrap">
         <div class="qk-search-box">
           <svg
@@ -332,24 +317,27 @@
         </div>
       </div>
 
-      <!-- Tabs — My Saves / Team Saves -->
+      <!-- Tabs: My Saves / Group / Notifications -->
       <div class="qk-saves-tabs" id="savesTabs" style="display: none">
         <button class="qk-saves-tab active" id="tabMySaves">My Saves</button>
         <button class="qk-saves-tab" id="tabTeamSaves">
-          Team
-          <span class="qk-team-count" id="teamCountBadge">0</span>
+          Group
+          <span class="qk-tab-count" id="teamCountBadge" style="display: none"
+            >0</span
+          >
+        </button>
+        <button class="qk-saves-tab" id="tabNotifs">
+          Notifs
+          <span
+            class="qk-tab-count qk-tab-count--notif"
+            id="notifTabBadge"
+            style="display: none"
+            >0</span
+          >
         </button>
       </div>
 
-      <!-- Activity notification bar — Team only -->
-      <div class="qk-activity-bar" id="activityBar" style="display: none">
-        <div class="qk-activity-bar-dot"></div>
-        <div class="qk-activity-bar-text" id="activityBarText">
-          No activity yet
-        </div>
-      </div>
-
-      <!-- List header — shown when tabs hidden -->
+      <!-- List header -->
       <div class="qk-list-header" id="listHeader">
         <span class="qk-list-title"
           >Saved Pages
@@ -358,7 +346,7 @@
         <button class="qk-clear-all" id="clearAllBtn">Clear All</button>
       </div>
 
-      <!-- Personal entry list -->
+      <!-- Personal list -->
       <div class="qk-list-container" id="listContainer">
         <div class="qk-empty" id="emptyState">
           <div class="qk-empty-icon">
@@ -383,7 +371,7 @@
         </div>
       </div>
 
-      <!-- Team saves list -->
+      <!-- Group list -->
       <div
         class="qk-list-container"
         id="teamListContainer"
@@ -405,22 +393,26 @@
               <circle cx="9" cy="7" r="4" />
             </svg>
           </div>
-          <div class="qk-empty-title">No team saves yet</div>
+          <div class="qk-empty-title">No group saves yet</div>
           <div class="qk-empty-sub">
-            Click <strong>Team</strong> next to Save to share pages<br />with
-            your whole team.
+            Click <strong>Group</strong> next to Save to share pages<br />with
+            your friends.
           </div>
         </div>
       </div>
 
-      <!-- Footer -->
+      <!-- Notifications list — inline tab panel -->
+      <div class="qk-list-container" id="notifContainer" style="display: none">
+        <div class="qk-notif-list" id="notifList"></div>
+      </div>
+
       <footer class="qk-footer">
-        <span class="qk-footer-tip">
-          <kbd>Double-click</kbd> any page to save
-        </span>
+        <span class="qk-footer-tip"
+          ><kbd>Double-click</kbd> any page to save</span
+        >
         <a
           class="qk-privacy-link"
-          href="https://quickkeep.netlify.app"
+          href="https://usequickkeep.netlify.app/privacy_policy.html"
           target="_blank"
           >Privacy</a
         >
@@ -428,7 +420,7 @@
     </div>
 
     <!-- ══════════════════════════════════════
-       UPGRADE VIEW — full pricing screen
+       UPGRADE VIEW
   ══════════════════════════════════════ -->
     <div id="upgradeView" class="qk-view" style="display: none">
       <div class="qk-upgrade-header">
@@ -448,8 +440,6 @@
         </button>
         <span>Upgrade QuickKeep</span>
       </div>
-
-      <!-- Billing toggle -->
       <div class="qk-billing-toggle">
         <span
           class="qk-toggle-label"
@@ -464,21 +454,19 @@
           >Yearly <span class="qk-toggle-save">-27%</span></span
         >
       </div>
-
-      <!-- Pro plan -->
       <div class="qk-plan-card featured">
         <div class="qk-plan-label">Most Popular</div>
         <div class="qk-plan-name">Pro</div>
         <div class="qk-plan-price">
           <span class="popup-price-monthly">$3.99<span>/month</span></span>
           <span class="popup-price-yearly" style="display: none"
-            >$29<span>/year</span></span
+            >$29.99<span>/year</span></span
           >
         </div>
         <div class="qk-plan-price-alt">
           <span class="popup-alt-monthly">billed monthly</span>
           <span class="popup-alt-yearly" style="display: none"
-            >$2.42/mo — save $19</span
+            >$2.50/mo — save 37%</span
           >
         </div>
         <ul class="qk-plan-features">
@@ -536,20 +524,6 @@
               height="12"
             >
               <polyline points="20 6 9 17 4 12" /></svg
-            >Folders and tags
-          </li>
-          <li>
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              width="12"
-              height="12"
-            >
-              <polyline points="20 6 9 17 4 12" /></svg
             >Search across all notes
           </li>
         </ul>
@@ -560,26 +534,24 @@
         >
           <span class="popup-btn-monthly">Get Pro — $3.99/month</span>
           <span class="popup-btn-yearly" style="display: none"
-            >Get Pro — $29/year</span
+            >Get Pro — $29.99/year</span
           >
         </button>
       </div>
-
-      <!-- Team plan -->
       <div class="qk-plan-card">
-        <div class="qk-plan-name">Team</div>
+        <div class="qk-plan-name">Group</div>
         <div class="qk-plan-price">
           <span class="popup-price-monthly"
-            >$13.99<span>/mo for 5 seats</span></span
+            >$11.99<span>/mo for 5 friends</span></span
           >
           <span class="popup-price-yearly" style="display: none"
-            >$99<span>/yr for 5 seats</span></span
+            >$89.99<span>/yr for 5 friends</span></span
           >
         </div>
         <div class="qk-plan-price-alt">
           <span class="popup-alt-monthly">up to 5 members, billed monthly</span>
           <span class="popup-alt-yearly" style="display: none"
-            >$8.25/mo — save $68</span
+            >$7.50/mo — save 37%</span
           >
         </div>
         <ul class="qk-plan-features">
@@ -609,7 +581,7 @@
               height="12"
             >
               <polyline points="20 6 9 17 4 12" /></svg
-            >Shared team collections
+            >Shared saves with friends
           </li>
           <li>
             <svg
@@ -623,7 +595,7 @@
               height="12"
             >
               <polyline points="20 6 9 17 4 12" /></svg
-            >Comment on saved pages
+            >Reactions on saves
           </li>
           <li>
             <svg
@@ -637,7 +609,7 @@
               height="12"
             >
               <polyline points="20 6 9 17 4 12" /></svg
-            >Admin dashboard
+            >Group activity notifications
           </li>
         </ul>
         <button
@@ -645,13 +617,12 @@
           data-monthly="pri_01kj0c2jyfw46t720s405yzf0q"
           data-yearly="pri_01kj0c3egz8d6qzttdgqw87821"
         >
-          <span class="popup-btn-monthly">Get Team — $13.99/month</span>
+          <span class="popup-btn-monthly">Get Group — $11.99/month</span>
           <span class="popup-btn-yearly" style="display: none"
-            >Get Team — $99/year</span
+            >Get Group — $89.99/year</span
           >
         </button>
       </div>
-
       <p class="qk-upgrade-note">
         Payments handled securely by Paddle. Cancel anytime.
       </p>
@@ -661,7 +632,7 @@
     <div class="qk-toast" id="toast"></div>
 
     <!-- ══════════════════════════════════════
-       TEAM VIEW — team management screen
+       TEAM/GROUP VIEW
   ══════════════════════════════════════ -->
     <div id="teamView" class="qk-view" style="display: none">
       <div class="qk-upgrade-header">
@@ -679,10 +650,8 @@
             <polyline points="15 18 9 12 15 6" />
           </svg>
         </button>
-        <span id="teamViewTitle">Team</span>
+        <span id="teamViewTitle">Group</span>
       </div>
-
-      <!-- No team yet — create one -->
       <div id="teamCreateSection">
         <div class="qk-team-empty">
           <svg
@@ -700,25 +669,22 @@
             <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
             <path d="M16 3.13a4 4 0 0 1 0 7.75" />
           </svg>
-          <p>Create a team to share saved pages with your colleagues.</p>
+          <p>Create a group to share saved pages with your friends.</p>
         </div>
         <div class="qk-team-form">
           <input
             type="text"
             id="teamNameInput"
             class="qk-input"
-            placeholder="Team name (e.g. Design Team)"
+            placeholder="Group name (e.g. The Boys)"
           />
-          <button class="qk-save-btn" id="createTeamBtn">Create Team</button>
+          <button class="qk-save-btn" id="createTeamBtn">Create Group</button>
         </div>
       </div>
-
-      <!-- Has team — manage it -->
       <div id="teamManageSection" style="display: none">
-        <!-- Team info -->
         <div class="qk-team-info">
           <div class="qk-team-info-row">
-            <span class="qk-team-info-label">Team name</span>
+            <span class="qk-team-info-label">Group name</span>
             <span class="qk-team-info-value" id="teamNameDisplay"></span>
           </div>
           <div class="qk-team-info-row">
@@ -726,22 +692,18 @@
             <span class="qk-team-info-value" id="teamRoleDisplay"></span>
           </div>
         </div>
-
-        <!-- Members list -->
         <div class="qk-team-section-title">Members</div>
         <div class="qk-members-list" id="membersList"></div>
-
-        <!-- Invite — owner only, hidden for members -->
         <div id="inviteSection" style="display: none">
           <div class="qk-team-section-title" style="margin-top: 4px">
-            Invite Member
+            Invite Friend
           </div>
           <div class="qk-team-form">
             <input
               type="email"
               id="inviteEmailInput"
               class="qk-input"
-              placeholder="colleague@email.com"
+              placeholder="friend@email.com"
             />
             <button class="qk-save-btn" id="sendInviteBtn">Send Invite</button>
           </div>
