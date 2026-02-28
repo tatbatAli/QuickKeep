@@ -16,20 +16,17 @@
     />
     <meta name="author" content="QuickKeep" />
     <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://usequickkeep.netlify.app/" />
+    <link rel="canonical" href="https://quickkeep.icu/" />
 
     <!-- ═══ OPEN GRAPH (Facebook, LinkedIn) ═══ -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://usequickkeep.netlify.app/" />
+    <meta property="og:url" content="https://quickkeep.icu/" />
     <meta property="og:title" content="QuickKeep — Save Any Page Instantly" />
     <meta
       property="og:description"
       content="Stop losing important pages. Save anything in one click, add a note, and find it instantly. Free Chrome extension."
     />
-    <meta
-      property="og:image"
-      content="https://usequickkeep.netlify.app/og-image.png"
-    />
+    <meta property="og:image" content="https://quickkeep.icu/og-image.png" />
     <meta property="og:site_name" content="QuickKeep" />
 
     <!-- ═══ TWITTER CARD ═══ -->
@@ -39,10 +36,7 @@
       name="twitter:description"
       content="Stop losing important pages. Save anything in one click, add a note, and find it instantly. Free Chrome extension."
     />
-    <meta
-      name="twitter:image"
-      content="https://usequickkeep.netlify.app/og-image.png"
-    />
+    <meta name="twitter:image" content="https://quickkeep.icu/og-image.png" />
 
     <!-- ═══ STRUCTURED DATA (JSON-LD) ═══ -->
     <script type="application/ld+json">
@@ -1539,27 +1533,23 @@
             <div class="mockup-divider"></div>
             <div class="mockup-entry">
               <div class="mockup-entry-info">
-                <div class="mockup-entry-title">
-                  How to deploy a Chrome extension
-                </div>
-                <div class="mockup-entry-url">developer.chrome.com</div>
+                <div class="mockup-entry-title">How to get money in 2026</div>
+                <div class="mockup-entry-url">youtube.com</div>
               </div>
               <div class="mockup-entry-time">2m ago</div>
             </div>
             <div class="mockup-entry">
               <div class="mockup-entry-info">
                 <div class="mockup-entry-title">
-                  The best productivity systems in 2025
+                  The best productivity systems in 2026
                 </div>
-                <div class="mockup-entry-url">medium.com</div>
+                <div class="mockup-entry-url">productivity.com</div>
               </div>
               <div class="mockup-entry-time">1h ago</div>
             </div>
             <div class="mockup-entry">
               <div class="mockup-entry-info">
-                <div class="mockup-entry-title">
-                  React hooks — complete guide
-                </div>
+                <div class="mockup-entry-title">Best Movies of all time</div>
                 <div class="mockup-entry-url">youtube.com</div>
               </div>
               <div class="mockup-entry-time">yesterday</div>
@@ -1929,8 +1919,8 @@
             </div>
             <h3>Shared saves</h3>
             <p>
-              You and your friends share one place. Save a page and everyone
-              sees it instantly.
+              Your whole friends shares one tab — no more "hey check this link"
+              messages.
             </p>
             <span class="feature-tag tag-team">Team</span>
           </div>
@@ -1989,7 +1979,10 @@
               </svg>
             </div>
             <h3>Reactions on saves</h3>
-            <p>React to any friend save. Keep the honest feedback flowing.</p>
+            <p>
+              React to any team. One reaction per person. Keep the honest
+              feedback flowing.
+            </p>
             <span class="feature-tag tag-team">Team</span>
           </div>
         </div>
@@ -2046,13 +2039,11 @@
       <div class="wrap">
         <div class="team-inner">
           <div class="team-copy sr">
-            <h2>Your crew's<em>shared brain.</em></h2>
+            <h2>Your friend's <em>shared brain.</em></h2>
             <p>
-              Stop sending links in WhatsApp that get buried in 200 other
-              messages. Stop pasting URLs in group chats nobody checks. Share
-              the plan with your friends and have one place where every great
-              find lives together — articles, videos, tools, anything worth
-              sharing.
+              Stop sending links in WhatsApp that get buried. Stop pasting URLs
+              in Slack channels nobody checks. Give your friends one place where
+              every great find lives together.
             </p>
             <ul class="team-perks">
               <li>
@@ -2684,8 +2675,8 @@
               system."
             </p>
             <div class="review-author">
-              <div class="review-avatar rv-c">O</div>
-              <div class="review-name">Olivia A.</div>
+              <div class="review-avatar rv-c">N</div>
+              <div class="review-name">Nour A.</div>
             </div>
           </div>
         </div>
@@ -2766,12 +2757,30 @@
           btn.addEventListener("click", () => {
             const priceId = btn.dataset.price;
             if (typeof Paddle !== "undefined") {
-              Paddle.Checkout.open({ items: [{ priceId, quantity: 1 }] });
+              Paddle.Checkout.open({
+                items: [{ priceId, quantity: 1 }],
+                settings: { quantityEditable: false },
+              });
             } else {
               alert("Payment system loading, please try again in a moment.");
             }
           });
         });
+
+        // Handle ?checkout=priceId sent from the extension popup
+        const autoPrice = new URLSearchParams(window.location.search).get(
+          "checkout",
+        );
+        if (autoPrice) {
+          setTimeout(() => {
+            if (typeof Paddle !== "undefined") {
+              Paddle.Checkout.open({
+                items: [{ priceId: autoPrice, quantity: 1 }],
+                settings: { quantityEditable: false },
+              });
+            }
+          }, 800);
+        }
       });
 
       // ── Scroll reveal ─────────────────────────────────────────────

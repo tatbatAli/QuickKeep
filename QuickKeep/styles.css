@@ -1913,3 +1913,150 @@ body.qk-popup {
   flex-shrink: 0;
   margin-top: 6px;
 }
+
+/* ══════════════════════════════════════
+   TRIAL & GUEST NUDGE BANNERS
+══════════════════════════════════════ */
+.qk-trial-banner {
+  margin: 0 12px 8px;
+  border-radius: 10px;
+  overflow: hidden;
+  animation: qk-fade-in 0.4s ease both;
+}
+.qk-trial-banner.expired {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+.qk-trial-banner.active {
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+}
+.qk-trial-banner.guest {
+  background: rgba(74, 222, 128, 0.06);
+  border: 1px solid rgba(74, 222, 128, 0.2);
+}
+.qk-trial-banner-inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 10px;
+}
+.qk-trial-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.qk-trial-text {
+  flex: 1;
+  min-width: 0;
+}
+.qk-trial-title {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #f0f0f8;
+  line-height: 1.3;
+}
+.qk-trial-sub {
+  font-size: 10.5px;
+  color: rgba(255, 255, 255, 0.4);
+  line-height: 1.4;
+  margin-top: 1px;
+}
+.qk-trial-cta {
+  flex-shrink: 0;
+  padding: 5px 10px;
+  border-radius: 7px;
+  background: #6366f1;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+.qk-trial-cta:hover {
+  background: #5254e7;
+}
+.qk-trial-banner.expired .qk-trial-cta {
+  background: #ef4444;
+}
+.qk-trial-banner.expired .qk-trial-cta:hover {
+  background: #dc2626;
+}
+.qk-trial-banner.guest .qk-trial-cta {
+  background: rgba(74, 222, 128, 0.2);
+  color: #4ade80;
+  border: 1px solid rgba(74, 222, 128, 0.3);
+}
+.qk-trial-banner.guest .qk-trial-cta:hover {
+  background: rgba(74, 222, 128, 0.3);
+}
+.qk-trial-dismiss {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.07);
+  border: none;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 9px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+.qk-trial-dismiss:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ══════════════════════════════════════
+   EMAIL VERIFICATION VIEW
+══════════════════════════════════════ */
+.qk-verify-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 20px 28px;
+  gap: 12px;
+  text-align: center;
+}
+.qk-verify-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #a5b4fc;
+  margin-bottom: 4px;
+}
+.qk-verify-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #f0f0f8;
+}
+.qk-verify-sub {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+  line-height: 1.6;
+  max-width: 240px;
+}
+.qk-verify-resend {
+  background: none;
+  border: none;
+  color: #a5b4fc;
+  font-size: 12px;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  font-family: inherit;
+}
+.qk-verify-resend:hover {
+  color: #c7d2fe;
+}

@@ -189,6 +189,22 @@
             >Team</span
           >
         </button>
+        <button class="qk-menu-item" id="manageSubBtn" style="display: none">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            width="13"
+            height="13"
+          >
+            <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+            <line x1="1" y1="10" x2="23" y2="10" />
+          </svg>
+          Manage Subscription
+        </button>
         <div class="qk-menu-divider"></div>
         <button class="qk-menu-item danger" id="logoutBtn">
           <svg
@@ -451,7 +467,7 @@
           <span class="qk-toggle-thumb"></span>
         </button>
         <span class="qk-toggle-label" id="popupLabelYearly"
-          >Yearly <span class="qk-toggle-save">-27%</span></span
+          >Yearly <span class="qk-toggle-save">Save 37%</span></span
         >
       </div>
       <div class="qk-plan-card featured">
@@ -720,6 +736,64 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════
+       EMAIL VERIFICATION VIEW
+  ══════════════════════════════════════ -->
+    <div id="verifyView" class="qk-view" style="display: none">
+      <div class="qk-auth-header">
+        <div class="qk-logo">
+          <div class="qk-logo-icon">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="white"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              width="14"
+              height="14"
+            >
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+            </svg>
+          </div>
+          <span class="qk-logo-name">Quick<span>Keep</span></span>
+        </div>
+      </div>
+      <div class="qk-verify-body">
+        <div class="qk-verify-icon">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            width="32"
+            height="32"
+          >
+            <path
+              d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+            />
+            <polyline points="22,6 12,13 2,6" />
+          </svg>
+        </div>
+        <div class="qk-verify-title">Check your email</div>
+        <div class="qk-verify-sub" id="verifyEmailHint">
+          We sent a verification link to your email. Click it to activate your
+          account and start your 7-day Pro trial.
+        </div>
+        <button class="qk-save-btn" id="verifyCheckBtn">
+          I've verified — continue
+        </button>
+        <button class="qk-verify-resend" id="verifyResendBtn">
+          Resend email
+        </button>
+        <button class="qk-link-btn" id="verifyBackBtn" style="margin-top: 8px">
+          ← Back to sign in
+        </button>
       </div>
     </div>
 

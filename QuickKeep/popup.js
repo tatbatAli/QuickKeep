@@ -107,6 +107,7 @@ function showView(view) {
     mainView,
     upgradeView,
     document.getElementById("teamView"),
+    document.getElementById("verifyView"),
   ].forEach((v) => v && (v.style.display = "none"));
   view.style.display = "flex";
 }
@@ -114,8 +115,12 @@ function showView(view) {
 // ─────────────────────────────────────────────────────────────
 //  PLAN UI
 // ─────────────────────────────────────────────────────────────
-function updatePlanUI(plan) {
-  const labels = { free: "Free", pro: "Pro ✦", team: "Team ✦" };
+function updatePlanUI(plan, isTrial) {
+  const labels = {
+    free: "Free",
+    pro: isTrial ? "Pro Trial ✦" : "Pro ✦",
+    team: "Team ✦",
+  };
   planBadge.textContent = labels[plan] || "Free";
   planBadge.className = `qk-plan-badge ${plan}`;
   upgradeBanner.style.display = plan === "free" ? "" : "none";
@@ -129,6 +134,13 @@ function updatePlanUI(plan) {
   // teamMenuBtn is added dynamically — safe check
   const teamBtn = document.getElementById("teamMenuBtn");
   if (teamBtn) teamBtn.style.display = isTeam ? "" : "none";
+
+  // Show Manage Subscription only for paying users (not trial, not free)
+  const manageBtn = document.getElementById("manageSubBtn");
+  if (manageBtn) {
+    const isPaying = (plan === "pro" || plan === "team") && !isTrial;
+    manageBtn.style.display = isPaying ? "" : "none";
+  }
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -162,7 +174,10 @@ async function handleRegister(e) {
     const email = document.getElementById("regEmail").value.trim();
     const password = document.getElementById("regPassword").value;
     await registerUser(email, password);
-    // onAuthChange listener will fire
+    // Show verify view — user must confirm email before accessing main view
+    document.getElementById("verifyEmailHint").textContent =
+      `We sent a verification link to ${email}. Click it to activate your account and start your 7-day Pro trial.`;
+    showView(document.getElementById("verifyView"));
   } catch (err) {
     showToast(friendlyAuthError(err.code), "error");
     btn.textContent = "Create free account";
@@ -995,6 +1010,123 @@ clearAllBtn.addEventListener("click", async () => {
 });
 
 // ─────────────────────────────────────────────────────────────
+//  TRIAL & GUEST BANNERS
+// ─────────────────────────────────────────────────────────────
+
+function showTrialExpiredBanner() {
+  const existing = document.getElementById("qkTrialBanner");
+  if (existing) existing.remove();
+
+  const banner = document.createElement("div");
+  banner.id = "qkTrialBanner";
+  banner.className = "qk-trial-banner expired";
+  banner.innerHTML = `
+    <div class="qk-trial-banner-inner">
+      <div class="qk-trial-icon">⏰</div>
+      <div class="qk-trial-text">
+        <div class="qk-trial-title">Your free trial has ended</div>
+        <div class="qk-trial-sub">Upgrade to Pro to keep unlimited saves, sync & search.</div>
+      </div>
+      <button class="qk-trial-cta" id="trialExpiredCta">Get Pro</button>
+      <button class="qk-trial-dismiss" id="trialBannerDismiss">✕</button>
+    </div>
+  `;
+
+  // Insert after the save buttons area
+  const saveRow =
+    document.querySelector(".qk-save-row") || mainView.firstElementChild;
+  saveRow.insertAdjacentElement("afterend", banner);
+
+  document.getElementById("trialExpiredCta").addEventListener("click", () => {
+    banner.remove();
+    showView(upgradeView);
+  });
+  document
+    .getElementById("trialBannerDismiss")
+    .addEventListener("click", () => {
+      banner.remove();
+    });
+}
+
+function showTrialActiveBanner(daysLeft) {
+  const existing = document.getElementById("qkTrialBanner");
+  if (existing) existing.remove();
+
+  // Only show on last 2 days
+  if (daysLeft > 2) return;
+
+  const banner = document.createElement("div");
+  banner.id = "qkTrialBanner";
+  banner.className = "qk-trial-banner active";
+  banner.innerHTML = `
+    <div class="qk-trial-banner-inner">
+      <div class="qk-trial-icon">✦</div>
+      <div class="qk-trial-text">
+        <div class="qk-trial-title">${daysLeft === 1 ? "Last day" : daysLeft + " days"} of your Pro trial</div>
+        <div class="qk-trial-sub">Keep unlimited saves, sync & search after your trial.</div>
+      </div>
+      <button class="qk-trial-cta" id="trialActiveCta">Get Pro</button>
+      <button class="qk-trial-dismiss" id="trialActiveDismiss">✕</button>
+    </div>
+  `;
+
+  const saveRow =
+    document.querySelector(".qk-save-row") || mainView.firstElementChild;
+  saveRow.insertAdjacentElement("afterend", banner);
+
+  document.getElementById("trialActiveCta").addEventListener("click", () => {
+    banner.remove();
+    showView(upgradeView);
+  });
+  document
+    .getElementById("trialActiveDismiss")
+    .addEventListener("click", () => {
+      banner.remove();
+    });
+}
+
+function checkGuestNudge() {
+  const NUDGE_KEY = "qk_guest_nudge_last";
+  const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+  const lastNudge = parseInt(localStorage.getItem(NUDGE_KEY) || "0", 10);
+  const now = Date.now();
+
+  if (now - lastNudge < THIRTY_DAYS) return;
+
+  // Update timestamp so it won't show again for 30 days
+  localStorage.setItem(NUDGE_KEY, String(now));
+
+  const nudge = document.createElement("div");
+  nudge.id = "qkGuestNudge";
+  nudge.className = "qk-trial-banner guest";
+  nudge.innerHTML = `
+    <div class="qk-trial-banner-inner">
+      <div class="qk-trial-icon">🔖</div>
+      <div class="qk-trial-text">
+        <div class="qk-trial-title">Want a better experience?</div>
+        <div class="qk-trial-sub">Create a free account and get 7 days of Pro — no card needed.</div>
+      </div>
+      <button class="qk-trial-cta" id="guestNudgeCta">Try Pro Free</button>
+      <button class="qk-trial-dismiss" id="guestNudgeDismiss">✕</button>
+    </div>
+  `;
+
+  const saveRow =
+    document.querySelector(".qk-save-row") || mainView.firstElementChild;
+  saveRow.insertAdjacentElement("afterend", nudge);
+
+  document.getElementById("guestNudgeCta").addEventListener("click", () => {
+    nudge.remove();
+    showView(authView);
+    // Switch to register tab
+    document.getElementById("tabRegister")?.click();
+  });
+  document.getElementById("guestNudgeDismiss").addEventListener("click", () => {
+    nudge.remove();
+  });
+}
+
+// ─────────────────────────────────────────────────────────────
 //  INIT MAIN VIEW
 // ─────────────────────────────────────────────────────────────
 async function initMain(user) {
@@ -1028,6 +1160,30 @@ async function initMain(user) {
       }
     }
 
+    // ── Trial expiry check ────────────────────────────────────
+    if (userProfile.isTrial && userProfile.trialEndsAt) {
+      const trialEnd = userProfile.trialEndsAt.toDate
+        ? userProfile.trialEndsAt.toDate()
+        : new Date(userProfile.trialEndsAt);
+      if (new Date() > trialEnd) {
+        // Downgrade in Firestore
+        await db.collection("users").doc(user.uid).update({
+          plan: "free",
+          isTrial: false,
+        });
+        userProfile.plan = "free";
+        userProfile.isTrial = false;
+        // Show expired banner after view loads
+        setTimeout(() => showTrialExpiredBanner(), 400);
+      } else {
+        // Trial still active — show how many days remain
+        const daysLeft = Math.ceil(
+          (trialEnd - new Date()) / (1000 * 60 * 60 * 24),
+        );
+        setTimeout(() => showTrialActiveBanner(daysLeft), 400);
+      }
+    }
+
     // Store auth info for background service worker
     const token = await user.getIdToken();
     await chrome.storage.local.set({
@@ -1040,7 +1196,7 @@ async function initMain(user) {
     userEmailEl.textContent = userProfile.email || user.email;
     window._qkUserEmail = userProfile.email || user.email;
     window._qkUserUid = user.uid;
-    updatePlanUI(userProfile.plan || "free");
+    updatePlanUI(userProfile.plan || "free", userProfile.isTrial);
     startEntriesListener(user.uid);
 
     // Start team listener if user is on team plan and has a team
@@ -1063,6 +1219,9 @@ async function initMain(user) {
     const local = await localLoadEntries();
     currentEntries = local;
     renderList(local);
+
+    // Show upgrade nudge every 30 days for guest users
+    setTimeout(() => checkGuestNudge(), 600);
   }
 }
 
@@ -1117,7 +1276,16 @@ chrome.storage.onChanged.addListener((changes) => {
 // ─────────────────────────────────────────────────────────────
 onAuthChange(async (firebaseUser) => {
   if (firebaseUser && !isGuest) {
-    // User is logged in
+    // Check email verification
+    await firebaseUser.reload(); // get fresh emailVerified status
+    if (!firebaseUser.emailVerified) {
+      // Show verify view — don't let them into the app yet
+      document.getElementById("verifyEmailHint").textContent =
+        `We sent a verification link to ${firebaseUser.email}. Click it to activate your account and start your 7-day Pro trial.`;
+      showView(document.getElementById("verifyView"));
+      return;
+    }
+    // Verified — load main view
     await initMain(firebaseUser);
   } else if (!isGuest) {
     // Not logged in and not guest — show auth screen
@@ -1151,6 +1319,92 @@ registerForm.addEventListener("submit", handleRegister);
 document.getElementById("skipAuthBtn").addEventListener("click", async () => {
   isGuest = true;
   await initMain(null);
+});
+
+// ── Email Verification view ───────────────────────────────────
+document
+  .getElementById("verifyCheckBtn")
+  .addEventListener("click", async () => {
+    const btn = document.getElementById("verifyCheckBtn");
+    btn.textContent = "Checking…";
+    btn.disabled = true;
+    try {
+      const user = auth.currentUser;
+      if (!user) {
+        showView(authView);
+        return;
+      }
+      await user.reload();
+      if (user.emailVerified) {
+        await initMain(user);
+      } else {
+        showToast("Email not verified yet — check your inbox", "error");
+        btn.textContent = "I've verified — continue";
+        btn.disabled = false;
+      }
+    } catch (err) {
+      showToast("Something went wrong", "error");
+      btn.textContent = "I've verified — continue";
+      btn.disabled = false;
+    }
+  });
+
+document
+  .getElementById("verifyResendBtn")
+  .addEventListener("click", async () => {
+    const btn = document.getElementById("verifyResendBtn");
+    btn.textContent = "Sending…";
+    try {
+      const user = auth.currentUser;
+      if (user) {
+        try {
+          const sendVerification = firebase
+            .functions()
+            .httpsCallable("sendVerificationEmail");
+          await sendVerification();
+        } catch {
+          // Fallback to Firebase default
+          await user.sendEmailVerification();
+        }
+        showToast("Verification email resent!");
+        btn.textContent = "Sent!";
+        setTimeout(() => (btn.textContent = "Resend email"), 3000);
+      }
+    } catch (err) {
+      showToast("Could not resend — try again in a minute", "error");
+      btn.textContent = "Resend email";
+    }
+  });
+
+document.getElementById("verifyBackBtn").addEventListener("click", async () => {
+  try {
+    await logoutUser();
+  } catch {}
+  showView(authView);
+});
+
+// ── Manage Subscription ───────────────────────────────────────
+document.getElementById("manageSubBtn").addEventListener("click", async () => {
+  userMenu.style.display = "none";
+  const btn = document.getElementById("manageSubBtn");
+  btn.textContent = "Loading…";
+
+  try {
+    const getPortalUrl = firebase
+      .functions()
+      .httpsCallable("getCustomerPortalUrl");
+    const result = await getPortalUrl();
+    if (result.data?.url) {
+      chrome.tabs.create({ url: result.data.url });
+    } else {
+      showToast("Could not open portal — try again", "error");
+    }
+  } catch (err) {
+    console.error("[QuickKeep] Portal error:", err);
+    showToast("Could not open portal — try again", "error");
+  } finally {
+    btn.textContent = "Manage Subscription";
+  }
 });
 
 // Save button
@@ -1286,7 +1540,7 @@ document.querySelectorAll(".popup-pro-btn, .popup-team-btn").forEach((btn) => {
   btn.addEventListener("click", () => {
     const priceId = popupIsYearly ? btn.dataset.yearly : btn.dataset.monthly;
     chrome.tabs.create({
-      url: `https://usequickkeep.netlify.app/?checkout=${priceId}`,
+      url: `https://quickkeep.icu/?checkout=${priceId}`,
     });
   });
 });
@@ -1453,7 +1707,7 @@ document.getElementById("sendInviteBtn").addEventListener("click", async () => {
     });
 
     // Show the invite link
-    const inviteLink = `https://usequickkeep.netlify.app/?invite=${token}`;
+    const inviteLink = `https://quickkeep.icu/?invite=${token}`;
     document.getElementById("inviteLinkWrap").style.display = "";
     document.getElementById("inviteLinkInput").value = inviteLink;
 

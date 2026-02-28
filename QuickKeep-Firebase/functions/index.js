@@ -18,9 +18,21 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const crypto = require("crypto");
+const nodemailer = require("nodemailer");
 
 admin.initializeApp();
 const db = admin.firestore();
+
+// ── Zoho SMTP transporter ─────────────────────────────────────
+const transporter = nodemailer.createTransport({
+  host: "smtp.zoho.com",
+  port: 465,
+  secure: true,
+  auth: {
+    user: process.env.ZOHO_EMAIL,
+    pass: process.env.ZOHO_PASSWORD,
+  },
+});
 
 // ── Map Paddle Price IDs to QuickKeep plans ───────────────────
 const PRICE_TO_PLAN = () => ({
@@ -122,11 +134,31 @@ exports.paddleWebhook = functions.https.onRequest(async (req, res) => {
         functions.logger.info(`[Paddle] Updated ${email} to ${newPlan}`);
         break;
 
-      // ── Cancelled → downgrade to free ─────────────────────
-      case "subscription.cancelled":
-        await userDoc.ref.update({ plan: "free", paddleSubId: null });
-        functions.logger.info(`[Paddle] Downgraded ${email} to free`);
+      // ── Cancelled → schedule downgrade at period end ─────────
+      case "subscription.cancelled": {
+        const userData = userDoc.data();
+        const scheduledDate = event.data?.scheduled_change?.effective_at;
+        const effectiveDate = scheduledDate
+          ? new Date(scheduledDate)
+          : new Date();
+        const isImmediate = effectiveDate <= new Date();
+
+        if (isImmediate) {
+          // Downgrade immediately
+          await downgradeUserAndTeam(userDoc);
+          functions.logger.info(`[Paddle] Immediately downgraded ${email}`);
+        } else {
+          // Schedule downgrade — keep access until period ends
+          await userDoc.ref.update({
+            pendingCancel: true,
+            cancelledAt: effectiveDate,
+          });
+          functions.logger.info(
+            `[Paddle] Scheduled downgrade for ${email} at ${effectiveDate}`,
+          );
+        }
         break;
+      }
 
       // ── Payment failed — you could trigger a dunning email here
       case "subscription.payment_failed":
@@ -323,3 +355,195 @@ exports.deleteAccount = functions.https.onCall(async (data, context) => {
   functions.logger.info("[deleteAccount] Account deleted:", uid);
   return { success: true };
 });
+
+// ── Cloud Function: sendVerificationEmail ────────────────────
+// Sends a branded verification email via Zoho SMTP.
+// Called from auth.js after registration.
+exports.sendVerificationEmail = functions.https.onCall(
+  async (data, context) => {
+    if (!context.auth) {
+      throw new functions.https.HttpsError(
+        "unauthenticated",
+        "Must be logged in.",
+      );
+    }
+
+    const email = context.auth.token.email;
+
+    // Generate Firebase verification link
+    const link = await admin.auth().generateEmailVerificationLink(email);
+
+    // Send via Zoho SMTP
+    await transporter.sendMail({
+      from: '"QuickKeep" <support@quickkeep.icu>',
+      to: email,
+      subject: "Verify your QuickKeep email ✦",
+      html: `
+      <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px;background:#0f0f1a;border-radius:16px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:24px;">
+          <div style="width:28px;height:28px;background:#6366f1;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+            <span style="color:white;font-size:14px;">✦</span>
+          </div>
+          <span style="color:#f0f0f8;font-size:16px;font-weight:700;">QuickKeep</span>
+        </div>
+        <h2 style="color:#f0f0f8;margin:0 0 8px;">Welcome to QuickKeep</h2>
+        <p style="color:#a0a0b8;line-height:1.6;">
+          Click below to verify your email and unlock your <strong style="color:#a5b4fc;">7-day Pro trial</strong> — no credit card needed.
+        </p>
+        <a href="${link}"
+           style="display:inline-block;margin:24px 0;padding:14px 28px;background:#6366f1;color:#fff;border-radius:10px;text-decoration:none;font-weight:700;font-size:15px;">
+          Verify my email →
+        </a>
+        <p style="color:#606080;font-size:12px;line-height:1.6;">
+          This link expires in 24 hours.<br>
+          If you didn't create a QuickKeep account, you can safely ignore this email.
+        </p>
+        <div style="margin-top:24px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.08);color:#404060;font-size:11px;">
+          QuickKeep · support@quickkeep.icu
+        </div>
+      </div>
+    `,
+    });
+
+    functions.logger.info(`[sendVerificationEmail] Sent to ${email}`);
+    return { sent: true };
+  },
+);
+
+// ── Helper: downgrade user + dissolve their team ─────────────
+async function downgradeUserAndTeam(userDoc) {
+  const userData = userDoc.data();
+  const teamId = userData?.teamId;
+
+  // Downgrade the owner
+  await userDoc.ref.update({
+    plan: "free",
+    paddleSubId: null,
+    teamId: null,
+    role: "member",
+    pendingCancel: false,
+    cancelledAt: null,
+  });
+
+  // If they had a team, downgrade all members and delete the team
+  if (teamId) {
+    const teamDoc = await db.collection("teams").doc(teamId).get();
+    if (teamDoc.exists) {
+      const memberIds = teamDoc.data()?.memberIds || [];
+
+      // Downgrade every member
+      const memberUpdates = memberIds
+        .filter((mid) => mid !== userDoc.id)
+        .map((mid) =>
+          db.collection("users").doc(mid).update({
+            plan: "free",
+            teamId: null,
+            role: "member",
+          }),
+        );
+      await Promise.all(memberUpdates);
+
+      // Delete the team document
+      await teamDoc.ref.delete();
+    }
+  }
+}
+
+// ── Cloud Function: getCustomerPortalUrl ─────────────────────
+// Returns a Paddle Customer Portal URL for the calling user.
+exports.getCustomerPortalUrl = functions.https.onCall(async (data, context) => {
+  if (!context.auth) {
+    throw new functions.https.HttpsError(
+      "unauthenticated",
+      "Must be logged in.",
+    );
+  }
+
+  const uid = context.auth.uid;
+  const userDoc = await db.collection("users").doc(uid).get();
+  const userData = userDoc.data();
+
+  if (!userData?.paddleSubId) {
+    throw new functions.https.HttpsError(
+      "not-found",
+      "No active subscription found.",
+    );
+  }
+
+  const PADDLE_API_KEY = process.env.PADDLE_API_KEY;
+
+  // Get the customer ID from Paddle using the subscription ID
+  const subRes = await fetch(
+    `https://api.paddle.com/subscriptions/${userData.paddleSubId}`,
+    { headers: { Authorization: `Bearer ${PADDLE_API_KEY}` } },
+  );
+  const subData = await subRes.json();
+  const customerId = subData?.data?.customer_id;
+
+  if (!customerId) {
+    throw new functions.https.HttpsError(
+      "not-found",
+      "Paddle customer not found.",
+    );
+  }
+
+  // Generate a portal session
+  const portalRes = await fetch(
+    `https://api.paddle.com/customers/${customerId}/portal-sessions`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${PADDLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({}),
+    },
+  );
+  const portalData = await portalRes.json();
+  const portalUrl = portalData?.data?.urls?.general?.overview;
+
+  if (!portalUrl) {
+    throw new functions.https.HttpsError(
+      "internal",
+      "Could not generate portal URL.",
+    );
+  }
+
+  return { url: portalUrl };
+});
+
+// ── Scheduled Function: process pending cancellations ────────
+// Runs every day at midnight — downgrades users whose billing
+// period has ended after a scheduled cancellation.
+exports.processPendingCancellations = functions.pubsub
+  .schedule("0 0 * * *")
+  .timeZone("UTC")
+  .onRun(async () => {
+    const now = new Date();
+    const snap = await db
+      .collection("users")
+      .where("pendingCancel", "==", true)
+      .where("cancelledAt", "<=", now)
+      .get();
+
+    if (snap.empty) {
+      functions.logger.info("[scheduler] No pending cancellations to process");
+      return;
+    }
+
+    functions.logger.info(
+      `[scheduler] Processing ${snap.docs.length} cancellations`,
+    );
+
+    for (const doc of snap.docs) {
+      try {
+        await downgradeUserAndTeam(doc);
+        functions.logger.info(`[scheduler] Downgraded ${doc.data()?.email}`);
+      } catch (err) {
+        functions.logger.error(
+          `[scheduler] Failed to downgrade ${doc.id}:`,
+          err,
+        );
+      }
+    }
+  });
