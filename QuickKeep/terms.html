@@ -52,7 +52,6 @@
         color: var(--t1);
       }
 
-      /* ── Backgrounds ── */
       .bg-noise {
         position: fixed;
         inset: -50%;
@@ -114,7 +113,6 @@
         );
       }
 
-      /* ── Reading bar ── */
       #rbar {
         position: fixed;
         top: 0;
@@ -127,7 +125,6 @@
         transition: width 0.08s linear;
       }
 
-      /* ── Layout ── */
       .page {
         position: relative;
         z-index: 1;
@@ -136,7 +133,6 @@
         padding: 0 24px 120px;
       }
 
-      /* ── Nav ── */
       nav {
         display: flex;
         align-items: center;
@@ -197,8 +193,30 @@
         text-transform: uppercase;
         letter-spacing: 0.6px;
       }
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .nav-link {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--t3);
+        background: var(--fog);
+        border: 1px solid var(--rule);
+        padding: 5px 12px;
+        border-radius: 20px;
+        text-decoration: none;
+        letter-spacing: 0.4px;
+        transition:
+          color 0.2s,
+          border-color 0.2s;
+      }
+      .nav-link:hover {
+        color: var(--violet-hi);
+        border-color: rgba(99, 102, 241, 0.3);
+      }
 
-      /* ── Page hero ── */
       .doc-hero {
         text-align: center;
         margin-bottom: 56px;
@@ -247,7 +265,6 @@
         font-weight: 300;
       }
 
-      /* ── Document shell ── */
       .doc-shell {
         background: var(--fog);
         border: 1px solid var(--rule);
@@ -275,7 +292,6 @@
         );
       }
 
-      /* ── Sections ── */
       .dsec {
         padding: 28px 32px;
         border-bottom: 1px solid var(--rule);
@@ -331,7 +347,6 @@
         margin-top: 10px;
       }
 
-      /* ── Highlight callout ── */
       .d-callout {
         background: rgba(99, 102, 241, 0.07);
         border: 1px solid rgba(99, 102, 241, 0.18);
@@ -344,24 +359,23 @@
         line-height: 1.75;
       }
 
-      /* ── Refund section highlight ── */
       .d-refund-box {
-        background: rgba(110, 231, 183, 0.06);
-        border: 1px solid rgba(110, 231, 183, 0.18);
+        background: var(--fog);
+        border: 1px solid var(--rule);
         border-radius: 12px;
         padding: 16px 18px;
         margin-top: 12px;
         font-size: 13.5px;
-        color: #6ee7b7;
+        color: var(--t2);
         line-height: 1.8;
       }
       .d-refund-box strong {
         display: block;
         margin-bottom: 4px;
         font-size: 13px;
+        color: var(--t1);
       }
 
-      /* ── Footer ── */
       footer {
         text-align: center;
         padding-top: 56px;
@@ -440,7 +454,6 @@
     <div class="bg-grid"></div>
 
     <div class="page">
-      <!-- Nav -->
       <nav>
         <a href="index.html" class="brand">
           <div class="brand-mark">
@@ -458,63 +471,12 @@
           <span class="brand-name">Quick<em>Keep</em></span>
         </a>
         <span class="nav-tag">Terms of Service</span>
-        <div style="display: flex; align-items: center; gap: 6px">
-          <a
-            href="index.html"
-            style="
-              font-size: 11px;
-              font-weight: 600;
-              color: var(--t3);
-              background: var(--fog);
-              border: 1px solid var(--rule);
-              padding: 5px 12px;
-              border-radius: 20px;
-              text-decoration: none;
-              letter-spacing: 0.4px;
-              transition:
-                color 0.2s,
-                border-color 0.2s;
-            "
-            onmouseover="
-              this.style.color = '#a5b4fc';
-              this.style.borderColor = 'rgba(99,102,241,0.3)';
-            "
-            onmouseout="
-              this.style.color = 'var(--t3)';
-              this.style.borderColor = 'var(--rule)';
-            "
-            >Home</a
-          >
-          <a
-            href="privacy_policy.html"
-            style="
-              font-size: 11px;
-              font-weight: 600;
-              color: var(--t3);
-              background: var(--fog);
-              border: 1px solid var(--rule);
-              padding: 5px 12px;
-              border-radius: 20px;
-              text-decoration: none;
-              letter-spacing: 0.4px;
-              transition:
-                color 0.2s,
-                border-color 0.2s;
-            "
-            onmouseover="
-              this.style.color = '#a5b4fc';
-              this.style.borderColor = 'rgba(99,102,241,0.3)';
-            "
-            onmouseout="
-              this.style.color = 'var(--t3)';
-              this.style.borderColor = 'var(--rule)';
-            "
-            >Privacy</a
-          >
+        <div class="nav-links">
+          <a href="index.html" class="nav-link">Home</a>
+          <a href="privacy_policy.html" class="nav-link">Privacy</a>
         </div>
       </nav>
 
-      <!-- Hero -->
       <div class="doc-hero">
         <div class="doc-badge">Legal</div>
         <h1 class="doc-title">Terms of <em>Service</em></h1>
@@ -524,7 +486,6 @@
         </p>
       </div>
 
-      <!-- Document -->
       <div class="doc-shell">
         <div class="dsec">
           <div class="d-num">1</div>
@@ -603,25 +564,13 @@
         <div class="dsec">
           <div class="d-num">5</div>
           <div class="d-body">
-            <div class="d-title">Refund Policy</div>
+            <div class="d-title">Service Availability</div>
             <p class="d-text">
-              If you believe you have been charged in error by QuickKeep — for
-              example, charged after cancellation, charged twice, or charged the
-              wrong amount — you may request a refund within
-              <strong style="color: var(--t1)">14 days</strong> of the charge
-              and we will correct it in full.
-            </p>
-            <div class="d-refund-box">
-              <strong>How to request a refund</strong>
-              Contact us within 14 days of the charge via the Chrome Web Store
-              support link. Include the email address on your account and a
-              description of the billing error. We respond within 48 hours and
-              process all valid refunds promptly.
-            </div>
-            <p class="d-text" style="margin-top: 12px">
-              Refunds are issued for genuine billing errors only. Cancelling a
-              subscription stops future charges — you retain access to paid
-              features until the end of the current billing period.
+              We aim to keep QuickKeep running reliably, but we do not guarantee
+              uninterrupted availability. The service may be temporarily
+              unavailable due to maintenance, updates, or circumstances beyond
+              our control. We are not liable for any loss or inconvenience
+              caused by service downtime.
             </p>
           </div>
         </div>
@@ -674,7 +623,7 @@
             <p class="d-text">
               We do not sell, share, or monetise your data in any form. See our
               <a
-                href="index.html"
+                href="privacy_policy.html"
                 style="color: var(--violet-hi); text-decoration: none"
                 >Privacy Policy</a
               >
@@ -686,13 +635,36 @@
         <div class="dsec">
           <div class="d-num">9</div>
           <div class="d-body">
-            <div class="d-title">Service Availability</div>
+            <div class="d-title">Refund Policy</div>
             <p class="d-text">
-              We aim to keep QuickKeep running reliably, but we do not guarantee
-              uninterrupted availability. The service may be temporarily
-              unavailable due to maintenance, updates, or circumstances beyond
-              our control. We are not liable for any loss or inconvenience
-              caused by service downtime.
+              QuickKeep offers paid subscriptions on a monthly or yearly basis,
+              processed securely through Paddle, our payment provider. When you
+              subscribe to a Pro or Group plan, your card is charged immediately
+              and your plan is activated right away. Subscriptions renew
+              automatically at the end of each billing period — monthly plans
+              renew every 30 days, yearly plans renew every 365 days. You will
+              receive a receipt by email from Paddle after each charge.
+            </p>
+            <p class="d-text">
+              When you cancel a subscription, your plan remains active until the
+              end of the current billing period. For example, if you are on a
+              monthly plan and cancel on the 15th of the month, you keep full
+              access to your paid features until the end of that month. No
+              further charges are made after cancellation. You can cancel at any
+              time directly from the extension by clicking your account menu and
+              selecting Manage Subscription.
+            </p>
+            <p class="d-text">
+              If you are on a Group plan and you cancel, all members of your
+              group are downgraded to the free plan at the end of the billing
+              period. Their personal saves are never affected — only the shared
+              group features are removed.
+            </p>
+            <p class="d-text">
+              If you have any issue with a charge or simply change your mind,
+              you may request a full refund within 14 days of the charge by
+              emailing support@quickkeep.icu with the email address on your
+              account. We process all refund requests within 48 hours.
             </p>
           </div>
         </div>
@@ -737,14 +709,13 @@
             <p class="d-text">
               If you have any questions about these Terms of Service, or to
               request a refund, please reach out via the Chrome Web Store
-              support link on our extension listing page. We respond to all
-              inquiries within 48 hours.
+              support link or email us at support@quickkeep.icu. We respond to
+              all inquiries within 48 hours.
             </p>
           </div>
         </div>
       </div>
 
-      <!-- Footer -->
       <footer>
         <div class="f-div">
           <div class="f-div-line"></div>
@@ -758,9 +729,13 @@
         <div class="f-meta">
           Last updated: <strong style="color: var(--t2)">February 2026</strong>
           <span class="fdot"></span>
+          <a href="index.html">Home</a>
+          <span class="fdot"></span>
           <a href="privacy_policy.html">Privacy Policy</a>
           <span class="fdot"></span>
-          <a href="#">Chrome Web Store</a>
+          <a href="https://chrome.google.com/webstore" target="_blank"
+            >Chrome Web Store</a
+          >
           <br />No ads &nbsp;&middot;&nbsp; No tracking &nbsp;&middot;&nbsp; No
           nonsense
         </div>
