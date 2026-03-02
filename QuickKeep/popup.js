@@ -915,8 +915,11 @@ async function saveCurrentPage() {
     showToast("Page saved!");
   } catch (err) {
     if (err.upgrade) {
-      showToast(err.message, "error");
-      setTimeout(() => showView(upgradeView), 800);
+      showToast(
+        "You've reached 20 saves — delete one to make room, or upgrade for unlimited.",
+        "error",
+      );
+      setTimeout(() => showView(upgradeView), 2000);
     } else {
       console.error("[QuickKeep] Save error:", err);
       showToast("Save failed", "error");
@@ -1022,17 +1025,16 @@ function showTrialExpiredBanner() {
   banner.className = "qk-trial-banner expired";
   banner.innerHTML = `
     <div class="qk-trial-banner-inner">
-      <div class="qk-trial-icon">⏰</div>
+      <div class="qk-trial-icon">✦</div>
       <div class="qk-trial-text">
-        <div class="qk-trial-title">Your free trial has ended</div>
-        <div class="qk-trial-sub">Upgrade to Pro to keep unlimited saves, sync & search.</div>
+        <div class="qk-trial-title">Your 7-day trial is over 😢 We're gonna miss you...</div>
+        <div class="qk-trial-sub">You can upgrade to Pro 🚀 and keep unlimited saves, sync & search — whenever you're ready.</div>
       </div>
-      <button class="qk-trial-cta" id="trialExpiredCta">Get Pro</button>
+      <button class="qk-trial-cta" id="trialExpiredCta">Upgrade</button>
       <button class="qk-trial-dismiss" id="trialBannerDismiss">✕</button>
     </div>
   `;
 
-  // Insert after the save buttons area
   const saveRow =
     document.querySelector(".qk-save-row") || mainView.firstElementChild;
   saveRow.insertAdjacentElement("afterend", banner);
@@ -1041,10 +1043,63 @@ function showTrialExpiredBanner() {
     banner.remove();
     showView(upgradeView);
   });
+
   document
     .getElementById("trialBannerDismiss")
     .addEventListener("click", () => {
-      banner.remove();
+      banner.innerHTML = `
+      <div class="qk-trial-banner-inner">
+        <div class="qk-trial-icon">🤔</div>
+        <div class="qk-trial-text">
+          <div class="qk-trial-title">Are you sure?</div>
+          <div class="qk-trial-sub">You'll lose unlimited saves, sync & search and go back to the free plan.</div>
+        </div>
+        <button class="qk-trial-cta" id="trialConfirmNo">Keep Pro</button>
+        <button class="qk-trial-dismiss" id="trialConfirmYes">Yes, downgrade</button>
+      </div>
+    `;
+
+      document
+        .getElementById("trialConfirmNo")
+        .addEventListener("click", () => {
+          banner.remove();
+          showTrialExpiredBanner();
+        });
+
+      document
+        .getElementById("trialConfirmYes")
+        .addEventListener("click", async () => {
+          try {
+            const uid = userProfile.uid || firebase.auth().currentUser?.uid;
+            const dataExpiresAt = new Date(
+              Date.now() + 15 * 24 * 60 * 60 * 1000,
+            ); // 15 days from now
+            await db
+              .collection("users")
+              .doc(uid)
+              .update({
+                plan: "free",
+                isTrial: false,
+                dataExpiresAt:
+                  firebase.firestore.Timestamp.fromDate(dataExpiresAt),
+              });
+            userProfile.plan = "free";
+            userProfile.isTrial = false;
+            userProfile.trialExpired = false;
+            updatePlanUI("free", false);
+            banner.remove();
+            const deadline = dataExpiresAt.toLocaleDateString("en-US", {
+              month: "long",
+              day: "numeric",
+            });
+            showToast(
+              `You're on the free plan. Upgrade before ${deadline} to keep your saves.`,
+            );
+          } catch (err) {
+            console.error("[QuickKeep] Downgrade error:", err);
+            showToast("Something went wrong, try again.", "error");
+          }
+        });
     });
 }
 
@@ -1166,14 +1221,9 @@ async function initMain(user) {
         ? userProfile.trialEndsAt.toDate()
         : new Date(userProfile.trialEndsAt);
       if (new Date() > trialEnd) {
-        // Downgrade in Firestore
-        await db.collection("users").doc(user.uid).update({
-          plan: "free",
-          isTrial: false,
-        });
-        userProfile.plan = "free";
-        userProfile.isTrial = false;
-        // Show expired banner after view loads
+        // Trial expired — show banner but do NOT downgrade yet
+        // Downgrade only happens when user confirms dismiss
+        userProfile.trialExpired = true;
         setTimeout(() => showTrialExpiredBanner(), 400);
       } else {
         // Trial still active — show how many days remain

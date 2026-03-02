@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>QuickKeep — Terms of Service</title>
+    <title>QuickKeep — Refund Policy</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -193,29 +193,6 @@
         text-transform: uppercase;
         letter-spacing: 0.6px;
       }
-      .nav-links {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-      }
-      .nav-link {
-        font-size: 11px;
-        font-weight: 600;
-        color: var(--t3);
-        background: var(--fog);
-        border: 1px solid var(--rule);
-        padding: 5px 12px;
-        border-radius: 20px;
-        text-decoration: none;
-        letter-spacing: 0.4px;
-        transition:
-          color 0.2s,
-          border-color 0.2s;
-      }
-      .nav-link:hover {
-        color: var(--violet-hi);
-        border-color: rgba(99, 102, 241, 0.3);
-      }
 
       .doc-hero {
         text-align: center;
@@ -347,35 +324,6 @@
         margin-top: 10px;
       }
 
-      .d-callout {
-        background: rgba(99, 102, 241, 0.07);
-        border: 1px solid rgba(99, 102, 241, 0.18);
-        border-radius: 12px;
-        padding: 14px 18px;
-        margin-top: 12px;
-        font-size: 13px;
-        font-weight: 400;
-        color: var(--violet-hi);
-        line-height: 1.75;
-      }
-
-      .d-refund-box {
-        background: var(--fog);
-        border: 1px solid var(--rule);
-        border-radius: 12px;
-        padding: 16px 18px;
-        margin-top: 12px;
-        font-size: 13.5px;
-        color: var(--t2);
-        line-height: 1.8;
-      }
-      .d-refund-box strong {
-        display: block;
-        margin-bottom: 4px;
-        font-size: 13px;
-        color: var(--t1);
-      }
-
       footer {
         text-align: center;
         padding-top: 56px;
@@ -438,6 +386,18 @@
         vertical-align: middle;
       }
 
+      .d-callout {
+        background: rgba(99, 102, 241, 0.07);
+        border: 1px solid rgba(99, 102, 241, 0.18);
+        border-radius: 12px;
+        padding: 14px 18px;
+        margin-top: 12px;
+        font-size: 13px;
+        font-weight: 400;
+        color: var(--violet-hi);
+        line-height: 1.75;
+      }
+
       @keyframes reveal {
         to {
           opacity: 1;
@@ -454,6 +414,7 @@
     <div class="bg-grid"></div>
 
     <div class="page">
+      <!-- Nav -->
       <nav>
         <a href="index.html" class="brand">
           <div class="brand-mark">
@@ -470,35 +431,120 @@
           </div>
           <span class="brand-name">Quick<em>Keep</em></span>
         </a>
-        <span class="nav-tag">Terms of Service</span>
-        <div class="nav-links">
-          <a href="index.html" class="nav-link">Home</a>
-          <a href="privacy_policy.html" class="nav-link">Privacy</a>
-          <a href="refund.html" class="nav-link">Refund</a>
+        <span class="nav-tag">Refund Policy</span>
+        <div style="display: flex; align-items: center; gap: 6px">
+          <a
+            href="index.html"
+            style="
+              font-size: 11px;
+              font-weight: 600;
+              color: var(--t3);
+              background: var(--fog);
+              border: 1px solid var(--rule);
+              padding: 5px 12px;
+              border-radius: 20px;
+              text-decoration: none;
+              letter-spacing: 0.4px;
+              transition:
+                color 0.2s,
+                border-color 0.2s;
+            "
+            onmouseover="
+              this.style.color = '#a5b4fc';
+              this.style.borderColor = 'rgba(99,102,241,0.3)';
+            "
+            onmouseout="
+              this.style.color = 'var(--t3)';
+              this.style.borderColor = 'var(--rule)';
+            "
+            >Home</a
+          >
+          <a
+            href="terms.html"
+            style="
+              font-size: 11px;
+              font-weight: 600;
+              color: var(--t3);
+              background: var(--fog);
+              border: 1px solid var(--rule);
+              padding: 5px 12px;
+              border-radius: 20px;
+              text-decoration: none;
+              letter-spacing: 0.4px;
+              transition:
+                color 0.2s,
+                border-color 0.2s;
+            "
+            onmouseover="
+              this.style.color = '#a5b4fc';
+              this.style.borderColor = 'rgba(99,102,241,0.3)';
+            "
+            onmouseout="
+              this.style.color = 'var(--t3)';
+              this.style.borderColor = 'var(--rule)';
+            "
+            >Terms</a
+          >
+          <a
+            href="privacy_policy.html"
+            style="
+              font-size: 11px;
+              font-weight: 600;
+              color: var(--t3);
+              background: var(--fog);
+              border: 1px solid var(--rule);
+              padding: 5px 12px;
+              border-radius: 20px;
+              text-decoration: none;
+              letter-spacing: 0.4px;
+              transition:
+                color 0.2s,
+                border-color 0.2s;
+            "
+            onmouseover="
+              this.style.color = '#a5b4fc';
+              this.style.borderColor = 'rgba(99,102,241,0.3)';
+            "
+            onmouseout="
+              this.style.color = 'var(--t3)';
+              this.style.borderColor = 'var(--rule)';
+            "
+            >Privacy</a
+          >
         </div>
       </nav>
 
+      <!-- Hero -->
       <div class="doc-hero">
         <div class="doc-badge">Legal</div>
-        <h1 class="doc-title">Terms of <em>Service</em></h1>
+        <h1 class="doc-title">Refund <em>Policy</em></h1>
         <p class="doc-sub">
-          Last updated: February 2026 &nbsp;·&nbsp; Effective immediately upon
-          use
+          Last updated: February 2026 &nbsp;·&nbsp; Applies to all paid plans
         </p>
       </div>
 
+      <!-- Document -->
       <div class="doc-shell">
         <div class="dsec">
           <div class="d-num">1</div>
           <div class="d-body">
-            <div class="d-title">Acceptance of Terms</div>
+            <div class="d-title">How Billing Works</div>
             <p class="d-text">
-              These Terms of Service are between you and
-              <strong style="color: var(--t1)">QuickKeep</strong>. By installing
-              QuickKeep, creating an account, or using any part of the service,
-              you agree to be bound by these Terms of Service. If you do not
-              agree, do not use QuickKeep. These terms apply to all users —
-              free, Pro, and Team plan subscribers.
+              QuickKeep offers paid subscriptions on a monthly or yearly basis,
+              processed securely through
+              <strong style="color: var(--t1)">Paddle</strong>, our payment
+              provider. Paddle is the merchant of record for all QuickKeep
+              transactions, which means they handle all payment processing,
+              receipts, and refund transactions on our behalf.
+            </p>
+            <p class="d-text">
+              When you subscribe to a Pro or Group plan, your card is charged
+              immediately and your plan is activated right away. You will
+              receive a receipt by email from Paddle after every charge.
+              Subscriptions renew automatically at the end of each billing
+              period — monthly plans renew every 30 days, yearly plans renew
+              every 365 days. You will always be notified before a renewal
+              charge is made.
             </p>
           </div>
         </div>
@@ -506,33 +552,46 @@
         <div class="dsec">
           <div class="d-num">2</div>
           <div class="d-body">
-            <div class="d-title">What QuickKeep Is</div>
+            <div class="d-title">Free Trial</div>
             <p class="d-text">
-              QuickKeep is a Chrome browser extension that allows users to save
-              webpages, videos, and online resources with personal notes
-              attached. Free users store data locally on their device. Pro and
-              Team subscribers store data securely in the cloud to enable
-              cross-device sync and collaboration features.
+              Every new QuickKeep account receives a
+              <strong style="color: var(--t1)">7-day free Pro trial</strong>
+              with no credit card required. During the trial you have full
+              access to all Pro features including unlimited saves, cross-device
+              sync, instant search, and export. The trial exists so you can
+              experience the full product before deciding to subscribe.
             </p>
+            <p class="d-text">
+              At the end of the 7-day trial your account automatically reverts
+              to the free plan. You will not be charged anything unless you
+              actively choose to subscribe to a paid plan.
+            </p>
+            <div class="d-callout">
+              No card is required for the free trial. You will never be charged
+              without explicitly choosing a paid plan and entering your payment
+              details.
+            </div>
           </div>
         </div>
 
         <div class="dsec">
           <div class="d-num">3</div>
           <div class="d-body">
-            <div class="d-title">User Accounts</div>
+            <div class="d-title">Cancellation and Access</div>
             <p class="d-text">
-              Free users are not required to create an account. Pro and Team
-              subscribers must create an account using a valid email address and
-              password. You are responsible for keeping your account credentials
-              secure. You must not share your account with others or use someone
-              else's account without permission.
+              You may cancel your subscription at any time directly from the
+              extension by opening your account menu and selecting
+              <strong style="color: var(--t1)">Manage Subscription</strong>.
+              This takes you to the Paddle customer portal where you can cancel
+              with no friction.
             </p>
             <p class="d-text">
-              You must be at least 13 years old to create an account. By
-              registering, you confirm that the information you provide is
-              accurate and that you are legally permitted to enter into this
-              agreement.
+              When you cancel, your plan remains active until the end of the
+              current billing period. For example, if you are on a monthly plan
+              and cancel on the 15th of the month, you keep full access to all
+              paid features until the end of that month. No further charges are
+              made after cancellation. Your saved data is never deleted — it
+              remains accessible on the free plan.
             </p>
           </div>
         </div>
@@ -540,103 +599,27 @@
         <div class="dsec">
           <div class="d-num">4</div>
           <div class="d-body">
-            <div class="d-title">Free Trial and Subscriptions</div>
+            <div class="d-title">Group Plan Cancellation</div>
             <p class="d-text">
-              When you create a QuickKeep account, you receive a
-              <strong style="color: var(--t1)">7-day free Pro trial</strong> —
-              no credit card required. During the trial you have full access to
-              all Pro features including sync, unlimited saves, search, and
-              export. At the end of the trial your account automatically reverts
-              to the free plan unless you choose to subscribe.
+              If you are the owner of a Group plan and you cancel, all members
+              of your group are downgraded to the free plan at the end of the
+              billing period. Members will lose access to shared group features
+              — the shared saves tab, live activity feed, and reactions — but
+              their personal saves are never affected. Everything they saved
+              privately remains fully intact.
             </p>
             <p class="d-text">
-              Paid plans (Pro and Team) are billed on a monthly or annual basis.
-              By subscribing, you authorise recurring charges to your payment
-              method until you cancel.
+              Members who were added to a group are never charged. Only the
+              group owner pays. If the owner cancels, members simply return to
+              their free accounts automatically.
             </p>
-            <div class="d-callout">
-              The free trial exists so you can experience the full product
-              before committing. We encourage you to use it fully before
-              deciding to subscribe.
-            </div>
           </div>
         </div>
 
         <div class="dsec">
           <div class="d-num">5</div>
           <div class="d-body">
-            <div class="d-title">Service Availability</div>
-            <p class="d-text">
-              We aim to keep QuickKeep running reliably, but we do not guarantee
-              uninterrupted availability. The service may be temporarily
-              unavailable due to maintenance, updates, or circumstances beyond
-              our control. We are not liable for any loss or inconvenience
-              caused by service downtime.
-            </p>
-          </div>
-        </div>
-
-        <div class="dsec">
-          <div class="d-num">6</div>
-          <div class="d-body">
-            <div class="d-title">Cancellation</div>
-            <p class="d-text">
-              You may cancel your subscription at any time. Cancellation takes
-              effect at the end of your current billing period — you retain
-              access to paid features until that date. After cancellation, your
-              account reverts to the free plan. Your saved data is not deleted
-              upon cancellation; it remains accessible on the free plan up to
-              the free tier limit.
-            </p>
-          </div>
-        </div>
-
-        <div class="dsec">
-          <div class="d-num">7</div>
-          <div class="d-body">
-            <div class="d-title">Acceptable Use</div>
-            <p class="d-text">
-              You agree to use QuickKeep only for lawful purposes. You must not
-              use the extension to save, store, or share content that is
-              illegal, harmful, abusive, defamatory, or infringes the
-              intellectual property rights of others. You must not attempt to
-              reverse-engineer, decompile, or tamper with the extension or its
-              backend systems.
-            </p>
-            <p class="d-text">
-              We reserve the right to suspend or terminate accounts that violate
-              these terms without prior notice.
-            </p>
-          </div>
-        </div>
-
-        <div class="dsec">
-          <div class="d-num">8</div>
-          <div class="d-body">
-            <div class="d-title">Your Data</div>
-            <p class="d-text">
-              You retain full ownership of all data you save using QuickKeep —
-              your URLs, notes, and any content you store. We do not claim any
-              rights over your saved content. Free users' data is stored
-              entirely on their local device. Pro and Team users' data is stored
-              securely in the cloud to enable sync features.
-            </p>
-            <p class="d-text">
-              We do not sell, share, or monetise your data in any form. See our
-              <a
-                href="privacy_policy.html"
-                style="color: var(--violet-hi); text-decoration: none"
-                >Privacy Policy</a
-              >
-              for full details.
-            </p>
-          </div>
-        </div>
-
-        <div class="dsec">
-          <div class="d-num">9</div>
-          <div class="d-body">
-            <div class="d-title">Refund Policy</div>
+            <div class="d-title">Refunds</div>
             <p class="d-text">
               QuickKeep offers paid subscriptions on a monthly or yearly basis,
               processed securely through Paddle, our payment provider. When you
@@ -671,52 +654,20 @@
         </div>
 
         <div class="dsec">
-          <div class="d-num">10</div>
-          <div class="d-body">
-            <div class="d-title">Limitation of Liability</div>
-            <p class="d-text">
-              QuickKeep is provided "as is" without any warranty, express or
-              implied. To the fullest extent permitted by law, we are not liable
-              for any indirect, incidental, or consequential damages arising
-              from your use of the extension or service, including loss of data,
-              loss of revenue, or interruption of business.
-            </p>
-            <p class="d-text">
-              Our total liability to you for any claim arising from use of
-              QuickKeep shall not exceed the amount you paid us in the three
-              months preceding the claim.
-            </p>
-          </div>
-        </div>
-
-        <div class="dsec">
-          <div class="d-num">11</div>
-          <div class="d-body">
-            <div class="d-title">Changes to These Terms</div>
-            <p class="d-text">
-              We may update these Terms of Service from time to time. When we
-              do, we will update the date at the top of this page and notify
-              active subscribers via email for material changes. Continued use
-              of QuickKeep after changes are posted constitutes acceptance of
-              the new terms.
-            </p>
-          </div>
-        </div>
-
-        <div class="dsec">
-          <div class="d-num">12</div>
+          <div class="d-num">6</div>
           <div class="d-body">
             <div class="d-title">Contact</div>
             <p class="d-text">
-              If you have any questions about these Terms of Service, or to
-              request a refund, please reach out via the Chrome Web Store
-              support link or email us at support@quickkeep.icu. We respond to
-              all inquiries within 48 hours.
+              For any billing questions, refund requests, or payment issues,
+              reach us at
+              <strong style="color: var(--t1)">support@quickkeep.icu</strong>.
+              We respond to all inquiries within 48 hours. You can also reach us
+              via the support link on our Chrome Web Store listing.
             </p>
           </div>
         </div>
       </div>
-
+      <!-- Footer -->
       <footer>
         <div class="f-div">
           <div class="f-div-line"></div>
@@ -732,9 +683,9 @@
           <span class="fdot"></span>
           <a href="index.html">Home</a>
           <span class="fdot"></span>
-          <a href="privacy_policy.html">Privacy Policy</a>
+          <a href="terms.html">Terms of Service</a>
           <span class="fdot"></span>
-          <a href="refund.html">Refund Policy</a>
+          <a href="privacy_policy.html">Privacy Policy</a>
           <span class="fdot"></span>
           <a href="https://chrome.google.com/webstore" target="_blank"
             >Chrome Web Store</a

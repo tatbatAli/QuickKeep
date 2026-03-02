@@ -16,6 +16,7 @@
  */
 
 const functions = require("firebase-functions");
+const functionsV1 = require("firebase-functions/v1");
 const admin = require("firebase-admin");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
@@ -515,10 +516,10 @@ exports.getCustomerPortalUrl = functions.https.onCall(async (data, context) => {
 // ── Scheduled Function: process pending cancellations ────────
 // Runs every day at midnight — downgrades users whose billing
 // period has ended after a scheduled cancellation.
-exports.processPendingCancellations = functions.pubsub
+exports.processPendingCancellations = functionsV1.pubsub
   .schedule("0 0 * * *")
   .timeZone("UTC")
-  .onRun(async () => {
+  .onRun(async (context) => {
     const now = new Date();
     const snap = await db
       .collection("users")
@@ -542,6 +543,64 @@ exports.processPendingCancellations = functions.pubsub
       } catch (err) {
         functions.logger.error(
           `[scheduler] Failed to downgrade ${doc.id}:`,
+          err,
+        );
+      }
+    }
+  });
+
+// ── Delete data for trial-expired users after 15-day grace period ──
+exports.processExpiredTrialData = functionsV1.pubsub
+  .schedule("0 1 * * *")
+  .timeZone("UTC")
+  .onRun(async (context) => {
+    const now = new Date();
+    const snap = await db
+      .collection("users")
+      .where("plan", "==", "free")
+      .where("dataExpiresAt", "<=", now)
+      .get();
+
+    if (snap.empty) {
+      functions.logger.info("[scheduler] No expired trial data to delete");
+      return;
+    }
+
+    functions.logger.info(
+      `[scheduler] Deleting data for ${snap.docs.length} expired users`,
+    );
+
+    for (const doc of snap.docs) {
+      const uid = doc.id;
+      try {
+        // Delete all personal entries
+        const entries = await db
+          .collection("entries")
+          .where("userId", "==", uid)
+          .where("teamId", "==", null)
+          .get();
+        const batch = db.batch();
+        entries.docs.forEach((e) => batch.delete(e.ref));
+        await batch.commit();
+
+        // Delete all folders
+        const folders = await db
+          .collection("folders")
+          .where("userId", "==", uid)
+          .get();
+        const batch2 = db.batch();
+        folders.docs.forEach((f) => batch2.delete(f.ref));
+        await batch2.commit();
+
+        // Clear dataExpiresAt so it doesn't run again
+        await doc.ref.update({
+          dataExpiresAt: admin.firestore.FieldValue.delete(),
+        });
+
+        functions.logger.info(`[scheduler] Deleted data for user ${uid}`);
+      } catch (err) {
+        functions.logger.error(
+          `[scheduler] Failed to delete data for ${uid}:`,
           err,
         );
       }
