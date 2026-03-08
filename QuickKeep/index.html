@@ -17,6 +17,12 @@
     <meta name="author" content="QuickKeep" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://quickkeep.icu/" />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      content="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%236366f1'/%3E%3Cpath d='M17 3H7a2 2 0 0 0-2 2v16l7-5 7 5V5a2 2 0 0 0-2-2z' fill='white'/%3E%3C/svg%3E"
+    />
 
     <!-- ═══ OPEN GRAPH (Facebook, LinkedIn) ═══ -->
     <meta property="og:type" content="website" />
@@ -935,6 +941,15 @@
         color: var(--t1);
         border: 1px solid rgba(255, 255, 255, 0.15);
       }
+      .plan-hint {
+        font-size: 11px;
+        color: var(--muted);
+        text-align: center;
+        margin-top: 10px;
+        line-height: 1.5;
+        opacity: 0.7;
+      }
+
       .plan-btn.outline:hover {
         background: rgba(255, 255, 255, 0.05);
         border-color: rgba(255, 255, 255, 0.25);
@@ -1368,6 +1383,10 @@
         height: 24px;
         background: linear-gradient(140deg, #6366f1, #4338ca);
         border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
       }
       .footer-brand-name {
         font-size: 13px;
@@ -1442,7 +1461,6 @@
             <a href="#pricing">Pricing</a>
             <a href="#team">Team</a>
             <a href="privacy_policy.html">Privacy</a>
-            <a href="terms.html">Terms</a>
             <a href="refund.html">Refund</a>
             <a
               href="https://chrome.google.com/webstore"
@@ -2427,6 +2445,10 @@
             >
               Get Pro — $29.99/yr
             </button>
+            <p class="plan-hint">
+              After payment, install the extension and sign up with the same
+              email to activate your plan.
+            </p>
           </div>
 
           <!-- Team -->
@@ -2550,6 +2572,10 @@
             >
               Get Group — $89.99/yr
             </button>
+            <p class="plan-hint">
+              After payment, install the extension and sign up with the same
+              email to activate your plan.
+            </p>
           </div>
         </div>
       </div>
@@ -2730,13 +2756,25 @@
       <div class="wrap">
         <div class="footer-inner">
           <a href="/" class="footer-brand">
-            <div class="footer-brand-mark"></div>
+            <div class="footer-brand-mark">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#fff"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                width="12"
+                height="12"
+              >
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+              </svg>
+            </div>
             <span class="footer-brand-name">QuickKeep</span>
           </a>
           <div class="footer-links">
             <a href="#features">Features</a>
             <a href="#pricing">Pricing</a>
-            <a href="#team">Team</a>
             <a href="privacy_policy.html">Privacy Policy</a>
             <a href="terms.html">Terms of Service</a>
             <a href="refund.html">Refund Policy</a>
