@@ -2801,7 +2801,6 @@
             if (typeof Paddle !== "undefined") {
               Paddle.Checkout.open({
                 items: [{ priceId, quantity: 1 }],
-                settings: { quantityEditable: false },
               });
             } else {
               alert("Payment system loading, please try again in a moment.");
@@ -2818,7 +2817,6 @@
             if (typeof Paddle !== "undefined") {
               Paddle.Checkout.open({
                 items: [{ priceId: autoPrice, quantity: 1 }],
-                settings: { quantityEditable: false },
               });
             }
           }, 800);
