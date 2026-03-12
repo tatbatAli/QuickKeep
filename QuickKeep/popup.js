@@ -234,7 +234,7 @@ async function handleRegister(e) {
     await registerUser(email, password);
     // Show verify view — user must confirm email before accessing main view
     document.getElementById("verifyEmailHint").textContent =
-      `We sent a verification link to ${email}. Click it to activate your account and start your 7-day Pro trial.`;
+      `We sent a verification link to ${email}. Click it to activate your account and start your 7-day Pro trial. Check spam if you didn't find it in your inbox`;
     showView(document.getElementById("verifyView"));
   } catch (err) {
     showToast(friendlyAuthError(err.code), "error");
@@ -1335,7 +1335,7 @@ onAuthChange(async (firebaseUser) => {
     await firebaseUser.reload();
     if (!firebaseUser.emailVerified) {
       document.getElementById("verifyEmailHint").textContent =
-        `We sent a verification link to ${firebaseUser.email}. Click it to activate your account and start your 7-day Pro trial.`;
+        `We sent a verification link to ${firebaseUser.email}. Click it to activate your account and start your 7-day Pro trial. Check spam if you didn't find it in your inbox`;
       showView(document.getElementById("verifyView"));
       return;
     }
