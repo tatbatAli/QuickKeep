@@ -118,9 +118,6 @@ function showView(view) {
 //  Persists in chrome.storage so it survives popup close/reopen.
 // ─────────────────────────────────────────────────────────────
 async function showTrialExpiredBanner() {
-  // Mark the flag so the banner reappears on every open
-  await chrome.storage.local.set({ qk_trial_expired: true });
-
   const banner = document.getElementById("trialExpiredBanner");
   if (banner) banner.style.display = "";
 }
@@ -1166,11 +1163,15 @@ async function initMain(user) {
     userProfile = await getUserProfile(user.uid);
 
     if (!userProfile) {
-      await db.collection("users").doc(user.uid).set({
-        email: user.email,
-        plan: "free",
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      });
+      await db
+        .collection("users")
+        .doc(user.uid)
+        .set({
+          email: user.email,
+          plan: "free",
+          verified: user.emailVerified === true,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        });
       userProfile = { uid: user.uid, email: user.email, plan: "free" };
 
       // Check if they paid before creating their account
@@ -1196,10 +1197,6 @@ async function initMain(user) {
         : new Date(userProfile.trialEndsAt);
 
       if (new Date() > trialEnd) {
-        // Set storage flag FIRST — before any async that could fail,
-        // so the banner always shows on the next open even if something errors.
-        await chrome.storage.local.set({ qk_trial_expired: true });
-
         // Mark Firestore (best effort — don't let a failure block the flow)
         try {
           await db
@@ -1342,18 +1339,18 @@ onAuthChange(async (firebaseUser) => {
       showView(document.getElementById("verifyView"));
       return;
     }
-    // Verified — load main view
+    // Verified — update Firestore flag if needed, then load main view
+    try {
+      await db.collection("users").doc(firebaseUser.uid).update({
+        verified: true,
+      });
+    } catch (e) {
+      console.warn("[QuickKeep] Could not set verified flag:", e);
+    }
     await initMain(firebaseUser);
   } else if (!isGuest) {
     // Not logged in — show auth screen
     showView(authView);
-
-    // ── Check if user was just logged out due to trial expiry ──
-    // If the flag is set, show the trial-ended banner automatically.
-    const stored = await chrome.storage.local.get(["qk_trial_expired"]);
-    if (stored.qk_trial_expired === true) {
-      await showTrialExpiredBanner();
-    }
   }
 });
 
@@ -1365,6 +1362,12 @@ document
   .addEventListener("click", () => {
     hideTrialExpiredBanner();
     showView(upgradeView);
+  });
+
+document
+  .getElementById("trialExpiredCloseBtn")
+  .addEventListener("click", () => {
+    hideTrialExpiredBanner();
   });
 
 // ─────────────────────────────────────────────────────────────
@@ -1410,6 +1413,14 @@ document
       }
       await user.reload();
       if (user.emailVerified) {
+        // Doc already exists (created by registerUser in auth.js) — mark as verified
+        try {
+          await db.collection("users").doc(user.uid).update({
+            verified: true,
+          });
+        } catch (e) {
+          console.warn("[QuickKeep] Could not set verified flag:", e);
+        }
         await initMain(user);
       } else {
         showToast("Email not verified yet — check your inbox", "error");

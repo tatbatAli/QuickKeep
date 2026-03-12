@@ -793,7 +793,6 @@ body.qk-popup {
 
 /* ════════════════════════════════════════════════════
    QUICKKEEP — PRO / AUTH / UPGRADE STYLES
-   Appended to base styles.css
 ════════════════════════════════════════════════════ */
 
 /* ── Views ── */
@@ -1618,7 +1617,6 @@ body.qk-popup {
   stroke: var(--r-color);
 }
 
-/* Fix: use filter for glow since CSS var in rgba doesn't work directly */
 .qk-reaction-btn[data-key="mustsave"].reacted {
   background: rgba(245, 158, 11, 0.12);
   border-color: #f59e0b;
@@ -1665,7 +1663,6 @@ body.qk-popup {
   line-height: 1;
 }
 
-/* Bounce animation on click */
 @keyframes qk-reaction-pop {
   0% {
     transform: scale(1);
@@ -1756,7 +1753,6 @@ body.qk-popup {
   text-align: center;
 }
 
-/* Live pulse dot */
 .qk-activity-header::before {
   content: "";
   width: 6px;
@@ -1778,12 +1774,10 @@ body.qk-popup {
   }
 }
 
-/* ── Activity Notification Bar ── */
 /* ══════════════════════════════════════
    NOTIFICATIONS TAB
 ══════════════════════════════════════ */
 
-/* Scrollable list inside notifContainer */
 .qk-notif-list {
   flex: 1;
   overflow-y: auto;
@@ -1797,7 +1791,6 @@ body.qk-popup {
   border-radius: 10px;
 }
 
-/* Empty state */
 .qk-notif-empty {
   display: flex;
   flex-direction: column;
@@ -1830,7 +1823,6 @@ body.qk-popup {
   max-width: 180px;
 }
 
-/* Individual notification row */
 .qk-notif-item {
   display: flex;
   align-items: flex-start;
@@ -1853,7 +1845,6 @@ body.qk-popup {
   background: rgba(99, 102, 241, 0.1);
 }
 
-/* Icon circle */
 .qk-notif-icon {
   width: 28px;
   height: 28px;
@@ -1875,7 +1866,6 @@ body.qk-popup {
   background: rgba(244, 63, 94, 0.12);
 }
 
-/* Text content */
 .qk-notif-body {
   flex: 1;
   min-width: 0;
@@ -2060,10 +2050,12 @@ body.qk-popup {
 .qk-verify-resend:hover {
   color: #c7d2fe;
 }
+
 /* ══════════════════════════════════════
    TRIAL EXPIRED BANNER (auth screen)
 ══════════════════════════════════════ */
 .qk-trial-expired-banner {
+  position: relative;
   margin: 0 16px 4px;
   background: linear-gradient(
     135deg,
@@ -2077,6 +2069,31 @@ body.qk-popup {
   gap: 12px;
   align-items: flex-start;
   animation: qk-fade-in 0.3s ease both;
+}
+
+.qk-trial-expired-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.07);
+  border: none;
+  color: rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background 0.15s,
+    color 0.15s;
+  flex-shrink: 0;
+}
+
+.qk-trial-expired-close:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .qk-trial-expired-icon {
@@ -2139,25 +2156,4 @@ body.qk-popup {
 .qk-trial-expired-upgrade:hover {
   opacity: 0.9;
   transform: translateY(-1px);
-}
-
-.qk-trial-expired-guest {
-  padding: 7px 11px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.45);
-  font-family: inherit;
-  font-size: 11.5px;
-  font-weight: 500;
-  cursor: pointer;
-  transition:
-    background 0.15s,
-    color 0.15s;
-  white-space: nowrap;
-}
-
-.qk-trial-expired-guest:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.7);
 }

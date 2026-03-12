@@ -32,6 +32,7 @@ async function registerUser(email, password) {
     paddleSubId: null,
     teamId: null,
     role: "member",
+    verified: false,
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
   });
 

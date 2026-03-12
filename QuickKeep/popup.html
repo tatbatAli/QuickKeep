@@ -46,6 +46,25 @@
         class="qk-trial-expired-banner"
         style="display: none"
       >
+        <button
+          class="qk-trial-expired-close"
+          id="trialExpiredCloseBtn"
+          aria-label="Dismiss"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            width="12"
+            height="12"
+          >
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
         <div class="qk-trial-expired-icon">
           <svg
             viewBox="0 0 24 24"
@@ -824,7 +843,8 @@
         <div class="qk-verify-title">Check your email</div>
         <div class="qk-verify-sub" id="verifyEmailHint">
           We sent a verification link to your email. Click it to activate your
-          account and start your 7-day Pro trial.
+          account and start your 7-day Pro trial. check the spam if you didn't
+          find the email in your inbox
         </div>
         <button class="qk-save-btn" id="verifyCheckBtn">
           I've verified — continue

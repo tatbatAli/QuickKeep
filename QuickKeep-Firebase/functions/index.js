@@ -145,11 +145,9 @@ exports.paddleWebhook = functions.https.onRequest(async (req, res) => {
         const isImmediate = effectiveDate <= new Date();
 
         if (isImmediate) {
-          // Downgrade immediately
           await downgradeUserAndTeam(userDoc);
           functions.logger.info(`[Paddle] Immediately downgraded ${email}`);
         } else {
-          // Schedule downgrade — keep access until period ends
           await userDoc.ref.update({
             pendingCancel: true,
             cancelledAt: effectiveDate,
@@ -161,7 +159,6 @@ exports.paddleWebhook = functions.https.onRequest(async (req, res) => {
         break;
       }
 
-      // ── Payment failed — you could trigger a dunning email here
       case "subscription.payment_failed":
         functions.logger.warn(`[Paddle] Payment failed for ${email}`);
         break;
@@ -178,8 +175,6 @@ exports.paddleWebhook = functions.https.onRequest(async (req, res) => {
 });
 
 // ── Cloud Function: createTeam ────────────────────────────────
-// Creates a team and sets the calling user as owner.
-// Called from the extension when a user clicks "Create Team".
 exports.createTeam = functions.https.onCall(async (data, context) => {
   if (!context.auth)
     throw new functions.https.HttpsError(
@@ -196,7 +191,6 @@ exports.createTeam = functions.https.onCall(async (data, context) => {
 
   const uid = context.auth.uid;
 
-  // Verify user is on team plan
   const userDoc = await db.collection("users").doc(uid).get();
   if (!["team"].includes(userDoc.data()?.plan)) {
     throw new functions.https.HttpsError(
@@ -205,7 +199,6 @@ exports.createTeam = functions.https.onCall(async (data, context) => {
     );
   }
 
-  // Create team document
   const teamRef = await db.collection("teams").add({
     name: teamName,
     ownerId: uid,
@@ -213,7 +206,6 @@ exports.createTeam = functions.https.onCall(async (data, context) => {
     createdAt: admin.firestore.FieldValue.serverTimestamp(),
   });
 
-  // Update user's teamId
   await db
     .collection("users")
     .doc(uid)
@@ -223,7 +215,6 @@ exports.createTeam = functions.https.onCall(async (data, context) => {
 });
 
 // ── Cloud Function: acceptInvite ──────────────────────────────
-// Adds the calling user to a team via invite token.
 exports.acceptInvite = functions.https.onCall(async (data, context) => {
   if (!context.auth)
     throw new functions.https.HttpsError(
@@ -253,11 +244,9 @@ exports.acceptInvite = functions.https.onCall(async (data, context) => {
   const teamId = invite.data().teamId;
   const uid = context.auth.uid;
 
-  // Get user email to store in team members array
   const userDoc = await db.collection("users").doc(uid).get();
   const email = userDoc.data()?.email || context.auth.token.email || "";
 
-  // Add user to team memberIds array and members array
   await db
     .collection("teams")
     .doc(teamId)
@@ -270,22 +259,18 @@ exports.acceptInvite = functions.https.onCall(async (data, context) => {
       }),
     });
 
-  // Update user record
   await db.collection("users").doc(uid).update({
     teamId,
     plan: "team",
     role: "member",
   });
 
-  // Mark invite as accepted
   await invite.ref.update({ accepted: true });
 
   return { teamId };
 });
 
 // ── Cloud Function: deleteAccount ─────────────────────────────
-// Cancels Paddle subscription, deletes all Firestore data,
-// and deletes the Firebase Auth user.
 exports.deleteAccount = functions.https.onCall(async (data, context) => {
   if (!context.auth) {
     throw new functions.https.HttpsError(
@@ -296,12 +281,10 @@ exports.deleteAccount = functions.https.onCall(async (data, context) => {
 
   const uid = context.auth.uid;
 
-  // 1. Get user profile to find Paddle subscription ID
   const userDoc = await db.collection("users").doc(uid).get();
   const userData = userDoc.data() || {};
   const paddleSubId = userData.paddleSubId;
 
-  // 2. Cancel Paddle subscription if exists
   if (paddleSubId) {
     try {
       const paddleApiKey = process.env.PADDLE_API_KEY;
@@ -319,7 +302,6 @@ exports.deleteAccount = functions.https.onCall(async (data, context) => {
       if (!response.ok) {
         const err = await response.json();
         functions.logger.error("[deleteAccount] Paddle cancel error:", err);
-        // Don't throw — still delete the account even if Paddle call fails
       } else {
         functions.logger.info(
           "[deleteAccount] Paddle subscription cancelled:",
@@ -328,11 +310,9 @@ exports.deleteAccount = functions.https.onCall(async (data, context) => {
       }
     } catch (err) {
       functions.logger.error("[deleteAccount] Paddle API error:", err);
-      // Continue with deletion even if Paddle fails
     }
   }
 
-  // 3. Delete all user's entries in batches
   const entriesSnap = await db
     .collection("entries")
     .where("userId", "==", uid)
@@ -347,10 +327,7 @@ exports.deleteAccount = functions.https.onCall(async (data, context) => {
     await batch.commit();
   }
 
-  // 4. Delete user Firestore document
   await db.collection("users").doc(uid).delete();
-
-  // 5. Delete Firebase Auth user
   await admin.auth().deleteUser(uid);
 
   functions.logger.info("[deleteAccount] Account deleted:", uid);
@@ -358,8 +335,6 @@ exports.deleteAccount = functions.https.onCall(async (data, context) => {
 });
 
 // ── Cloud Function: sendVerificationEmail ────────────────────
-// Sends a branded verification email via Zoho SMTP.
-// Called from auth.js after registration.
 exports.sendVerificationEmail = functions.https.onCall(
   async (data, context) => {
     if (!context.auth) {
@@ -371,10 +346,8 @@ exports.sendVerificationEmail = functions.https.onCall(
 
     const email = context.auth.token.email;
 
-    // Generate Firebase verification link
     const link = await admin.auth().generateEmailVerificationLink(email);
 
-    // Send via Zoho SMTP
     await transporter.sendMail({
       from: '"QuickKeep" <support@quickkeep.icu>',
       to: email,
@@ -416,7 +389,6 @@ async function downgradeUserAndTeam(userDoc) {
   const userData = userDoc.data();
   const teamId = userData?.teamId;
 
-  // Downgrade the owner
   await userDoc.ref.update({
     plan: "free",
     paddleSubId: null,
@@ -426,13 +398,11 @@ async function downgradeUserAndTeam(userDoc) {
     cancelledAt: null,
   });
 
-  // If they had a team, downgrade all members and delete the team
   if (teamId) {
     const teamDoc = await db.collection("teams").doc(teamId).get();
     if (teamDoc.exists) {
       const memberIds = teamDoc.data()?.memberIds || [];
 
-      // Downgrade every member
       const memberUpdates = memberIds
         .filter((mid) => mid !== userDoc.id)
         .map((mid) =>
@@ -444,14 +414,12 @@ async function downgradeUserAndTeam(userDoc) {
         );
       await Promise.all(memberUpdates);
 
-      // Delete the team document
       await teamDoc.ref.delete();
     }
   }
 }
 
 // ── Cloud Function: getCustomerPortalUrl ─────────────────────
-// Returns a Paddle Customer Portal URL for the calling user.
 exports.getCustomerPortalUrl = functions.https.onCall(async (data, context) => {
   if (!context.auth) {
     throw new functions.https.HttpsError(
@@ -473,7 +441,6 @@ exports.getCustomerPortalUrl = functions.https.onCall(async (data, context) => {
 
   const PADDLE_API_KEY = process.env.PADDLE_API_KEY;
 
-  // Get the customer ID from Paddle using the subscription ID
   const subRes = await fetch(
     `https://api.paddle.com/subscriptions/${userData.paddleSubId}`,
     { headers: { Authorization: `Bearer ${PADDLE_API_KEY}` } },
@@ -488,7 +455,6 @@ exports.getCustomerPortalUrl = functions.https.onCall(async (data, context) => {
     );
   }
 
-  // Generate a portal session
   const portalRes = await fetch(
     `https://api.paddle.com/customers/${customerId}/portal-sessions`,
     {
@@ -514,8 +480,6 @@ exports.getCustomerPortalUrl = functions.https.onCall(async (data, context) => {
 });
 
 // ── Scheduled Function: process pending cancellations ────────
-// Runs every day at midnight — downgrades users whose billing
-// period has ended after a scheduled cancellation.
 exports.processPendingCancellations = functionsV1.pubsub
   .schedule("0 0 * * *")
   .timeZone("UTC")
@@ -549,7 +513,7 @@ exports.processPendingCancellations = functionsV1.pubsub
     }
   });
 
-// ── Delete data for trial-expired users after 15-day grace period ──
+// ── Scheduled Function: delete expired trial data after 15-day grace period ──
 exports.processExpiredTrialData = functionsV1.pubsub
   .schedule("0 1 * * *")
   .timeZone("UTC")
@@ -573,7 +537,6 @@ exports.processExpiredTrialData = functionsV1.pubsub
     for (const doc of snap.docs) {
       const uid = doc.id;
       try {
-        // Delete all personal entries
         const entries = await db
           .collection("entries")
           .where("userId", "==", uid)
@@ -583,7 +546,6 @@ exports.processExpiredTrialData = functionsV1.pubsub
         entries.docs.forEach((e) => batch.delete(e.ref));
         await batch.commit();
 
-        // Delete all folders
         const folders = await db
           .collection("folders")
           .where("userId", "==", uid)
@@ -592,7 +554,6 @@ exports.processExpiredTrialData = functionsV1.pubsub
         folders.docs.forEach((f) => batch2.delete(f.ref));
         await batch2.commit();
 
-        // Clear dataExpiresAt so it doesn't run again
         await doc.ref.update({
           dataExpiresAt: admin.firestore.FieldValue.delete(),
         });
@@ -601,6 +562,60 @@ exports.processExpiredTrialData = functionsV1.pubsub
       } catch (err) {
         functions.logger.error(
           `[scheduler] Failed to delete data for ${uid}:`,
+          err,
+        );
+      }
+    }
+  });
+
+// ── Scheduled Function: delete unverified accounts after 24h ─
+// Runs daily at 2am UTC. Cleans up ghost accounts where the
+// user registered but never clicked the verification link.
+exports.deleteUnverifiedAccounts = functionsV1.pubsub
+  .schedule("0 2 * * *")
+  .timeZone("UTC")
+  .onRun(async (context) => {
+    const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000); // 24h ago
+
+    const snap = await db
+      .collection("users")
+      .where("verified", "==", false)
+      .where("createdAt", "<=", cutoff)
+      .get();
+
+    if (snap.empty) {
+      functions.logger.info("[scheduler] No unverified accounts to clean up");
+      return;
+    }
+
+    functions.logger.info(
+      `[scheduler] Deleting ${snap.docs.length} unverified accounts`,
+    );
+
+    for (const doc of snap.docs) {
+      const uid = doc.id;
+      const email = doc.data()?.email;
+      try {
+        // Delete Firebase Auth account
+        try {
+          await admin.auth().deleteUser(uid);
+        } catch (authErr) {
+          // Already deleted from Auth or never fully created — continue
+          functions.logger.warn(
+            `[scheduler] Auth delete skipped for ${uid}:`,
+            authErr.message,
+          );
+        }
+
+        // Delete Firestore document
+        await doc.ref.delete();
+
+        functions.logger.info(
+          `[scheduler] Deleted unverified account: ${email} (${uid})`,
+        );
+      } catch (err) {
+        functions.logger.error(
+          `[scheduler] Failed to delete unverified account ${uid}:`,
           err,
         );
       }
