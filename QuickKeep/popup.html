@@ -36,6 +36,47 @@
         </div>
         <p class="qk-auth-tagline">Save anything. Find it instantly.</p>
       </div>
+
+      <!-- ── Trial Expired Banner ─────────────────────────────
+           Hidden by default. Shown when qk_trial_expired=true
+           in chrome.storage, or immediately after trial expires.
+      ──────────────────────────────────────────────────────── -->
+      <div
+        id="trialExpiredBanner"
+        class="qk-trial-expired-banner"
+        style="display: none"
+      >
+        <div class="qk-trial-expired-icon">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            width="18"
+            height="18"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
+        </div>
+        <div class="qk-trial-expired-body">
+          <div class="qk-trial-expired-title">Your Pro trial has ended</div>
+          <div class="qk-trial-expired-sub">
+            Upgrade to keep syncing across devices, unlimited saves, and search.
+          </div>
+          <div class="qk-trial-expired-actions">
+            <button
+              class="qk-trial-expired-upgrade"
+              id="trialExpiredUpgradeBtn"
+            >
+              Upgrade to Pro
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div class="qk-auth-tabs">
         <button class="qk-tab-btn active" id="tabLogin">Sign in</button>
         <button class="qk-tab-btn" id="tabRegister">Create account</button>
@@ -417,7 +458,7 @@
         </div>
       </div>
 
-      <!-- Notifications list — inline tab panel -->
+      <!-- Notifications list -->
       <div class="qk-list-container" id="notifContainer" style="display: none">
         <div class="qk-notif-list" id="notifList"></div>
       </div>
@@ -428,7 +469,7 @@
         >
         <a
           class="qk-privacy-link"
-          href="https://usequickkeep.netlify.app/privacy_policy.html"
+          href="https://quickkeep.icu/privacy_policy.html"
           target="_blank"
           >Privacy</a
         >

@@ -2060,3 +2060,104 @@ body.qk-popup {
 .qk-verify-resend:hover {
   color: #c7d2fe;
 }
+/* ══════════════════════════════════════
+   TRIAL EXPIRED BANNER (auth screen)
+══════════════════════════════════════ */
+.qk-trial-expired-banner {
+  margin: 0 16px 4px;
+  background: linear-gradient(
+    135deg,
+    rgba(239, 68, 68, 0.1) 0%,
+    rgba(217, 70, 239, 0.08) 100%
+  );
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  animation: qk-fade-in 0.3s ease both;
+}
+
+.qk-trial-expired-icon {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f87171;
+  margin-top: 1px;
+}
+
+.qk-trial-expired-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.qk-trial-expired-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fecaca;
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+
+.qk-trial-expired-sub {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.45);
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+.qk-trial-expired-actions {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.qk-trial-expired-upgrade {
+  padding: 7px 13px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  border: none;
+  color: #fff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 12px rgba(239, 68, 68, 0.35);
+  transition:
+    opacity 0.15s,
+    transform 0.15s;
+  white-space: nowrap;
+}
+
+.qk-trial-expired-upgrade:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.qk-trial-expired-guest {
+  padding: 7px 11px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.45);
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+  white-space: nowrap;
+}
+
+.qk-trial-expired-guest:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+}

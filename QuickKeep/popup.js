@@ -113,6 +113,24 @@ function showView(view) {
 }
 
 // ─────────────────────────────────────────────────────────────
+//  TRIAL EXPIRED BANNER
+//  Shown on the auth screen when a trial has ended.
+//  Persists in chrome.storage so it survives popup close/reopen.
+// ─────────────────────────────────────────────────────────────
+async function showTrialExpiredBanner() {
+  // Mark the flag so the banner reappears on every open
+  await chrome.storage.local.set({ qk_trial_expired: true });
+
+  const banner = document.getElementById("trialExpiredBanner");
+  if (banner) banner.style.display = "";
+}
+
+function hideTrialExpiredBanner() {
+  const banner = document.getElementById("trialExpiredBanner");
+  if (banner) banner.style.display = "none";
+}
+
+// ─────────────────────────────────────────────────────────────
 //  PLAN UI
 // ─────────────────────────────────────────────────────────────
 function updatePlanUI(plan, isTrial) {
@@ -155,7 +173,50 @@ async function handleLogin(e) {
   try {
     const email = document.getElementById("loginEmail").value.trim();
     const password = document.getElementById("loginPassword").value;
-    await loginUser(email, password);
+    const firebaseUser = await loginUser(email, password);
+
+    // ── Trial-expired check ───────────────────────────────────
+    // Block sign-in if trialExpired flag is set OR if the trial
+    // end date has already passed — covers both already-processed
+    // accounts and first-time expiry on login.
+    const profile = await getUserProfile(firebaseUser.uid);
+    if (profile && !profile.paddleSubId) {
+      const alreadyExpired =
+        profile.trialExpired === true && profile.plan === "free";
+
+      let expiredByDate = false;
+      if (profile.isTrial && profile.trialEndsAt) {
+        const trialEnd = profile.trialEndsAt.toDate
+          ? profile.trialEndsAt.toDate()
+          : new Date(profile.trialEndsAt);
+        expiredByDate = new Date() > trialEnd;
+      }
+
+      if (alreadyExpired || expiredByDate) {
+        try {
+          await db.collection("users").doc(firebaseUser.uid).update({
+            plan: "free",
+            isTrial: false,
+            trialExpired: true,
+          });
+        } catch (e) {}
+
+        await logoutUser();
+        await chrome.storage.local.remove([
+          "qk_user_uid",
+          "qk_user_plan",
+          "qk_auth_token",
+          "qk_auth_expiry",
+        ]);
+        showView(authView);
+        await showTrialExpiredBanner();
+        btn.textContent = "Sign in";
+        btn.disabled = false;
+        return;
+      }
+    }
+    // ─────────────────────────────────────────────────────────
+
     // onAuthChange listener will fire and call initMain()
   } catch (err) {
     showToast(friendlyAuthError(err.code), "error");
@@ -1133,17 +1194,49 @@ async function initMain(user) {
       const trialEnd = userProfile.trialEndsAt.toDate
         ? userProfile.trialEndsAt.toDate()
         : new Date(userProfile.trialEndsAt);
+
       if (new Date() > trialEnd) {
-        // Trial expired — downgrade immediately and silently
-        await db
-          .collection("users")
-          .doc(userProfile.uid || user.uid)
-          .update({
-            plan: "free",
-            isTrial: false,
-          });
-        userProfile.plan = "free";
-        userProfile.isTrial = false;
+        // Set storage flag FIRST — before any async that could fail,
+        // so the banner always shows on the next open even if something errors.
+        await chrome.storage.local.set({ qk_trial_expired: true });
+
+        // Mark Firestore (best effort — don't let a failure block the flow)
+        try {
+          await db
+            .collection("users")
+            .doc(userProfile.uid || user.uid)
+            .update({
+              plan: "free",
+              isTrial: false,
+              trialExpired: true,
+            });
+        } catch (e) {
+          console.warn("[QuickKeep] Firestore trial expiry update failed:", e);
+        }
+
+        // Clean up auth state
+        if (unsubEntries) {
+          unsubEntries();
+          unsubEntries = null;
+        }
+        try {
+          await logoutUser();
+        } catch (e) {}
+        await chrome.storage.local.remove([
+          "qk_user_uid",
+          "qk_user_plan",
+          "qk_auth_token",
+          "qk_auth_expiry",
+        ]);
+
+        userProfile = null;
+        currentEntries = [];
+        isGuest = false;
+
+        // Show auth view with trial-ended banner
+        showView(authView);
+        await showTrialExpiredBanner();
+        return; // stop — don't proceed to render main view
       } else {
         // Trial still active — show how many days remain
         const daysLeft = Math.ceil(
@@ -1196,9 +1289,6 @@ async function initMain(user) {
 
 // ─────────────────────────────────────────────────────────────
 //  PENDING SAVE LISTENER
-//  When content script saves a page, it goes to chrome.storage
-//  as a pending save. The popup picks it up here and saves to
-//  Firebase (or local storage for guests).
 // ─────────────────────────────────────────────────────────────
 async function processPendingSave() {
   const result = await new Promise((resolve) =>
@@ -1208,7 +1298,6 @@ async function processPendingSave() {
   const pending = result.qk_pending_save;
   if (!pending) return;
 
-  // Clear it immediately to avoid processing twice
   await new Promise((resolve) =>
     chrome.storage.local.remove(["qk_pending_save"], resolve),
   );
@@ -1226,29 +1315,28 @@ async function processPendingSave() {
         title,
         note,
       });
-      // Firestore listener auto-refreshes the list
     }
   } catch (err) {
     console.error("[QuickKeep] Pending save error:", err);
   }
 }
 
-// Listen for storage changes (content script just saved something)
 chrome.storage.onChanged.addListener((changes) => {
   if (changes.qk_pending_save) {
     processPendingSave();
   }
 });
 
-//  This is the main entry point — Firebase tells us when the
-//  user is logged in or out, then we show the right view.
+// ─────────────────────────────────────────────────────────────
+//  AUTH STATE LISTENER
+//  Main entry point — Firebase tells us when the user is logged
+//  in or out, then we show the right view.
 // ─────────────────────────────────────────────────────────────
 onAuthChange(async (firebaseUser) => {
   if (firebaseUser && !isGuest) {
     // Check email verification
-    await firebaseUser.reload(); // get fresh emailVerified status
+    await firebaseUser.reload();
     if (!firebaseUser.emailVerified) {
-      // Show verify view — don't let them into the app yet
       document.getElementById("verifyEmailHint").textContent =
         `We sent a verification link to ${firebaseUser.email}. Click it to activate your account and start your 7-day Pro trial.`;
       showView(document.getElementById("verifyView"));
@@ -1257,10 +1345,27 @@ onAuthChange(async (firebaseUser) => {
     // Verified — load main view
     await initMain(firebaseUser);
   } else if (!isGuest) {
-    // Not logged in and not guest — show auth screen
+    // Not logged in — show auth screen
     showView(authView);
+
+    // ── Check if user was just logged out due to trial expiry ──
+    // If the flag is set, show the trial-ended banner automatically.
+    const stored = await chrome.storage.local.get(["qk_trial_expired"]);
+    if (stored.qk_trial_expired === true) {
+      await showTrialExpiredBanner();
+    }
   }
 });
+
+// ─────────────────────────────────────────────────────────────
+//  TRIAL EXPIRED BANNER BUTTON HANDLERS
+// ─────────────────────────────────────────────────────────────
+document
+  .getElementById("trialExpiredUpgradeBtn")
+  .addEventListener("click", () => {
+    hideTrialExpiredBanner();
+    showView(upgradeView);
+  });
 
 // ─────────────────────────────────────────────────────────────
 //  EVENT LISTENERS
@@ -1332,7 +1437,6 @@ document
             .httpsCallable("sendVerificationEmail");
           await sendVerification();
         } catch {
-          // Fallback to Firebase default
           await user.sendEmailVerification();
         }
         showToast("Verification email resent!");
@@ -1407,7 +1511,6 @@ document.getElementById("saveTeamBtn").addEventListener("click", async () => {
       teamId: userProfile.teamId,
     });
 
-    // Log activity event
     db.collection("activity")
       .add({
         teamId: userProfile.teamId,
@@ -1422,8 +1525,6 @@ document.getElementById("saveTeamBtn").addEventListener("click", async () => {
 
     noteInput.value = "";
     showToast("Saved to team!");
-
-    // Switch to team tab to show the save
     document.getElementById("tabTeamSaves").click();
   } catch (err) {
     console.error("[QuickKeep] Save to team error:", err);
@@ -1504,7 +1605,6 @@ popupToggle.addEventListener("click", () => {
     .forEach((el) => (el.style.display = popupIsYearly ? "" : "none"));
 });
 
-// Open checkout in new tab via Netlify page
 document.querySelectorAll(".popup-pro-btn, .popup-team-btn").forEach((btn) => {
   btn.addEventListener("click", () => {
     const isTeam = btn.classList.contains("popup-team-btn");
@@ -1531,7 +1631,6 @@ document
   .getElementById("backFromTeam")
   .addEventListener("click", () => showView(mainView));
 
-// ── Open team view from user menu ─────────────────────────────
 async function openTeamView() {
   userMenu.style.display = "none";
   showView(teamView);
@@ -1551,7 +1650,6 @@ async function openTeamView() {
   }
 }
 
-// ── Load team data ────────────────────────────────────────────
 async function loadTeamData(teamId) {
   try {
     const teamDoc = await db.collection("teams").doc(teamId).get();
@@ -1560,7 +1658,6 @@ async function loadTeamData(teamId) {
     const team = teamDoc.data();
     const isOwner = team.ownerId === userProfile.uid;
 
-    // Update role from team document
     userProfile.role = isOwner ? "owner" : "member";
 
     document.getElementById("teamNameDisplay").textContent = team.name;
@@ -1568,13 +1665,11 @@ async function loadTeamData(teamId) {
       ? "Owner"
       : "Member";
 
-    // Show invite section ONLY for owner
     document.getElementById("inviteSection").style.display = isOwner
       ? ""
       : "none";
     document.getElementById("inviteLinkWrap").style.display = "none";
 
-    // Display members from the team doc directly (no extra user doc fetches needed)
     const membersList = document.getElementById("membersList");
     const members =
       team.members ||
@@ -1602,7 +1697,6 @@ async function loadTeamData(teamId) {
   }
 }
 
-// ── Create team ───────────────────────────────────────────────
 document.getElementById("createTeamBtn").addEventListener("click", async () => {
   const nameInput = document.getElementById("teamNameInput");
   const teamName = nameInput.value.trim();
@@ -1616,7 +1710,6 @@ document.getElementById("createTeamBtn").addEventListener("click", async () => {
   btn.disabled = true;
 
   try {
-    // Create team document — store emails directly for easy access
     const teamRef = await db.collection("teams").add({
       name: teamName,
       ownerId: userProfile.uid,
@@ -1627,7 +1720,6 @@ document.getElementById("createTeamBtn").addEventListener("click", async () => {
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     });
 
-    // Update user profile
     await db.collection("users").doc(userProfile.uid).update({
       teamId: teamRef.id,
       role: "owner",
@@ -1648,7 +1740,6 @@ document.getElementById("createTeamBtn").addEventListener("click", async () => {
   }
 });
 
-// ── Send invite ───────────────────────────────────────────────
 document.getElementById("sendInviteBtn").addEventListener("click", async () => {
   const emailInput = document.getElementById("inviteEmailInput");
   const inviteEmail = emailInput.value.trim().toLowerCase();
@@ -1662,7 +1753,6 @@ document.getElementById("sendInviteBtn").addEventListener("click", async () => {
   btn.disabled = true;
 
   try {
-    // Check current member count — cap at 5 (owner + 4 members)
     const teamDoc = await db.collection("teams").doc(userProfile.teamId).get();
     const memberCount = teamDoc.data()?.memberIds?.length || 1;
     if (memberCount >= 5) {
@@ -1682,7 +1772,6 @@ document.getElementById("sendInviteBtn").addEventListener("click", async () => {
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     });
 
-    // Show the invite link
     const inviteLink = `https://quickkeep.icu/?invite=${token}`;
     document.getElementById("inviteLinkWrap").style.display = "";
     document.getElementById("inviteLinkInput").value = inviteLink;
@@ -1698,7 +1787,6 @@ document.getElementById("sendInviteBtn").addEventListener("click", async () => {
   }
 });
 
-// ── Copy invite link ──────────────────────────────────────────
 document.getElementById("copyInviteLinkBtn").addEventListener("click", () => {
   const linkInput = document.getElementById("inviteLinkInput");
   navigator.clipboard.writeText(linkInput.value).then(() => {
@@ -1706,9 +1794,6 @@ document.getElementById("copyInviteLinkBtn").addEventListener("click", () => {
   });
 });
 
-// toggleSharedBtn removed — shared saves now shown in Team tab on main view
-
-// ── Team button in user menu ──────────────────────────────────
 document.getElementById("teamMenuBtn").addEventListener("click", () => {
   openTeamView();
 });
