@@ -61,55 +61,80 @@
   }
 
   // ── Utility: Clamp overlay within viewport ───────────────────
-  /**
-   * Keeps the save overlay fully inside the visible viewport.
-   * Flips above the cursor if there's not enough room below.
-   */
   function clampPosition(x, y, w, h) {
     const vw = window.innerWidth;
     const vh = window.innerHeight;
     const margin = 12;
 
-    let left = x - 16; // align arrow tip near cursor
-    let top = y + 14; // default: appear below cursor
+    let left = x - 16;
+    let top = y + 14;
 
     if (left + w + margin > vw) left = vw - w - margin;
     if (left < margin) left = margin;
-    if (top + h + margin > vh) top = y - h - 10; // flip above
+    if (top + h + margin > vh) top = y - h - 10;
     if (top < margin) top = margin;
 
     return { top, left };
   }
 
   // ── Storage ───────────────────────────────────────────────────
+
   // Send save to background service worker, which bridges to the popup/Firebase
   function saveToBackground(url, title, note) {
     return new Promise((resolve, reject) => {
-      chrome.runtime.sendMessage(
-        { type: "SAVE_PAGE", url, title, note },
-        (response) => {
-          if (chrome.runtime.lastError) {
-            reject(chrome.runtime.lastError);
-          } else {
-            resolve(response);
-          }
-        },
-      );
+      // chrome.runtime can become undefined if the extension was reloaded
+      // while this content script was still running on the page.
+      // In that case fall back to local storage silently.
+      if (!chrome?.runtime?.sendMessage) {
+        saveToLocalFallback(url, title, note).then(resolve).catch(reject);
+        return;
+      }
+
+      try {
+        chrome.runtime.sendMessage(
+          { type: "SAVE_PAGE", url, title, note },
+          (response) => {
+            if (chrome.runtime.lastError) {
+              // Context invalidated mid-call — fall back to local
+              saveToLocalFallback(url, title, note).then(resolve).catch(reject);
+            } else {
+              resolve(response);
+            }
+          },
+        );
+      } catch (err) {
+        // Catch any synchronous throws from invalidated context
+        saveToLocalFallback(url, title, note).then(resolve).catch(reject);
+      }
     });
   }
 
-  // Legacy local storage (used for guest mode fallback)
-  function loadEntries() {
+  // Fallback: save directly to chrome.storage.local when background is unavailable
+  function saveToLocalFallback(url, title, note) {
     return new Promise((resolve) => {
-      chrome.storage.local.get(["quickkeep_entries"], (r) =>
-        resolve(r["quickkeep_entries"] || []),
-      );
-    });
-  }
+      chrome.storage.local.get(["quickkeep_entries"], (r) => {
+        const entries = r["quickkeep_entries"] || [];
+        const existingIdx = entries.findIndex((e) => e.url === url);
+        const genId = () =>
+          Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 
-  function saveEntries(entries) {
-    return new Promise((resolve) => {
-      chrome.storage.local.set({ quickkeep_entries: entries }, resolve);
+        if (existingIdx > -1) {
+          entries[existingIdx].note = note;
+          entries[existingIdx].savedAt = Date.now();
+        } else {
+          entries.unshift({
+            id: genId(),
+            url,
+            title,
+            note,
+            savedAt: Date.now(),
+          });
+        }
+
+        chrome.storage.local.set({ quickkeep_entries: entries }, () =>
+          resolve({ ok: true, local: true }),
+        );
+      });
     });
   }
 
@@ -117,10 +142,6 @@
   //  PILL — floating "Save" button that appears on text selection
   // ─────────────────────────────────────────────────────────────
 
-  /**
-   * Removes the selection pill from the DOM, with optional animation.
-   * @param {boolean} immediate - Skip fade animation.
-   */
   function removePill(immediate = false) {
     clearTimeout(pillHideTimer);
     if (!currentPill || !currentPill.isConnected) return;
@@ -139,24 +160,16 @@
     }, PILL_HIDE_DELAY);
   }
 
-  /**
-   * Creates and positions the floating "Save" pill near the
-   * end of the user's text selection using Selection.getRangeAt().
-   * @param {string} selectedText - The text the user dragged to select.
-   */
   function showSelectionPill(selectedText) {
-    // Remove any existing pill first
     removePill(true);
 
     const sel = window.getSelection();
     if (!sel || sel.rangeCount === 0) return;
 
-    // Get the bounding box of the selected text
     const range = sel.getRangeAt(0);
     const rect = range.getBoundingClientRect();
     if (!rect || rect.width === 0) return;
 
-    // Build the pill element
     const pill = document.createElement("div");
     pill.id = PILL_ID;
     pill.setAttribute("role", "button");
@@ -171,7 +184,6 @@
       Save to QuickKeep
     `;
 
-    // Inline styles — scoped so they never conflict with page CSS
     Object.assign(pill.style, {
       position: "fixed",
       zIndex: "2147483646",
@@ -191,7 +203,6 @@
       cursor: "pointer",
       userSelect: "none",
       whiteSpace: "nowrap",
-      // Entrance animation
       opacity: "0",
       transform: "translateY(6px) scale(0.92)",
       transition:
@@ -199,44 +210,35 @@
       pointerEvents: "all",
     });
 
-    // Position just above the selection's bottom-right corner
-    const scrollX = window.scrollX;
-    const scrollY = window.scrollY;
     document.body.appendChild(pill);
 
-    // Place it: horizontally centered on selection, above the selection
     const pillW = pill.offsetWidth || 160;
     const pillH = pill.offsetHeight || 34;
     const vw = window.innerWidth;
     const margin = 10;
 
-    // Horizontal: center above selection, clamp to viewport
     let left = rect.left + rect.width / 2 - pillW / 2;
     if (left + pillW + margin > vw) left = vw - pillW - margin;
     if (left < margin) left = margin;
 
-    // Vertical: sit just above the selection
     let top = rect.top - pillH - 10;
-    if (top < margin) top = rect.bottom + 10; // flip below if no room above
+    if (top < margin) top = rect.bottom + 10;
 
     pill.style.left = `${left}px`;
     pill.style.top = `${top}px`;
 
     currentPill = pill;
 
-    // Trigger entrance animation on next frame
     requestAnimationFrame(() => {
       if (!pill.isConnected) return;
       pill.style.opacity = "1";
       pill.style.transform = "translateY(0) scale(1)";
     });
 
-    // ── Click: open save overlay with the selection as note ──
     pill.addEventListener("mousedown", (e) => {
-      e.preventDefault(); // prevent the selection from being cleared
+      e.preventDefault();
       e.stopPropagation();
 
-      // Capture position near the pill itself
       const pillRect = pill.getBoundingClientRect();
       const fakeEvt = {
         clientX: pillRect.left + pillRect.width / 2,
@@ -252,11 +254,6 @@
   //  OVERLAY — the main save dialog
   // ─────────────────────────────────────────────────────────────
 
-  /**
-   * Removes the save overlay from the DOM.
-   * @param {HTMLElement} overlay
-   * @param {boolean} immediate
-   */
   function removeOverlay(overlay, immediate = false) {
     if (!overlay || !overlay.isConnected) return;
 
@@ -278,11 +275,6 @@
     }, HIDE_DELAY);
   }
 
-  /**
-   * Builds, positions, and attaches all events to the save overlay.
-   * @param {{ clientX: number, clientY: number }} position - Where to anchor the overlay.
-   * @param {string} selection - Text to pre-fill as the note (may be empty).
-   */
   function injectOverlay(position, selection) {
     if (currentOverlay) removeOverlay(currentOverlay, true);
 
@@ -293,7 +285,6 @@
     overlay.className = "qkt-overlay";
     overlay.id = OVERLAY_ID;
 
-    // Truncate for the preview label (textarea keeps full text)
     const previewText =
       selection.length > 65 ? selection.slice(0, 62) + "…" : selection;
 
@@ -351,7 +342,6 @@
       </div>
     `;
 
-    // ── Position overlay ──
     overlay.style.visibility = "hidden";
     document.body.appendChild(overlay);
     const estH = overlay.offsetHeight || 210;
@@ -366,7 +356,6 @@
     overlay.style.visibility = "visible";
     currentOverlay = overlay;
 
-    // ── Auto-focus note field ──
     const noteField = overlay.querySelector("#qkt-note-field");
     requestAnimationFrame(() => {
       noteField.focus();
@@ -376,7 +365,6 @@
       );
     });
 
-    // ── Events ──
     overlay
       .querySelector("#qkt-close-btn")
       .addEventListener("click", () => removeOverlay(overlay));
@@ -394,7 +382,6 @@
       }
     });
 
-    // Click outside → dismiss (delayed so the triggering click doesn't immediately close it)
     outsideClickHandler = (e) => {
       if (!overlay.contains(e.target)) removeOverlay(overlay);
     };
@@ -407,9 +394,6 @@
   //  SAVE HANDLER
   // ─────────────────────────────────────────────────────────────
 
-  /**
-   * Persists the entry and transitions the overlay to a success state.
-   */
   async function handleSave(overlay, url, title, note) {
     const saveBtn = overlay.querySelector("#qkt-save-btn");
     if (saveBtn) {
@@ -418,10 +402,8 @@
     }
 
     try {
-      // Send to background → popup will save to Firebase or local storage
       await saveToBackground(url, title, note);
 
-      // Success flash
       overlay.classList.add("qkt-saved");
       overlay.innerHTML = `
         <div class="qkt-success-flash">
@@ -449,19 +431,14 @@
 
   // ─────────────────────────────────────────────────────────────
   //  TRIGGER 1 — Double-click
-  //  Handles quick saves and single-word captures.
-  //  If a long selection already exists when the user double-clicks,
-  //  we still honour it (covers power users who select then dblclick).
   // ─────────────────────────────────────────────────────────────
   document.addEventListener("dblclick", (evt) => {
-    // Ignore clicks inside our own UI
     if (
       evt.target.closest(`#${OVERLAY_ID}`) ||
       evt.target.closest(`#${PILL_ID}`)
     )
       return;
 
-    // If a selection pill is visible, the mouseup handler already took over — skip
     if (currentPill) return;
 
     const selection = window.getSelection()?.toString().trim() || "";
@@ -470,28 +447,21 @@
 
   // ─────────────────────────────────────────────────────────────
   //  TRIGGER 2 — Mouse selection pill
-  //  Fires on mouseup. If the selected text is longer than
-  //  PILL_MIN_CHARS, show the floating Save pill near the selection.
-  //  Short selections (single words) are left for double-click.
   // ─────────────────────────────────────────────────────────────
   document.addEventListener("mouseup", (evt) => {
-    // Don't interfere with our own UI
     if (
       evt.target.closest(`#${OVERLAY_ID}`) ||
       evt.target.closest(`#${PILL_ID}`)
     )
       return;
 
-    // Small delay so the browser finishes updating the Selection object
     setTimeout(() => {
       const sel = window.getSelection();
       const text = sel?.toString().trim() || "";
 
       if (text.length >= PILL_MIN_CHARS) {
-        // Long selection — show the pill
         showSelectionPill(text);
       } else {
-        // Short or no selection — hide any existing pill
         removePill();
       }
     }, 10);
@@ -499,10 +469,10 @@
 
   // ── Hide pill when user starts a new selection or clicks away ──
   document.addEventListener("mousedown", (evt) => {
-    if (evt.target.closest(`#${PILL_ID}`)) return; // pill click handled separately
+    if (evt.target.closest(`#${PILL_ID}`)) return;
     removePill();
   });
 
-  // ── Hide pill on scroll (selection rect moves, pill would float wrong) ──
+  // ── Hide pill on scroll ──
   window.addEventListener("scroll", () => removePill(), { passive: true });
 })(); // end IIFE

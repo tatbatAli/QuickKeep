@@ -32,19 +32,49 @@ async function getUserData() {
   return data;
 }
 
+// ── Count user's existing entries via Firestore REST ─────────
+async function countUserEntries(uid, token) {
+  const queryBody = {
+    structuredQuery: {
+      from: [{ collectionId: "entries" }],
+      where: {
+        fieldFilter: {
+          field: { fieldPath: "userId" },
+          op: "EQUAL",
+          value: { stringValue: uid },
+        },
+      },
+      select: {
+        fields: [{ fieldPath: "__name__" }], // only fetch doc names, not full data
+      },
+    },
+  };
+
+  const res = await fetch(
+    `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents:runQuery`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(queryBody),
+    },
+  );
+
+  const data = await res.json();
+  // runQuery returns an array — filter out empty results
+  return data.filter((d) => d.document).length;
+}
+
 // ── Save entry to Firestore via REST ─────────────────────────
 async function saveToFirestore(uid, plan, url, title, note, token) {
-  // Check free limit
+  // Enforce free plan limit of 20 entries
   if (plan === "free") {
-    const countRes = await fetch(
-      `${FIRESTORE_URL}/entries?` +
-        new URLSearchParams({
-          "structuredQuery.from[0].collectionId": "entries",
-        }),
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      },
-    );
+    const count = await countUserEntries(uid, token);
+    if (count >= 20) {
+      throw new Error("FREE_LIMIT_REACHED");
+    }
   }
 
   const now = new Date().toISOString();
@@ -148,9 +178,9 @@ async function saveToLocal(url, title, note) {
     entries[existingIdx].note = note;
     entries[existingIdx].savedAt = Date.now();
   } else {
-    const uid = () =>
+    const genUid = () =>
       Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-    entries.unshift({ id: uid(), url, title, note, savedAt: Date.now() });
+    entries.unshift({ id: genUid(), url, title, note, savedAt: Date.now() });
   }
 
   await chrome.storage.local.set({ quickkeep_entries: entries });
